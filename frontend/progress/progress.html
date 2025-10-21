@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- =========================================================
+       Riza | Progress Page
+       - Visualizes habit consistency with charts
+       - Shows stats, streaks and insights
+       - Unified with shared components
+       ========================================================= -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riza | Progress</title>
+
+    <!-- Sidebar styles -->
+    <link rel="stylesheet" href="../components/sidebar.css" />
+    <!-- Progress Page styles -->
+    <link rel="stylesheet" href="progress.css" />
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Load Lottie Player for animations -->
+    <script
+      src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"
+      type="module"
+    ></script>
+  </head>
+
+  <body>
+    <div class="progress-container">
+      <!-- ========================= SIDEBAR ========================= -->
+      <div id="sidebar-container"></div>
+
+      <!-- ========================= MAIN ========================= -->
+      <main class="main-content">
+        <!-- ===================== HEADER ===================== -->
+        <header class="progress-header">
+          <button class="menu-toggle" aria-label="Open menu">
+            <img
+              src="/frontend/assets/icons/menu.svg"
+              aria-hidden="true"
+              class="menu-icon"
+            />
+          </button>
+          <div class="header-text">
+            <h1>Progress Overview</h1>
+            <p>Track your consistency and growth</p>
+          </div>
+        </header>
+
+        <!-- ===================== SUMMARY STATS ===================== -->
+        <section class="progress-summary">
+          <!-- Stats card with total check-ins -->
+          <div class="card total-checkins anim-1">
+            <h3>
+              <img
+                src="../assets/icons/stats.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Stats
+            </h3>
+            <div class="stats-content">
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <img src="../assets/icons/calendar.svg" alt="Calendar" />
+                </div>
+                <div class="stat-info">
+                  <span class="stat-label">Total Check-ins</span>
+                  <span class="stat-value" id="total-checkins">134</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <img src="../assets/icons/flame.svg" alt="Flame" />
+                </div>
+                <div class="stat-info">
+                  <span class="stat-label">Longest Streak</span>
+                  <span class="stat-value">
+                    <strong id="longest-streak">7</strong> days
+                  </span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <img src="../assets/icons/target.svg" alt="Target" />
+                </div>
+                <div class="stat-info">
+                  <span class="stat-label">Total Habits</span>
+                  <span class="stat-value" id="total-habits">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current streak card -->
+          <div class="card current-streak anim-2">
+            <h3>
+              <img
+                src="../assets/icons/flame.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Current Streak
+            </h3>
+            <div class="streak-content">
+              <div class="streak-flame-container">
+                <dotlottie-wc
+                  id="flame-animation"
+                  src="https://lottie.host/56d7da74-9728-4b30-9850-2f882c814d31/JxaPzJMak3.lottie"
+                  autoplay
+                  loop
+                ></dotlottie-wc>
+                <div class="streak-overlay">
+                  <span class="streak-number" id="current-streak">7</span>
+                  <span class="streak-label">days</span>
+                </div>
+              </div>
+              <div class="streak-milestones">
+                <div class="milestone" id="milestone-7">
+                  <span class="milestone-icon">⭐</span>
+                  <span class="milestone-text">7 days</span>
+                </div>
+                <div class="milestone" id="milestone-30">
+                  <span class="milestone-icon">🏆</span>
+                  <span class="milestone-text">30 days</span>
+                </div>
+                <div class="milestone" id="milestone-100">
+                  <span class="milestone-icon">👑</span>
+                  <span class="milestone-text">100 days</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success rate card -->
+          <div class="card success-rate anim-3">
+            <h3>
+              <img
+                src="../assets/icons/success-rate.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Success Rate
+            </h3>
+            <div class="success-rate-content">
+              <div class="circular-progress">
+                <svg class="progress-ring" width="120" height="120">
+                  <circle
+                    class="progress-ring-circle"
+                    stroke="#e0e0e0"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="52"
+                    cx="60"
+                    cy="60"
+                  />
+                  <circle
+                    id="progress-ring-fill"
+                    class="progress-ring-circle"
+                    stroke="#2d6a4f"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="52"
+                    cx="60"
+                    cy="60"
+                    stroke-dasharray="326.73"
+                    stroke-dashoffset="326.73"
+                  />
+                </svg>
+                <div class="progress-text">
+                  <span id="success-rate" class="percentage">82%</span>
+                </div>
+              </div>
+              <div class="success-details">
+                <p class="success-comparison" id="success-comparison">
+                  <img
+                    src="../assets/icons/up.svg"
+                    class="trend-icon"
+                    alt="Up"
+                  />
+                  <span class="comparison-text">12% from last week</span>
+                </p>
+                <p class="best-day" id="best-day">
+                  <span class="best-day-label">Best day:</span>
+                  <span class="best-day-value">Monday</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== CHART VISUALIZATIONS ===================== -->
+        <section class="progress-charts">
+          <!-- Weekly progress line chart -->
+          <div class="card weekly-chart anim-1">
+            <h3>
+              <img
+                src="../assets/icons/line-chart.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Weekly Progress
+            </h3>
+            <canvas id="weeklyChart"></canvas>
+          </div>
+
+          <!-- Monthly overview pie chart -->
+          <div class="card monthly-chart anim-2">
+            <h3>
+              <img
+                src="../assets/icons/pie-chart.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Monthly Overview
+            </h3>
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </section>
+
+        <!-- ===================== INSIGHTS & MOTIVATION ===================== -->
+        <section class="progress-insights">
+          <!-- Daily motivation quote -->
+          <div class="card motivation anim-1">
+            <h3>
+              <img
+                src="../assets/icons/sparkles.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Daily Motivation
+            </h3>
+            <div class="motivation-content">
+              <blockquote id="motivationText">
+                "Small progress each day adds up to big results."
+              </blockquote>
+              <div class="motivation-footer">
+                <span class="quote-category" id="quoteCategory"
+                  >Consistency</span
+                >
+                <button
+                  class="refresh-quote"
+                  id="refreshQuote"
+                  title="Get new quote"
+                >
+                  <img src="../assets/icons/refresh.svg" alt="Refresh" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Calendar -->
+          <div class="card calendar anim-2">
+            <h3>
+              <img
+                src="../assets/icons/calendar.svg"
+                class="icon"
+                aria-hidden="true"
+              />
+              Activity Calendar
+            </h3>
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <button class="calendar-nav" id="prevMonth">
+                  <img src="../assets/icons/left.svg" alt="Previous" />
+                </button>
+                <h4 id="currentMonth">January 2025</h4>
+                <button class="calendar-nav" id="nextMonth">
+                  <img src="../assets/icons/right.svg" alt="Next" />
+                </button>
+              </div>
+              <div class="calendar-weekdays">
+                <div class="weekday">Sun</div>
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+              </div>
+              <div class="calendar-days" id="calendarDays">
+                <!-- Days will be generated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Daily motivation quotes module -->
+    <script src="../shared/daily-motivation.js"></script>
+    <!-- Main application script (sidebar loader, etc) -->
+    <script src="/frontend/main.js"></script>
+    <!-- Chart configuration and progress data visualization -->
+    <script type="module" src="progress.js"></script>
+  </body>
+</html>

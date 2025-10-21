@@ -1,0 +1,383 @@
+/* =========================================================
+   RIZA SIGN IN / SIGN UP PAGE
+   Glassmorphic animated card + floating underline inputs
+   Smooth slide transition between cards
+   ========================================================= */
+
+/* ==================== RESET ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ==================== BODY ==================== */
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("../assets/background.png") no-repeat center center;
+  background-size: cover;
+  color: #1b4332;
+  overflow: hidden;
+}
+
+/* ==================== CONTAINER ==================== */
+.container {
+  position: relative;
+  width: 350px;
+  height: 560px;
+  animation: fadeInSmooth 0.8s ease forwards;
+  opacity: 0; /* Fades in on page load */
+}
+
+/* =========================================================
+   CARD (Glassmorphic Container)
+   ========================================================= */
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.15),
+    -20px -20px 60px rgb(255, 255, 255);
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.card.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 10;
+}
+
+/* ==================== Frosted Background ==================== */
+.bg {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  background: rgb(255, 255, 255);
+  backdrop-filter: blur(24px);
+  border-radius: 14px;
+  z-index: 2;
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ==================== Blob Animation Layer ==================== */
+.blob {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: #00fa70;
+  filter: blur(18px);
+  opacity: 0.9;
+  animation: blob-bounce 6s infinite ease-in-out;
+}
+
+/* ==================== Card Content ==================== */
+.card-content {
+  position: relative;
+  z-index: 3;
+  padding: 50px 30px;
+  text-align: center;
+}
+
+/* =========================================================
+   HEADINGS & TEXT
+   ========================================================= */
+.logo {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #1b4332;
+}
+
+p {
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+  opacity: 0.9;
+}
+
+/* =========================================================
+   INPUTS (Floating Underline)
+   ========================================================= */
+.input-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.input-box input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #1b4332;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+  color: #1b4332;
+  padding: 10px 5px 6px;
+  transition: all 0.3s ease;
+}
+
+.input-box label {
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  color: #1b4332;
+  font-size: 0.95rem;
+  pointer-events: none;
+  transition: 0.3s ease all;
+}
+
+/* Input focus and filled effects */
+.input-box input:focus,
+.input-box input:valid {
+  border-bottom-color: #2d6a4f;
+  box-shadow: 0 1px 0 0 #b7e4c7;
+}
+
+.input-box input:focus + label,
+.input-box input:valid + label {
+  top: -12px;
+  left: 0;
+  font-size: 0.8rem;
+  color: #2d6a4f;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn {
+  background: #1b4332;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 10px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #2d6a4f;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+   SWITCH TEXT (Login ↔ Signup)
+   ========================================================= */
+.switch-text {
+  margin-top: 15px;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.switch-text a {
+  color: #1b4332;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   FOCUS STATES (for accessibility - match dashboard)
+   ========================================================= */
+.btn:focus,
+a:focus {
+  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline-offset: 3px;
+}
+
+/* Update the focus state for inputs only */
+.input-box input:focus {
+  outline: none; /* Remove the default outline */
+  border-bottom-color: #2d6a4f;
+  box-shadow: 0 1px 0 0 #b7e4c7;
+}
+
+/* High contrast focus for keyboard navigation */
+a:focus-visible {
+  outline: 3px solid #2d6a4f;
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+/* Blob movement */
+@keyframes blob-bounce {
+  0%,
+  100% {
+    transform: translate(-100%, -100%) translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate(-100%, -100%) translate3d(100%, 0, 0);
+  }
+  50% {
+    transform: translate(-100%, -100%) translate3d(100%, 100%, 0);
+  }
+  75% {
+    transform: translate(-100%, -100%) translate3d(0, 100%, 0);
+  }
+}
+
+/* Slide transitions */
+.slide-in-right {
+  animation: slideInRight 0.6s ease forwards;
+}
+.slide-in-left {
+  animation: slideInLeft 0.6s ease forwards;
+}
+.slide-out-left {
+  animation: slideOutLeft 0.6s ease forwards;
+}
+.slide-out-right {
+  animation: slideOutRight 0.6s ease forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* Fade-in effect on page load - renamed for consistency */
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (add to match other pages)
+   ========================================================= */
+
+/* EXTRA SMALL PHONES (<375px) */
+@media (max-width: 374px) {
+  .container {
+    width: 300px;
+  }
+
+  .card-content {
+    padding: 40px 20px;
+  }
+
+  .logo {
+    width: 50px;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* SMALL SCREENS (phones < 600px) */
+@media (max-width: 599px) {
+  .container {
+    width: 320px;
+  }
+
+  .bg {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .blob {
+    width: 150px;
+    height: 150px;
+    filter: blur(15px);
+  }
+
+  footer {
+    font-size: 0.65rem;
+    padding: 8px;
+    bottom: 5px;
+  }
+}
+
+/* TABLET SCREENS (600px-1200px) */
+@media (min-width: 600px) and (max-width: 1200px) {
+  .container {
+    width: 400px;
+    height: 580px;
+  }
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.7rem;
+  color: #1b4332;
+  opacity: 0.8;
+}

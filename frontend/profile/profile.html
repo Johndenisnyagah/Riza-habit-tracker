@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- =========================================================
+       Riza | Profile Page
+       - Manage user information and settings
+       - Account management options
+       ========================================================= -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riza | Profile</title>
+
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="../components/sidebar.css" />
+    <!-- Profile Page styles -->
+    <link rel="stylesheet" href="profile.css" />
+  </head>
+
+  <body>
+    <div class="profile-container">
+      <!-- ========================= SIDEBAR ========================= -->
+      <div id="sidebar-container"></div>
+
+      <!-- ========================= MAIN ========================= -->
+      <main class="main-content">
+        <!-- ===================== HEADER ===================== -->
+        <header class="profile-header">
+          <button class="menu-toggle" aria-label="Open menu">
+            <img
+              src="/frontend/assets/icons/menu.svg"
+              aria-hidden="true"
+              class="menu-icon"
+            />
+          </button>
+          <div class="header-text">
+            <h1>Your Profile</h1>
+            <p>Manage your personal information and account settings</p>
+          </div>
+        </header>
+
+        <div class="profile-grid">
+          <!-- ===================== USER PROFILE ===================== -->
+          <section class="profile-card card anim-1">
+            <div class="profile-pic-wrapper">
+              <button
+                class="edit-icon"
+                id="uploadPicBtn"
+                title="Upload Picture"
+              >
+                <img src="../assets/icons/edit.svg" aria-hidden="true" />
+              </button>
+              <input
+                type="file"
+                id="profilePicInput"
+                accept="image/*"
+                style="display: none"
+              />
+              <img
+                src="../assets/profile-placeholder.jpg"
+                alt="Profile Picture"
+                class="profile-pic"
+                id="profilePic"
+              />
+            </div>
+            <div class="info">
+              <h2 id="user-name">John N.</h2>
+              <p id="user-email">john@example.com</p>
+              <p class="joined-date">Joined: March 2025</p>
+              <button class="edit-btn">Edit Profile</button>
+            </div>
+          </section>
+
+          <!-- ===================== SETTINGS ===================== -->
+          <div class="settings-side">
+            <section class="card settings-card anim-2">
+              <div class="setting-row">
+                <p>Change Password</p>
+                <button class="setting-btn">Update</button>
+              </div>
+              <div class="setting-row">
+                <p>Log Out</p>
+                <button class="setting-btn logout-btn">Log Out</button>
+              </div>
+              <div class="setting-row">
+                <p>Delete Account</p>
+                <button class="setting-btn delete-btn">Delete</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Main application script (sidebar loader, etc) -->
+    <script src="/frontend/main.js"></script>
+    <!-- Profile page specific functionality -->
+    <script type="module" src="/frontend/profile/profile.js"></script>
+  </body>
+</html>

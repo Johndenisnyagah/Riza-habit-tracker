@@ -1,0 +1,866 @@
+/* =========================================================
+   Riza Progress Page Styles (Unified Design System)
+   - Matches homepage + dashboard spacing, cards, and colors
+   - Fixed sidebar offset
+   - Responsive grid layout
+   ========================================================= */
+
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  color: #1b4332;
+  line-height: 1.6;
+  background: url("../assets/background.png") center center / cover no-repeat;
+  background-color: #f7fdf9;
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.3)
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* =========================================================
+   MENU TOGGLE BUTTON
+   ========================================================= */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1100;
+}
+
+.menu-icon {
+  width: 28px;
+  height: 28px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+}
+
+/* === MAIN LAYOUT === */
+.progress-container {
+  display: flex;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 40px 60px;
+  max-width: 1300px;
+  transition: margin-left 0.3s ease;
+}
+
+/* === HEADER === */
+.progress-header {
+  text-align: center;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeInSmooth 0.8s ease forwards;
+  animation-delay: 0.4s;
+}
+
+.header-text {
+  text-align: center;
+}
+
+.progress-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin-bottom: 10px;
+}
+
+.progress-header p {
+  color: #333;
+  font-size: 1rem;
+}
+
+/* ============== CARD BASE ============== */
+.card {
+  background: #ffffff;
+  border: 2px solid #c3c6ce;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.5s ease-out;
+  min-height: 180px;
+  opacity: 0;
+  transform: translateY(60px);
+  animation: fadeUp 1.8s ease forwards;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: #2d6a4f;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* === ICON STYLING (to match dashboard) === */
+.icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+  vertical-align: middle;
+}
+
+.card h3 {
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #1b4332;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+}
+
+/* === SUMMARY SECTION (Top cards) === */
+.progress-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+/* Stats Card Enhancements */
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f0f7f4;
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateX(5px);
+  background: #e6f2ed;
+}
+
+.stat-icon {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.stat-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1b4332;
+}
+
+/* Current Streak Card Enhancements */
+.streak-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0;
+  gap: 15px;
+}
+
+.streak-flame-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+#flame-animation {
+  width: 120px;
+  height: 120px;
+  transition: all 0.3s ease;
+}
+
+.streak-overlay {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.streak-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.streak-label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #4a5568;
+  letter-spacing: 0.5px;
+}
+
+.streak-milestones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+}
+
+.milestone.achieved {
+  background: #e9f5ee;
+  border-color: #74c69d;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(45, 106, 79, 0.2);
+}
+
+.milestone-icon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.milestone-text {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.milestone.achieved .milestone-text {
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+/* Success Rate Card Enhancements */
+.success-rate-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.circular-progress {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  transition: stroke-dashoffset 1s ease;
+  stroke-linecap: round;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-text .percentage {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2d6a4f;
+  display: block;
+}
+
+.success-details {
+  text-align: center;
+  width: 100%;
+}
+
+.success-comparison {
+  font-size: 1rem;
+  color: #1b4332;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.trend-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.comparison-text {
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+.best-day {
+  font-size: 0.95rem;
+  color: #1b4332;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.best-day-label {
+  color: #6b7280;
+}
+
+.best-day-value {
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+/* === CHARTS SECTION === */
+.progress-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.progress-charts .card {
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.progress-charts canvas {
+  width: 100% !important;
+  height: 180px !important;
+  flex: 1;
+}
+
+/* === INSIGHTS & MOTIVATION === */
+.progress-insights {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+.progress-insights .card p {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Daily Motivation Card */
+.card.motivation {
+  min-height: auto;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.motivation-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.motivation-content blockquote {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1b4332;
+  text-align: center;
+  font-style: italic;
+  margin: 0 0 15px 0;
+  padding: 0;
+  font-weight: 500;
+}
+
+.motivation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin-top: auto;
+}
+
+.quote-category {
+  font-size: 0.85rem;
+  color: #2d6a4f;
+  font-weight: 600;
+  background: #f0f7f4;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.refresh-quote {
+  background: #f0f7f4;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-quote:hover {
+  background: #2d6a4f;
+  transform: scale(1.05);
+}
+
+.refresh-quote img {
+  width: 18px;
+  height: 18px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  transition: filter 0.2s ease;
+}
+
+.refresh-quote:hover img {
+  filter: invert(100%) brightness(200%);
+}
+
+/* === ACTIVITY CALENDAR === */
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.calendar-header h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin: 0;
+}
+
+.calendar-nav {
+  background: #f0f7f4;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav:hover {
+  background: #e6f2ed;
+  transform: scale(1.05);
+}
+
+.calendar-nav img {
+  width: 18px;
+  height: 18px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 8px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f9f9f9;
+  position: relative;
+}
+
+.calendar-day:hover {
+  background: #e6f2ed;
+  transform: scale(1.05);
+}
+
+.calendar-day.other-month {
+  color: #c0c0c0;
+  background: transparent;
+}
+
+.calendar-day.today {
+  border: 2px solid #2d6a4f;
+  font-weight: 700;
+}
+
+.calendar-day.logged-in {
+  background: #2d6a4f;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.logged-in:hover {
+  background: #1b4332;
+}
+
+.calendar-day.streak {
+  box-shadow: 0 0 0 2px #74c69d inset;
+}
+
+/* =========================================================
+   ANIMATIONS (match dashboard)
+   ========================================================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE (Consolidated Media Queries to match dashboard)
+   ========================================================= */
+
+/* EXTRA SMALL PHONES (<375px) */
+@media (max-width: 374px) {
+  .progress-summary .card,
+  .progress-charts .card,
+  .progress-insights .card {
+    width: 92%;
+    padding: 20px 18px;
+  }
+}
+
+/* SMALL SCREENS (phones < 600px) */
+@media (max-width: 599px) {
+  body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 25px 20px;
+  }
+
+  .progress-header {
+    flex-direction: column;
+    text-align: center;
+    width: 100%;
+  }
+
+  .progress-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .progress-summary,
+  .progress-charts,
+  .progress-insights {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .progress-summary .card,
+  .progress-charts .card,
+  .progress-insights .card {
+    width: 94%;
+    max-width: 380px;
+    padding: 22px;
+    margin: 0 auto;
+    border-radius: 16px;
+    height: auto;
+  }
+
+  .progress-charts canvas {
+    height: auto !important;
+    max-height: 200px !important;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .header-text {
+    text-align: center;
+    margin-left: 40px;
+  }
+}
+
+/* TABLET SCREENS (600px-1200px) - BASE LAYOUT */
+@media (min-width: 600px) and (max-width: 1200px) {
+  body {
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+  }
+
+  .sidebar {
+    flex: 0 0 220px;
+    min-width: 220px;
+    position: fixed;
+    height: 100vh;
+    z-index: 999;
+  }
+
+  .main-content {
+    position: relative;
+    margin-left: 0;
+    padding-left: 240px;
+    padding-right: 40px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .progress-summary,
+  .progress-charts,
+  .progress-insights {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 90%;
+    max-width: 550px;
+    margin: 0 auto 30px;
+  }
+
+  .progress-summary .card,
+  .progress-charts .card,
+  .progress-insights .card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: auto;
+  }
+
+  .progress-charts canvas {
+    height: 250px !important;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+}
+
+/* LAPTOP SCREENS (901px-1440px) - CENTERED WITH MAX-WIDTH */
+@media (min-width: 901px) and (max-width: 1440px) {
+  .main-content {
+    margin-left: 250px;
+    padding: 40px 40px !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100vw - 250px) !important;
+    box-sizing: border-box !important;
+  }
+
+  .progress-header {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .progress-summary,
+  .progress-charts,
+  .progress-insights {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* LARGE DESKTOP SCREENS (> 1440px) - FULL WIDTH LAYOUT */
+@media (min-width: 1441px) {
+  .main-content {
+    margin-left: 250px !important;
+    padding: 40px 50px !important;
+    width: auto !important;
+    max-width: none !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+  }
+
+  .progress-header {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 25px 0 !important;
+  }
+
+  .progress-summary,
+  .progress-charts,
+  .progress-insights {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .progress-summary .card,
+  .progress-charts .card,
+  .progress-insights .card {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+}
+
+/* =========================================================
+   ANIMATION DELAYS (for staggered card animations)
+   ========================================================= */
+.anim-1 {
+  animation-delay: 0.2s;
+}
+
+.anim-2 {
+  animation-delay: 0.35s;
+}
+
+.anim-3 {
+  animation-delay: 0.5s;
+}
+
+.anim-4 {
+  animation-delay: 0.65s;
+}
+
+.anim-5 {
+  animation-delay: 0.8s;
+}
+
+/* =========================================================
+   FOCUS STATES (for accessibility)
+   ========================================================= */
+/* Focus states for accessibility */
+.card:focus-within,
+a:focus,
+button:focus {
+  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline-offset: 3px;
+  transition: outline 0.2s ease;
+}

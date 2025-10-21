@@ -1,0 +1,1774 @@
+/* =========================================================
+   Riza Habits Stylesheet - Updated v2.0
+   - Layout: 3 top equal-height cards + 1 full-width list card
+   - Responsive, animated, dashboard-consistent
+   - Last updated: Now with full dashboard styling
+   ========================================================= */
+
+/* === RESET & BASE === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  color: #1b4332;
+  line-height: 1.6;
+  background: url("../assets/background.png") center center / cover no-repeat;
+  background-color: #f7fdf9;
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Soft overlay for large screens */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.3)
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* === DASHBOARD CONTAINER === */
+.dashboard-container {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* === ICONS === */
+.icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+}
+
+/* === MAIN === */
+.main-content {
+  margin-left: 250px;
+  margin-right: 0;
+  padding: 30px 40px 30px 60px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   HEADER ALIGNMENT
+   ========================================================= */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1350px;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.header-text {
+  text-align: center;
+  flex: 1;
+}
+
+/* ============== CARD BASE ============== */
+.card {
+  background: #ffffff;
+  border: 2px solid #c3c6ce;
+  border-radius: 18px;
+  padding: clamp(12px, 2vw, 18px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 70px;
+  min-width: 0;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(60px);
+  animation: fadeUp 1.8s ease forwards;
+  transition: 0.5s ease-out; /* smoother hover transition */
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: #2d6a4f; /* highlight border */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #1b4332;
+  letter-spacing: 0.3px;
+}
+
+.card p {
+  color: #333;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+/* =========================================================
+   MENU TOGGLE BUTTON
+   ========================================================= */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+.menu-icon {
+  width: 28px;
+  height: 28px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+}
+
+.sidebar {
+  z-index: 1000;
+}
+
+/* =========================================================
+   HABITS SECTION - Full Width Container
+   ========================================================= */
+.habits-section {
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(15px, 2vw, 25px);
+}
+
+/* =========================================================
+   HABITS TOP ROW — 3 cards side-by-side on large screens
+   ========================================================= */
+.habits-top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(15px, 2vw, 25px);
+  max-width: 1350px;
+  margin: 0 auto;
+  width: 100%;
+  justify-content: center;
+}
+
+/* === ADD HABIT FORM === */
+.add-habit-form {
+  display: flex;
+  gap: 10px;
+  background: #f1faf4;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.add-habit-form input,
+.add-habit-form select {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #1b4332;
+}
+
+.add-habit-form select {
+  min-width: 120px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 10px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.add-habit-form select:focus {
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+}
+
+.btn {
+  background: #2d6a4f;
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 15px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #1b4332;
+  transform: scale(1.02);
+}
+
+/* ============== DAILY OVERVIEW CARD (COMBINED) ============== */
+.card.daily-overview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+}
+
+.add-habit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  width: 18px;
+  height: 18px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+}
+
+.section-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin: 0;
+}
+
+.add-habit-section p {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    #c3c6ce 20%,
+    #c3c6ce 80%,
+    transparent
+  );
+  margin: 10px 0;
+}
+
+.motivation-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============== DAILY MOTIVATION CARD ENHANCEMENTS ============== */
+.card.motivation {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.motivation-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.motivation-content blockquote {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1b4332;
+  text-align: center;
+  font-style: italic;
+  margin: 0 0 15px 0;
+  padding: 0;
+  font-weight: 500;
+}
+
+.motivation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin-top: auto;
+}
+
+.quote-category {
+  font-size: 0.85rem;
+  color: #2d6a4f;
+  font-weight: 600;
+  background: #f0f7f4;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.refresh-quote {
+  background: #f0f7f4;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-quote:hover {
+  background: #2d6a4f;
+  transform: scale(1.05);
+}
+
+.refresh-quote img {
+  width: 18px;
+  height: 18px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  transition: filter 0.2s ease;
+}
+
+.refresh-quote:hover img {
+  filter: invert(100%) brightness(200%);
+}
+
+/* ============== STATS CARD ============== */
+.card.stats {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f0f7f4;
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateX(5px);
+  background: #e6f2ed;
+}
+
+.stat-icon {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.stat-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1b4332;
+}
+
+/* ============== CURRENT STREAK CARD ENHANCEMENTS ============== */
+.card.streak {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.streak-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0;
+  gap: 15px;
+}
+
+.streak-flame-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+#habits-flame-animation {
+  width: 120px;
+  height: 120px;
+  transition: all 0.3s ease;
+}
+
+.streak-overlay {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.streak-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.streak-label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #4a5568;
+  letter-spacing: 0.5px;
+}
+
+.streak-milestones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+}
+
+.milestone.achieved {
+  background: #e9f5ee;
+  border-color: #74c69d;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(45, 106, 79, 0.2);
+}
+
+.milestone-icon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.milestone-text {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.milestone.achieved .milestone-text {
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+/* === HABIT LIST === */
+.habit-list {
+  margin-top: clamp(25px, 3vw, 35px);
+  width: 100%;
+}
+
+/* Habit list UL element */
+#habit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* ====== Unified outline button style (match dashboard) ====== */
+.btn-outline {
+  border: 2px solid #2d6a4f;
+  color: #2d6a4f;
+  border-radius: 20px;
+  padding: 7px 16px;
+  transition: background 0.25s, color 0.25s;
+  cursor: pointer;
+
+  /* make anchors visually like buttons */
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-outline:link,
+.btn-outline:visited,
+.btn-outline:hover,
+.btn-outline:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn-outline:hover {
+  background: #2d6a4f;
+  color: #fff;
+}
+
+.btn-outline:focus {
+  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline-offset: 3px;
+}
+
+/* style the selected filter button */
+.filters .btn-outline.active,
+.filters button.active {
+  background: #2d6a4f;
+  color: #fff;
+  border-color: #2d6a4f;
+}
+
+.habit-list ul,
+#habit-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* ============== MY HABITS SCROLLBAR (match dashboard) ============== */
+.habit-list,
+.habit-list ul,
+#habit-list {
+  /* keep layout already present, add scrollbar niceties */
+  scrollbar-gutter: stable both-edges;
+  clip-path: inset(0 round 12px); /* keeps scrollbar inside rounded area */
+}
+
+/* Chrome, Edge, Safari */
+.habit-list::-webkit-scrollbar,
+#habit-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.habit-list::-webkit-scrollbar-track,
+#habit-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.habit-list::-webkit-scrollbar-thumb,
+#habit-list::-webkit-scrollbar-thumb {
+  background-color: rgba(45, 106, 79, 0.6); /* soft green */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.habit-list::-webkit-scrollbar-thumb:hover,
+#habit-list::-webkit-scrollbar-thumb:hover {
+  background-color: #1b4332; /* darker green on hover */
+}
+
+/* Firefox */
+.habit-list,
+#habit-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 106, 79, 0.6) transparent;
+}
+
+/* =========================================================
+   UNIFIED HABIT ITEM STYLE (MATCHES DASHBOARD)
+   ========================================================= */
+.habit-item {
+  background: #e9f5ee;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+/* ✅ new: group checkbox + name so the right side can float right */
+.habit-left {
+  display: flex;
+  align-items: center;
+  flex: 1; /* gives the left side the remaining width */
+}
+
+.habit-item:hover {
+  background: #74c69d9b; /* very subtle highlight */
+  transition: background 0.25s ease;
+}
+
+/* Hover effect for buttons inside habit items */
+.habit-item:hover .habit-actions .btn-outline {
+  color: #2d6a4f; /* keep default unless button hovered */
+}
+
+.habit-item:hover .habit-actions .btn-outline:hover {
+  color: #fff;
+}
+
+/* Left side with checkbox and habit name */
+.habit-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* Button styling from dashboard */
+.habit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.habit-actions .btn-outline {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  border: 2px solid #2d6a4f;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+  color: #2d6a4f;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.habit-actions .btn-outline:hover,
+.habit-actions .btn-outline:focus {
+  background: #2d6a4f;
+  color: #fff;
+  border-color: #2d6a4f;
+  outline: none;
+}
+
+.habit-actions .btn-outline .btn-text {
+  color: inherit;
+  font-style: normal;
+}
+
+#habit-list > li {
+  background: none !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Custom Checkbox */
+.checkbox-container {
+  display: inline-block;
+  height: 1.3em;
+  width: 1.3em;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.checkbox-container input {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-container .checkmark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #2d6a4f;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  transform: rotate(45deg);
+  height: 1.2em;
+  width: 0.6em;
+  border-color: #2d6a4f;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-radius: 0;
+}
+
+.habit-name {
+  flex: 1;
+  color: #1b4332;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.habit-frequency,
+.habit-progress {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* === MODAL === */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal.show,
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  width: 90%;
+  max-width: 420px;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-1 {
+  animation-delay: 0.2s;
+}
+.anim-2 {
+  animation-delay: 0.35s;
+}
+.anim-3 {
+  animation-delay: 0.5s;
+}
+.anim-4 {
+  animation-delay: 0.65s;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (Updated to match dashboard)
+   ========================================================= */
+
+/* EXTRA SMALL PHONES (<375px) */
+@media (max-width: 374px) {
+  .habits-top .card,
+  .habit-list .card {
+    width: 92%; /* More spacing for very small screens */
+    padding: 20px 18px; /* Slightly reduced internal padding */
+  }
+
+  .habit-item {
+    padding: 12px;
+  }
+
+  .habit-name {
+    font-size: 0.9rem;
+  }
+
+  .habit-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .habit-actions .btn-outline {
+    flex: 1;
+    margin: 0 4px;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* SMALL SCREENS (phones < 600px) */
+@media (max-width: 599px) {
+  body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 25px 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .habits-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .habits-top .card,
+  .habit-list .card {
+    width: 94%; /* Reduced from 100% to create space on edges */
+    max-width: 380px;
+    padding: 22px;
+    margin: 0 auto; /* Center the cards */
+    border-radius: 16px; /* Slightly reduced border radius for mobile */
+    min-height: 180px !important; /* Override smaller desktop height */
+  }
+
+  .card.motivation {
+    min-height: 200px !important; /* Extra height for content */
+  }
+
+  .card.streak {
+    min-height: 350px !important; /* Extra height for flame + milestones */
+    overflow: visible !important;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .header-text {
+    text-align: center;
+    margin-left: 40px;
+  }
+
+  /* Fix for Add Habit form on small screens */
+  .add-habit-form {
+    flex-direction: column;
+    gap: 15px;
+    padding: 16px;
+  }
+
+  .add-habit-form input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(45, 106, 79, 0.2);
+  }
+
+  .add-habit-form select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .add-habit-form .btn {
+    align-self: center;
+    width: 80%;
+    padding: 10px;
+  }
+
+  .habit-list {
+    width: 94%;
+    max-width: 420px;
+    margin: 20px auto 0;
+    display: block;
+  }
+
+  .habit-list .card {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* SMALL SCREENS HABIT ITEMS (phones < 500px) */
+@media (max-width: 500px) {
+  /* Filter buttons more compact on mobile */
+  .habit-filters {
+    gap: 6px;
+  }
+
+  .filter-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Restructure habit item for small screens - Match Dashboard */
+  #habit-list .habit-item {
+    flex-direction: column;
+    padding: 14px 16px !important; /* More horizontal padding to bring tick inside */
+    align-items: flex-start;
+    gap: 8px; /* Reduced gap to give more space */
+  }
+
+  /* Top row: checkbox, icon, and text */
+  #habit-list .habit-left {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  /* Checkbox stays on the left */
+  #habit-list .checkbox-container {
+    flex-shrink: 0;
+    margin-right: 0;
+  }
+
+  /* Habit info takes remaining space */
+  #habit-list .habit-info {
+    flex: 1;
+    margin-left: 0;
+  }
+
+  #habit-list .habit-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  #habit-list .habit-description {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+
+  /* Buttons appear below in a row - centered */
+  #habit-list .habit-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    justify-content: center !important; /* Center the buttons */
+    margin-left: 0 !important;
+    margin-top: 6px !important;
+    gap: 10px !important;
+    padding-left: 0 !important;
+  }
+
+  #habit-list .habit-actions .btn-outline {
+    padding: 5px 10px !important;
+    font-size: 0.85rem !important;
+    flex: 0 0 auto !important;
+  }
+}
+
+@media (min-width: 501px) {
+  #habit-list .habit-actions {
+    justify-content: flex-end !important;
+    margin-left: auto !important;
+    flex-direction: row !important;
+    width: auto !important;
+  }
+
+  #habit-list .habit-item {
+    padding: 12px 16px !important;
+    flex-direction: row !important;
+  }
+
+  /* Ensure all elements stay within the card */
+  #habit-list .habit-left {
+    flex: 1;
+    min-width: 0; /* Allow text to shrink if needed */
+  }
+
+  #habit-list .habit-actions {
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+  }
+}
+
+/* TABLET SCREENS (600px-900px) - BASE LAYOUT */
+@media (min-width: 600px) and (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+  }
+
+  .sidebar {
+    flex: 0 0 220px;
+    min-width: 220px;
+    position: fixed;
+    height: 100vh;
+    z-index: 999;
+  }
+
+  .main-content {
+    position: relative;
+    margin-left: 0;
+    padding-left: 240px;
+    padding-right: 40px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Stack cards vertically on tablet */
+  .habits-top {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 90%;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .habits-top .card,
+  .habit-list .card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+    min-height: 180px !important; /* Override smaller desktop height */
+  }
+
+  .card.motivation {
+    min-height: 200px !important; /* Extra height for content */
+  }
+
+  .card.streak {
+    min-height: 350px !important; /* Extra height for flame + milestones */
+    overflow: visible !important;
+  }
+
+  .habit-list {
+    width: 90%;
+    max-width: 550px;
+    margin: 25px auto 0;
+  }
+
+  /* Hide menu toggle on tablets */
+  .menu-toggle {
+    display: none;
+  }
+}
+
+/* LAPTOP SCREENS (901px - 1440px) - OPTIMIZED FOR SMALLER DESKTOP SCREENS */
+@media (min-width: 901px) and (max-width: 1440px) {
+  .main-content {
+    margin-left: 250px;
+    padding: 40px 40px !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100vw - 250px) !important;
+    box-sizing: border-box !important;
+  }
+
+  .dashboard-header {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .habits-section {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .habits-top {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .habits-top .card {
+    width: 100% !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+
+  .card.habit-list {
+    width: 100% !important;
+  }
+
+  .habit-list ul,
+  #habit-list {
+    width: 100% !important;
+  }
+}
+
+/* LARGE DESKTOP SCREENS (> 1440px) - FULL WIDTH LAYOUT */
+@media (min-width: 1441px) {
+  .main-content {
+    margin-left: 250px !important;
+    padding: 40px 50px !important;
+    width: auto !important;
+    max-width: none !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+  }
+
+  .dashboard-header {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 25px 0 !important;
+  }
+
+  .habits-section {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .habits-top {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 28px !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .habits-top .card {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+
+  .card.add-habit,
+  .card.motivation,
+  .card.streak {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .card.habit-list {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .habit-list ul,
+  #habit-list {
+    width: 100% !important;
+  }
+}
+
+/* Add these styles to apply the dashboard habit styling to your habits page */
+
+/* Habit List Container - Adapt dashboard styling for the habits page */
+#habit-list,
+#habitsContainer {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin: 0;
+  padding: 0;
+
+  /* Scrollbar styling */
+  scrollbar-gutter: stable both-edges;
+  clip-path: inset(0 round 12px);
+}
+
+/* Webkit scrollbar styling */
+#habit-list::-webkit-scrollbar,
+#habitsContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#habit-list::-webkit-scrollbar-track,
+#habitsContainer::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+#habit-list::-webkit-scrollbar-thumb,
+#habitsContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(45, 106, 79, 0.6);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+#habit-list::-webkit-scrollbar-thumb:hover,
+#habitsContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #1b4332;
+}
+
+/* Firefox scrollbar */
+#habit-list,
+#habitsContainer {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 106, 79, 0.6) transparent;
+}
+
+/* Habit items styling - Match Dashboard */
+#habit-list .habit-item,
+#habitsContainer .habit-item,
+.habit-list .habit-item {
+  background: #e9f5ee !important;
+  border-radius: 12px;
+  padding: 14px 18px; /* Slightly more padding to bring content inside */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#habit-list .habit-item:hover,
+#habitsContainer .habit-item:hover,
+.habit-list .habit-item:hover {
+  background: #74c69d9b !important;
+  transition: background 0.25s ease;
+}
+
+/* Left side with checkbox and habit name */
+#habit-list .habit-left,
+#habitsContainer .habit-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* Checkbox styling */
+#habit-list .checkbox-container,
+#habitsContainer .checkbox-container {
+  display: inline-block;
+  height: 1.3em;
+  width: 1.3em;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+#habit-list .checkbox-container input,
+#habitsContainer .checkbox-container input {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+#habit-list .checkbox-container .checkmark,
+#habitsContainer .checkbox-container .checkmark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #2d6a4f;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+#habit-list .checkbox-container input:checked ~ .checkmark,
+#habitsContainer .checkbox-container input:checked ~ .checkmark {
+  transform: rotate(45deg);
+  height: 1.2em;
+  width: 0.6em;
+  border-color: #2d6a4f;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-radius: 0;
+}
+
+/* Habit info container */
+#habit-list .habit-info,
+#habitsContainer .habit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 5px;
+}
+
+#habit-list .habit-name,
+#habitsContainer .habit-name {
+  color: #1b4332;
+  font-weight: 500;
+}
+
+#habit-list .habit-description,
+#habitsContainer .habit-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* Button styling */
+#habit-list .habit-actions,
+#habitsContainer .habit-actions,
+.habit-list .habit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+#habit-list .habit-actions .btn-outline,
+#habitsContainer .habit-actions .btn-outline,
+.habit-list .habit-actions .btn-outline {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  border: 2px solid #2d6a4f;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+  color: #2d6a4f;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#habit-list .habit-actions .btn-outline:hover,
+#habit-list .habit-actions .btn-outline:focus,
+#habitsContainer .habit-actions .btn-outline:hover,
+#habitsContainer .habit-actions .btn-outline:focus,
+.habit-list .habit-actions .btn-outline:hover,
+.habit-list .habit-actions .btn-outline:focus {
+  background: #2d6a4f;
+  color: #fff;
+  border-color: #2d6a4f;
+  outline: none;
+}
+
+#habit-list .btn-text,
+#habitsContainer .btn-text {
+  color: inherit;
+  font-style: normal;
+}
+
+/* Completed state */
+#habit-list .habit-item.completed,
+#habitsContainer .habit-item.completed {
+  opacity: 0.8;
+  background-color: rgba(74, 222, 128, 0.1);
+  border-left: 3px solid #4ade80;
+}
+
+/* Empty message */
+#habit-list .empty-message,
+#habitsContainer .empty-message {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 15px 0;
+}
+
+/* Ensure icons display properly */
+#habit-list .icon,
+#habitsContainer .icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+/* =========================================================
+   SHARED DASHBOARD STYLES - Modal and Filters
+   ========================================================= */
+
+/* ============== HABIT FILTERS ============== */
+.habit-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: #555;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  background: #e9f5ee;
+  border-color: #2d6a4f;
+  color: #2d6a4f;
+}
+
+.filter-btn.active {
+  background: #2d6a4f;
+  color: white;
+  border-color: #2d6a4f;
+}
+
+/* ============== HABIT INFO WITH DESCRIPTION ============== */
+#habit-list .habit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 5px;
+}
+
+#habit-list .habit-name {
+  color: #1b4332;
+  font-weight: 500;
+}
+
+#habit-list .habit-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ============== UPDATED MODAL STYLES ============== */
+#habit-modal.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#habit-modal.modal.active {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#habit-modal .modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 1001;
+}
+
+/* Fix for form inputs */
+#habit-modal .modal-body input,
+#habit-modal .modal-body textarea {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+#habit-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+#habit-modal .modal-header h3 {
+  color: #1b4332;
+  margin: 0;
+}
+
+#habit-modal .close-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #777;
+}
+
+#habit-modal .modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#habit-modal .modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Make both cancel and save buttons match */
+#habit-modal .modal-footer .cancel-btn,
+#habit-modal .modal-footer .save-btn {
+  background: transparent;
+  color: #2d6a4f;
+  border: 2px solid #2d6a4f;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 500;
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+#habit-modal .modal-footer .cancel-btn:hover,
+#habit-modal .modal-footer .cancel-btn:focus,
+#habit-modal .modal-footer .save-btn:hover,
+#habit-modal .modal-footer .save-btn:focus {
+  background: #2d6a4f;
+  color: #ffffff;
+}
+
+/* Form styling */
+#habit-modal .form-group {
+  margin-bottom: 20px;
+}
+
+#habit-modal .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #1b4332;
+}
+
+#habit-modal .form-group input,
+#habit-modal .form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+#habit-modal .form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Frequency buttons */
+#habit-modal .frequency-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#habit-modal .freq-btn {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#habit-modal .freq-btn.active {
+  background: #1b4332;
+  color: white;
+  border-color: #1b4332;
+}
+
+/* Custom days */
+#habit-modal .day-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#habit-modal .day-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Custom checkbox animation for day selection */
+#habit-modal .day-checkboxes input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+#habit-modal .day-checkboxes label {
+  position: relative;
+  padding-left: 28px;
+  cursor: pointer;
+}
+
+#habit-modal .day-checkboxes label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2d6a4f;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+#habit-modal .day-checkboxes input[type="checkbox"]:checked + label::before,
+#habit-modal .day-checkboxes label:has(input[type="checkbox"]:checked)::before {
+  transform: translateY(-50%) rotate(45deg);
+  height: 18px;
+  width: 10px;
+  border-color: #2d6a4f;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-radius: 0;
+}
+
+#habit-modal .day-checkboxes label:hover::before {
+  box-shadow: 0 0 4px rgba(45, 106, 79, 0.3);
+}
+
+/* Icon selector */
+#habit-modal .icon-selector {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#habit-modal .icon-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: #f5f5f5;
+  transition: all 0.2s ease;
+}
+
+#habit-modal .icon-option:hover {
+  background: #edf4f0;
+}
+
+#habit-modal .icon-option.active {
+  border-color: #1b4332;
+  background: rgba(27, 67, 50, 0.1);
+}
+
+#habit-modal .icon-option img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Button styles */
+#habit-modal .btn-danger {
+  background: #e76f51;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#habit-modal .btn-danger:hover {
+  background: #d65c3e;
+}
+
+#habit-modal .hidden {
+  display: none;
+}
+
+/* Button in the Add Habit card */
+.open-habit-modal {
+  background: #1b4332;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.open-habit-modal:hover {
+  background: #2d6a4f;
+  transform: translateY(-2px);
+}

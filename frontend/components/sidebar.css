@@ -1,0 +1,303 @@
+/* =========================================================
+   Riza Sidebar Stylesheet (Final Solid Version)
+   - Solid white sidebar with green highlights
+   - Collapsible on smaller screens
+   - Consistent shadows and spacing
+   ========================================================= */
+
+/* ==================== BASE SIDEBAR ==================== */
+.sidebar {
+  background: #ffffff; /* solid white background */
+  color: #1b4332;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  width: 250px;
+  padding: 30px 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* ==================== LOGO AREA ==================== */
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.logo {
+  width: 50px;
+}
+.logo-container h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1b4332;
+}
+
+/* ==================== NAVIGATION LINKS ==================== */
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+/* --- Base link style --- */
+.nav-links a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #1b4332;
+  font-weight: 500;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  transition: all 0.25s ease-in-out;
+}
+
+/* --- Hover effect --- */
+.nav-links a:hover {
+  background-color: #95d5b2;
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Pressed (active click) state --- */
+.nav-links a:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Active page link --- */
+.nav-links a.active {
+  background-color: #338965;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(27, 67, 50, 0.2);
+}
+
+/* --- Icon adjustments --- */
+.nav-links a .icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+}
+
+.nav-links a:hover .icon {
+  transform: scale(1.1);
+  filter: brightness(0) invert(1);
+}
+
+.nav-links a.active .icon {
+  filter: brightness(0) invert(1);
+}
+
+/* ==================== LOGOUT LINK ==================== */
+.logout {
+  margin-top: 30px;
+}
+
+.logout a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+  font-weight: 500;
+  color: #1b4332;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  transition: all 0.25s ease-in-out;
+}
+
+/* --- Hover effect --- */
+.logout a:hover {
+  background-color: #95d5b2;
+  color: #000000;
+  transform: translateY(-2px);
+}
+
+/* --- Pressed (active click) state --- */
+.logout a:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Icon styling --- */
+.logout a .icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+}
+
+.logout a:hover .icon {
+  transform: scale(1.1);
+  filter: brightness(0) invert(1);
+}
+
+/* ==================== ICONS ==================== */
+.icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
+    brightness(96%) contrast(88%);
+  opacity: 0.9;
+}
+
+/* =========================================================
+   RESPONSIVE BEHAVIOR
+   ========================================================= */
+
+/* ======== DESKTOP (≥1200px) ======== */
+@media (min-width: 1200px) {
+  .sidebar {
+    width: 250px;
+  }
+}
+
+/* ======== TABLET (600px–1199px) ======== */
+@media (min-width: 600px) and (max-width: 1199px) {
+  /* Always visible on tablets */
+  .sidebar {
+    width: 220px;
+    padding: 25px 15px;
+    transform: translateX(0) !important; /* Force visible */
+    opacity: 1 !important;
+  }
+
+  .nav-links a {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+  }
+
+  .logo {
+    width: 45px;
+  }
+
+  .logo-container h2 {
+    font-size: 1.1rem;
+  }
+
+  /* Hide any mobile overlays */
+  .overlay {
+    display: none !important;
+  }
+}
+
+/* ======== MOBILE (≤599px) ======== */
+@media (max-width: 599px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 230px;
+    background: #ffffff;
+    transform: translateX(-100%); /* start hidden */
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  /* Overlay for dimming the background (non-transparent white effect) */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .overlay.show {
+    display: block;
+    opacity: 1;
+  }
+
+  .no-scroll {
+    overflow: hidden;
+  }
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make sidebar always visible on tablets */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .sidebar {
+    transform: translateX(0) !important; /* Force sidebar to be visible */
+    opacity: 1 !important;
+    width: 220px !important;
+  }
+
+  /* Hide any overlay that might appear */
+  .sidebar-overlay,
+  .overlay {
+    display: none !important;
+  }
+}
+
+/* Make sidebar always visible on tablets and larger screens */
+@media (min-width: 600px) {
+  .sidebar {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Hide sidebar on mobile by default */
+@media (max-width: 599px) {
+  .sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Fix for tablet display - forces sidebar to be fixed position */
+@media (min-width: 600px) and (max-width: 1200px) {
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 220px !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    transform: none !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+  }
+}

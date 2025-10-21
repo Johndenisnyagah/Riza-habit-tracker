@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         Riza Sign In / Sign Up Page
+         - Glassmorphic card with animated blob
+         - Floating underline inputs
+         - Smooth slide transition between cards
+         ========================================================= -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riza | Sign In / Sign Up</title>
+    <link rel="stylesheet" href="signin_signup.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- ===================== LOGIN CARD ===================== -->
+      <div class="card active" id="login-card" role="region" aria-live="polite">
+        <div class="bg"></div>
+        <div class="blob"></div>
+
+        <div class="card-content">
+          <img src="../assets/logo.png" alt="Riza Logo" class="logo" />
+          <h2>Welcome Back</h2>
+          <p>Log in to continue your journey</p>
+
+          <form onsubmit="return false;">
+            <div class="input-box">
+              <input type="email" id="login-email" required />
+              <label for="login-email">Email</label>
+            </div>
+
+            <div class="input-box">
+              <input type="password" id="login-password" required />
+              <label for="login-password">Password</label>
+            </div>
+
+            <button type="submit" class="btn">Log In</button>
+          </form>
+
+          <p class="switch-text">
+            Don't have an account?
+            <a href="#" id="go-signup">Sign Up</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ===================== SIGNUP CARD ===================== -->
+      <div class="card" id="signup-card" role="region" aria-live="polite">
+        <div class="bg"></div>
+        <div class="blob"></div>
+
+        <div class="card-content">
+          <img src="../assets/logo.png" alt="Riza Logo" class="logo" />
+          <h2>Create Account</h2>
+          <p>Join Riza and grow every day</p>
+
+          <form onsubmit="return false;">
+            <div class="input-box">
+              <input type="email" id="signup-email" required />
+              <label for="signup-email">Email</label>
+            </div>
+
+            <div class="input-box">
+              <input type="password" id="signup-password" required />
+              <label for="signup-password">Password</label>
+            </div>
+
+            <div class="input-box">
+              <input type="password" id="confirm-password" required />
+              <label for="confirm-password">Confirm Password</label>
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+          </form>
+
+          <p class="switch-text">
+            Already have an account?
+            <a href="#" id="go-login">Log In</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+      <p>© 2025 Riza. Build better habits, one day at a time.</p>
+    </footer>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Login/signup card switching and validation -->
+    <script src="signin-signup.js"></script>
+  </body>
+</html>

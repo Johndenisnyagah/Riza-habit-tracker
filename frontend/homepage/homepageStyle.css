@@ -1,0 +1,403 @@
+/* =========================================================
+   Riza Homepage Styles
+   - Gradient background + center-aligned hero section
+   - Smooth entrance animations
+   - Responsive navbar + typography
+   ========================================================= */
+
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* === BODY === */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: url("../assets/background.png") center center / cover no-repeat;
+  background-attachment: fixed; /* optional: creates subtle parallax effect */
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   NAVBAR
+   - Fixed header with logo and Sign in / Sign up links
+   - Fades in gently on page load
+   ========================================================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 60px;
+  animation: fadeIn 1.2s ease forwards;
+  will-change: transform; /* Performance optimization */
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 45px;
+}
+
+.logo-container h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Removed redundant nav-links a styles since they're defined in NAVBAR BUTTONS section */
+
+/* Sign up button style */
+.signup {
+  background: #95d5b2;
+  padding: 8px 18px;
+  border-radius: 8px;
+  color: #000;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.signup:hover {
+  background: #74c69d;
+}
+
+/* =========================================================
+   HERO SECTION
+   - Central text + subtext + button
+   - Uses fade-up animation for staged appearance
+   ========================================================= */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-text {
+  will-change: transform; /* Performance optimization */
+}
+
+.hero-text h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.hero-text em {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero-text p {
+  font-size: 1rem;
+  color: #333;
+  max-width: 550px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+/* =========================================================
+    CTA BUTTON 
+   ========================================================= */
+.simple-btn {
+  background-color: #ffffff;
+  color: #1b4332;
+  border-radius: 10em;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 1em 2em;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border: 2px solid #1b4332;
+  box-shadow: 0 0 0 0 #1b4332;
+  will-change: transform;
+  text-decoration: none;
+}
+
+.simple-btn:hover {
+  transform: translateY(-4px) translateX(-2px);
+  box-shadow: 2px 5px 0 0 #1b4332;
+  background-color: #d8f3dc; /* soft green background on hover */
+}
+
+.simple-btn:active {
+  transform: translateY(2px) translateX(1px);
+  box-shadow: 0 0 0 0 #1b4332;
+}
+/* =========================================================
+   NAVBAR BUTTONS (Sign in / Sign up)
+   Matches the hero CTA hover effect
+   ========================================================= */
+
+/* Shared base style for both links */
+.nav-links a {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0.6em 1.5em;
+  border: 2px solid #1b4332;
+  border-radius: 10em;
+  color: #1b4332;
+  background-color: #ffffff;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 0 0 #1b4332;
+}
+
+/* Hover effect (same as .simple-btn) */
+.nav-links a:hover {
+  transform: translateY(-4px) translateX(-2px);
+  box-shadow: 2px 5px 0 0 #1b4332;
+  background-color: #d8f3dc;
+}
+
+/* Active click state */
+.nav-links a:active {
+  transform: translateY(2px) translateX(1px);
+  box-shadow: 0 0 0 0 #1b4332;
+}
+
+/* Optional differentiation for Sign Up */
+.nav-links .signup {
+  background-color: #1b4332;
+  color: #ffffff;
+  border-color: #1b4332;
+}
+
+.nav-links .signup:hover {
+  background-color: #2d6a4f;
+  box-shadow: 2px 5px 0 0 #1b4332;
+  color: #ffffff;
+}
+
+/* =========================================================
+   FOOTER
+   - Consistent with other pages
+   ========================================================= */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8rem;
+  color: #1b4332;
+  opacity: 0.8;
+}
+
+/* =========================================================
+   ANIMATIONS
+   - fadeIn: Navbar drop-in
+   - fadeUp: Hero staged content
+   ========================================================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation utility classes */
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 1s ease forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.3s;
+}
+
+.delay-2 {
+  animation-delay: 0.6s;
+}
+
+/* =========================================================
+   RESPONSIVE (Updated to match other pages)
+   - Proper mobile, tablet and desktop views
+   - Consistent with dashboard and other pages
+   ========================================================= */
+
+/* EXTRA SMALL PHONES (<375px) */
+@media (max-width: 374px) {
+  .navbar {
+    padding: 18px 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .logo {
+    width: 32px;
+  }
+
+  .logo-container h2 {
+    font-size: 1rem;
+  }
+
+  /* Even smaller buttons */
+  .nav-links {
+    gap: 6px;
+  }
+
+  .nav-links a {
+    font-size: 10px; /* Removed !important */
+    padding: 0.25em 0.7em; /* Removed !important */
+    border-width: 1px; /* Removed !important */
+  }
+
+  .simple-btn {
+    font-size: 11px; /* Removed !important */
+    padding: 0.5em 1em; /* Removed !important */
+  }
+
+  /* Reduce hero text size */
+  .hero-text h1 {
+    font-size: 1.6rem; /* Removed !important */
+    line-height: 1.3;
+    margin-bottom: 15px;
+  }
+
+  .hero-text p {
+    font-size: 0.85rem; /* Removed !important */
+    max-width: 95%;
+    margin-bottom: 25px;
+  }
+
+  footer {
+    font-size: 0.7rem;
+    padding: 15px;
+  }
+}
+
+/* SMALL SCREENS (phones < 600px) */
+@media (max-width: 599px) {
+  .navbar {
+    padding: 20px 25px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  .logo-container {
+    margin-bottom: 0;
+  }
+
+  .logo-container h2 {
+    font-size: 1.1rem;
+  }
+
+  .nav-links {
+    margin-top: 0;
+    gap: 8px;
+  }
+
+  .nav-links a {
+    font-size: 11px; /* Removed !important */
+    padding: 0.35em 0.8em; /* Removed !important */
+    border-width: 1px; /* Removed !important */
+  }
+
+  .simple-btn {
+    padding: 0.7em 1.4em;
+    font-size: 14px;
+  }
+
+  /* Reduce hero text size */
+  .hero-text h1 {
+    font-size: 1.9rem;
+    line-height: 1.35;
+    margin-bottom: 15px;
+  }
+
+  .hero-text p {
+    font-size: 0.9rem;
+    max-width: 95%;
+    margin-bottom: 30px;
+  }
+
+  footer {
+    font-size: 0.7rem;
+    padding: 15px;
+  }
+}
+
+/* TABLET SCREENS (600px-1200px) */
+@media (min-width: 600px) and (max-width: 1200px) {
+  .navbar {
+    padding: 25px 40px;
+  }
+
+  .hero-text h1 {
+    font-size: 2.4rem;
+    max-width: 90%;
+    margin: 0 auto 20px;
+  }
+
+  .hero-text p {
+    max-width: 70%;
+  }
+
+  .simple-btn {
+    font-size: 16px;
+  }
+}
+
+/* LARGE SCREENS */
+@media (min-width: 1440px) {
+  .navbar {
+    padding: 30px 80px;
+  }
+
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .hero-text h1 {
+    font-size: 3.2rem;
+  }
+
+  .hero-text p {
+    font-size: 1.1rem;
+    max-width: 650px;
+    margin-bottom: 50px;
+  }
+}
+
+/* FOCUS STATES (for accessibility) */
+.nav-links a:focus,
+.simple-btn:focus {
+  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline-offset: 3px;
+}
