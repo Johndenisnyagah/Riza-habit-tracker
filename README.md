@@ -39,7 +39,7 @@ A modern, responsive habit tracking web application built with vanilla JavaScrip
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6 Modules)
 - **Charts**: Chart.js
 - **Animations**: Lottie (https://lottiefiles.com/)
-- **Icons**: Lucide (https://lucide.dev/)
+- **Icons**: Downloaded from Lucide (https://lucide.dev/)
 - **Storage**: Browser localStorage API
 - **Version Control**: Git & GitHub
 
@@ -120,7 +120,7 @@ habit-tracker/
 1. **Sign Up/Login** - Create an account or log in
 2. **Add Your First Habit** - Click "Add Habit" on the Dashboard
 3. **Choose Frequency** - Select daily, weekdays, weekends, or custom schedule
-4. **Pick an Icon** - Choose from 25+ habit category icons
+4. **Pick an Icon** - Choose from 15+ habit category icons
 5. **Track Progress** - Check off habits as you complete them
 
 ### Pages Overview
@@ -241,7 +241,7 @@ This project is created for educational purposes as part of a school portfolio p
 
 **John Denis Nyagah**
 
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+- GitHub: [@Johndesnisnyagah](https://github.com/Johndenisnyagah)
 - School: [International University of AApplied Sciences (IU) ]
 - Program: [Bachelor of Science Computer Science]
 
