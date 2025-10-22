@@ -1,26 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
   <!-- =========================================================
-       Riza | Dashboard Page
-       Unified with Shared Habit Summary
+       RIZA HABIT TRACKER | DASHBOARD PAGE
+       
+       Purpose: Main dashboard interface for habit tracking
+       
+       Features:
+       - Personalized welcome message with user's name
+       - Weekly progress chart visualization
+       - Daily motivation quotes with refresh
+       - Real-time habit check-in status
+       - Statistics: Total logins, longest streak, total habits
+       - Current streak with animated flame
+       - Habit summary list with filters
+       - Add/Edit habit modal
+       
+       Data Source: All data from MongoDB via backend API
+       
+       Dependencies:
+       - Chart.js for progress visualization
+       - Lottie animations for streak flame
+       - Shared components (sidebar, habit manager, API)
+       
+       Author: John kirungia Denis Nyagah
        ========================================================= -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Riza | Dashboard</title>
 
-    <!-- Sidebar Styles -->
+    <!-- ==================== STYLESHEETS ==================== -->
+    <!-- Sidebar component styles (shared across pages) -->
     <link rel="preload" href="/frontend/components/sidebar.css" as="style" />
     <link rel="stylesheet" href="/frontend/components/sidebar.css" />
 
-    <!-- Dashboard Styles -->
+    <!-- Font Awesome icons for UI elements -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
+
+    <!-- Dashboard-specific styles -->
     <link rel="stylesheet" href="dashboard.css" />
 
-    <!-- Lottie Animation -->
+    <!-- Lottie animation library for streak flame effect -->
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"
       type="module"
@@ -30,12 +53,15 @@
   <body>
     <div class="dashboard-container">
       <!-- ========================= SIDEBAR ========================= -->
+      <!-- Navigation sidebar loaded dynamically via main.js -->
       <div id="sidebar-container"></div>
 
       <!-- ====================== MAIN CONTENT ====================== -->
       <main class="main-content">
-        <!-- Header -->
+        <!-- ==================== HEADER ==================== -->
+        <!-- Displays personalized welcome message with user's name from MongoDB -->
         <header class="dashboard-header">
+          <!-- Mobile menu toggle button (visible on small screens) -->
           <button class="menu-toggle" aria-label="Open menu">
             <img
               src="../assets/icons/menu.svg"
@@ -43,15 +69,19 @@
               class="menu-icon"
             />
           </button>
+
           <div class="header-text">
-            <h1>Welcome back, <span>John!</span></h1>
-            <p>Here’s an overview of your week</p>
+            <!-- User name loaded dynamically from backend -->
+            <h1>Welcome back, <span id="user-name-display"></span></h1>
+            <p>Here's an overview of your week</p>
           </div>
         </header>
 
         <!-- ===================== DASHBOARD GRID ===================== -->
+        <!-- Main dashboard content organized in responsive card grid -->
         <section class="dashboard-grid" aria-label="Dashboard overview">
-          <!-- Add Habit - Keep this card but modify it to be a trigger -->
+          <!-- ==================== ADD HABIT CARD ==================== -->
+          <!-- Quick access to create new habits -->
           <div class="card add-habit">
             <h3>
               <img
@@ -63,14 +93,15 @@
             </h3>
             <p>Create a new habit to track</p>
 
-            <!-- Replace the form with a button -->
+            <!-- Opens modal for habit creation -->
             <button class="btn open-habit-modal">Get Started</button>
           </div>
 
-          <!-- Weekly Progress Chart -->
+          <!-- ==================== WEEKLY PROGRESS CHART ==================== -->
+          <!-- Chart.js visualization of habit completions over past 7 days -->
+          <!-- Data source: MongoDB via /api/checkins -->
           <div class="card progress-chart">
             <h3>
-              <!-- Weekly Progress Chart icon -->
               <img
                 src="../assets/icons/bar-chart-2.svg"
                 class="icon"
@@ -84,7 +115,8 @@
             ></canvas>
           </div>
 
-          <!-- Daily Overview -->
+          <!-- ==================== DAILY OVERVIEW CARD ==================== -->
+          <!-- Combines motivation quote and today's check-in status -->
           <div class="card daily-overview">
             <h3>
               <img
@@ -95,7 +127,7 @@
               Daily Overview
             </h3>
 
-            <!-- Motivation Section -->
+            <!-- Motivation Section: Randomized daily quotes -->
             <div class="motivation-section">
               <div class="motivation-content">
                 <blockquote id="motivationText">
@@ -105,6 +137,7 @@
                   <span class="quote-category" id="quoteCategory"
                     >Consistency</span
                   >
+                  <!-- Refresh button to get new quote -->
                   <button
                     class="refresh-quote"
                     id="refreshQuote"
@@ -116,10 +149,12 @@
               </div>
             </div>
 
-            <!-- Divider -->
+            <!-- Visual divider -->
             <div class="section-divider"></div>
 
-            <!-- Check-ins Section -->
+            <!-- Today's Check-ins: Shows completion ratio -->
+            <!-- Updates automatically when habits are checked/unchecked -->
+            <!-- Data source: MongoDB via /api/checkins -->
             <div class="checkins-section">
               <div class="checkins-header">
                 <img
@@ -129,6 +164,7 @@
                 />
                 <h4>Today's Check-ins</h4>
               </div>
+              <!-- Format: "X/Y habits completed" -->
               <p class="checkins-status">3/4 habits completed</p>
               <a class="btn-outline" href="../progress/progress.html"
                 >View Check-in Details</a
@@ -136,7 +172,9 @@
             </div>
           </div>
 
-          <!-- Stats -->
+          <!-- ==================== STATISTICS CARD ==================== -->
+          <!-- Displays key metrics from backend -->
+          <!-- All data from MongoDB, no localStorage -->
           <div class="card stats">
             <h3>
               <img
@@ -147,17 +185,22 @@
               Stats
             </h3>
             <div class="stats-content">
+              <!-- Total Logins: Unique days user logged into app -->
+              <!-- Data source: /api/logins/count -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/calendar.svg" alt="Calendar" />
                 </div>
                 <div class="stat-info">
-                  <span class="stat-label">Total Check-ins</span>
+                  <span class="stat-label">Total Logins</span>
                   <span class="stat-value" id="dashboard-total-checkins"
-                    >134</span
+                    >0</span
                   >
                 </div>
               </div>
+
+              <!-- Longest Streak: Maximum consecutive days with completions -->
+              <!-- Calculated from /api/checkins data -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/flame.svg" alt="Flame" />
@@ -169,6 +212,9 @@
                   </span>
                 </div>
               </div>
+
+              <!-- Total Habits: Number of habits user has created -->
+              <!-- Data source: /api/habits -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/target.svg" alt="Target" />
@@ -181,7 +227,10 @@
             </div>
           </div>
 
-          <!-- Current Streak -->
+          <!-- ==================== CURRENT STREAK CARD ==================== -->
+          <!-- Displays consecutive days with habit completions -->
+          <!-- Features animated flame that grows with streak length -->
+          <!-- Data source: MongoDB via /api/checkins -->
           <div class="card streak">
             <h3>
               <img
@@ -192,6 +241,8 @@
               Current Streak
             </h3>
             <div class="streak-content">
+              <!-- Animated flame container (Lottie animation) -->
+              <!-- Flame size scales based on streak: 80px-200px -->
               <div class="streak-flame-container">
                 <dotlottie-wc
                   id="dashboard-flame-animation"
@@ -199,6 +250,8 @@
                   autoplay
                   loop
                 ></dotlottie-wc>
+
+                <!-- Streak number overlay on flame -->
                 <div class="streak-overlay">
                   <span class="streak-number" id="dashboard-current-streak"
                     >7</span
@@ -206,6 +259,9 @@
                   <span class="streak-label">days</span>
                 </div>
               </div>
+
+              <!-- Milestone badges (7, 30, 100 days) -->
+              <!-- Highlights automatically when achieved -->
               <div class="streak-milestones">
                 <div class="milestone" id="dashboard-milestone-7">
                   <span class="milestone-icon">⭐</span>
@@ -223,10 +279,12 @@
             </div>
           </div>
 
-          <!-- Habit Summary -->
+          <!-- ==================== HABIT SUMMARY CARD ==================== -->
+          <!-- Lists all user's habits with check-in checkboxes -->
+          <!-- Includes filters and edit/delete buttons -->
+          <!-- Data source: MongoDB via /api/habits and /api/checkins -->
           <div class="card habit-summary">
             <h3>
-              <!-- Habit Summary icon -->
               <img
                 src="../assets/icons/list-tree.svg"
                 class="icon"
@@ -235,7 +293,7 @@
               Habit Summary
             </h3>
 
-            <!-- Filter buttons -->
+            <!-- Filter buttons: All, Daily, Weekdays, Weekends, Custom -->
             <div class="habit-filters">
               <button class="filter-btn active" data-filter="all">All</button>
               <button class="filter-btn" data-filter="daily">Daily</button>
@@ -248,23 +306,29 @@
               <button class="filter-btn" data-filter="custom">Custom</button>
             </div>
 
+            <!-- Habit list populated dynamically by habit-manager.js -->
+            <!-- Updates in real-time when habits added/edited/deleted -->
             <ul id="habit-list" class="habit-list" aria-live="polite"></ul>
           </div>
-          <!-- The list is filled dynamically by JS -->
         </section>
         <!-- End of dashboard-grid -->
 
         <!-- ===================== HABIT MODAL ===================== -->
+        <!-- Modal popup for creating and editing habits -->
+        <!-- Managed by habit-manager.js -->
         <div id="habit-modal" class="modal" aria-hidden="true">
           <div class="modal-content">
+            <!-- Modal header with title and close button -->
             <div class="modal-header">
+              <!-- Title changes: "Add New Habit" or "Edit Habit" -->
               <h3 id="modal-title">Add New Habit</h3>
               <button class="close-modal" aria-label="Close">&times;</button>
             </div>
 
+            <!-- Modal body with form fields -->
             <div class="modal-body">
               <form id="habit-form">
-                <!-- Name field -->
+                <!-- Habit name input (required) -->
                 <div class="form-group">
                   <label for="habit-name">Habit Name</label>
                   <input
@@ -275,7 +339,7 @@
                   />
                 </div>
 
-                <!-- Description field -->
+                <!-- Description textarea (optional) -->
                 <div class="form-group">
                   <label for="habit-description">Description (Optional)</label>
                   <textarea
@@ -284,7 +348,9 @@
                   ></textarea>
                 </div>
 
-                <!-- Frequency selection -->
+                <!-- Frequency selection buttons -->
+                <!-- Options: Daily, Weekdays, Weekends, Custom -->
+                <!-- Saved to MongoDB in habit.frequency field -->
                 <div class="form-group">
                   <label>Frequency</label>
                   <div class="frequency-options">
@@ -315,7 +381,8 @@
                   </div>
                 </div>
 
-                <!-- Custom days (hidden by default) -->
+                <!-- Custom days checkboxes (shown only when Custom selected) -->
+                <!-- Selected days saved to MongoDB in habit.customDays array -->
                 <div class="form-group custom-days hidden">
                   <div class="day-checkboxes">
                     <label><input type="checkbox" value="mon" /> Mon</label>
@@ -328,21 +395,25 @@
                   </div>
                 </div>
 
-                <!-- Icon selection -->
+                <!-- Icon selection grid -->
+                <!-- Icons loaded dynamically from habit-icons-config.js -->
+                <!-- Selected icon saved to MongoDB in habit.icon field -->
                 <div class="form-group">
                   <label>Choose Icon</label>
                   <div class="icon-selector" id="icon-selector">
-                    <!-- Icons will be loaded dynamically from habit-icons-config.js -->
+                    <!-- Icons populated by loadHabitIcons() in dashboard.js -->
                   </div>
                 </div>
               </form>
             </div>
 
+            <!-- Modal footer with action buttons -->
             <div class="modal-footer">
               <button type="button" class="btn-outline cancel-btn">
                 Cancel
               </button>
               <button type="button" class="btn save-btn">Save Habit</button>
+              <!-- Delete button (shown only in edit mode) -->
               <button type="button" class="btn-danger delete-btn hidden">
                 Delete
               </button>
@@ -352,14 +423,18 @@
       </main>
     </div>
 
-    <!-- ==================== SCRIPTS ==================== -->
-    <!-- Chart.js library for progress visualization -->
+    <!-- ==================== JAVASCRIPT DEPENDENCIES ==================== -->
+    <!-- Chart.js library for weekly progress visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Main application script (sidebar loader, etc) -->
+
+    <!-- Main application script (loads sidebar dynamically) -->
     <script src="/frontend/main.js"></script>
+
     <!-- Daily motivation quotes module -->
     <script src="../shared/daily-motivation.js"></script>
-    <!-- Dashboard-specific functionality - uses shared components -->
+
+    <!-- Dashboard functionality (ES6 module) -->
+    <!-- Handles: initialization, stats updates, chart, habit management -->
     <script type="module" src="dashboard.js"></script>
   </body>
 </html>

@@ -1,11 +1,33 @@
 /* =========================================================
-   Riza Progress Page Styles (Unified Design System)
-   - Matches homepage + dashboard spacing, cards, and colors
-   - Fixed sidebar offset
-   - Responsive grid layout
+   RIZA HABIT TRACKER | PROGRESS PAGE STYLES
+   
+   Purpose: Styling for progress tracking and analytics page
+   
+   Design System:
+   - Matches homepage + dashboard spacing and colors
+   - Card-based layout with glassmorphism effects
+   - Responsive grid system (mobile-first approach)
+   - Unified color palette (greens, whites, grays)
+   
+   Layout Structure:
+   - Sidebar navigation (250px fixed left)
+   - Main content area (responsive width)
+   - Grid-based card layouts
+   - Responsive breakpoints: 768px, 900px, 1200px
+   
+   Key Features:
+   - Animated flame streak visualization
+   - Circular progress indicators
+   - Chart.js canvas containers
+   - Interactive calendar grid
+   - Staggered animation delays
+   
+   Author: John Denis Kirungia Nyagah
    ========================================================= */
 
-/* === RESET === */
+/* =========================================================
+   GLOBAL RESET & BASE STYLES
+   ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,11 +35,16 @@
   font-family: "Poppins", sans-serif;
 }
 
+/* =========================================================
+   BODY & BACKGROUND
+   Purpose: Full-screen layout with fixed background image
+   ========================================================= */
 body {
   min-height: 100vh;
   display: flex;
   color: #1b4332;
   line-height: 1.6;
+  /* Background image with cover sizing */
   background: url("../assets/background.png") center center / cover no-repeat;
   background-color: #f7fdf9;
   background-attachment: fixed;
@@ -25,6 +52,7 @@ body {
   overflow-x: hidden;
 }
 
+/* Background overlay for better contrast */
 body::before {
   content: "";
   position: fixed;
@@ -77,7 +105,10 @@ body::before {
   transition: margin-left 0.3s ease;
 }
 
-/* === HEADER === */
+/* =========================================================
+   HEADER SECTION
+   Purpose: Page title and description
+   ========================================================= */
 .progress-header {
   text-align: center;
   margin-bottom: 40px;
@@ -102,7 +133,16 @@ body::before {
   font-size: 1rem;
 }
 
-/* ============== CARD BASE ============== */
+/* =========================================================
+   CARD BASE STYLES
+   Purpose: Shared styling for all content cards
+   Features:
+   - White background with border
+   - Rounded corners (18px)
+   - Subtle shadow
+   - Hover lift effect
+   - Fade-up animation on load
+   ========================================================= */
 .card {
   background: #ffffff;
   border: 2px solid #c3c6ce;
@@ -111,11 +151,13 @@ body::before {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
   transition: all 0.5s ease-out;
   min-height: 180px;
+  /* Initial state for animation */
   opacity: 0;
   transform: translateY(60px);
   animation: fadeUp 1.8s ease forwards;
 }
 
+/* Card hover effect - lift and highlight border */
 .card:hover {
   transform: translateY(-6px);
   border-color: #2d6a4f;
@@ -158,6 +200,11 @@ body::before {
   padding: 10px 0;
 }
 
+/* =========================================================
+   STAT ITEM COMPONENTS
+   Purpose: Individual statistic display blocks
+   Used in: Stats card, check-ins, streaks, habits
+   ========================================================= */
 .stat-item {
   display: flex;
   align-items: center;
@@ -168,11 +215,13 @@ body::before {
   transition: transform 0.2s ease;
 }
 
+/* Hover effect - slide right slightly */
 .stat-item:hover {
   transform: translateX(5px);
   background: #e6f2ed;
 }
 
+/* Stat icon container */
 .stat-icon {
   width: 45px;
   height: 45px;
@@ -190,18 +239,21 @@ body::before {
   object-fit: contain;
 }
 
+/* Stat text container */
 .stat-info {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
+/* Stat label (e.g., "Total Check-ins") */
 .stat-label {
   font-size: 0.85rem;
   color: #6b7280;
   margin-bottom: 2px;
 }
 
+/* Stat value (e.g., "134") */
 .stat-value {
   font-size: 1.3rem;
   font-weight: 600;
@@ -389,20 +441,16 @@ body::before {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
-.progress-charts .card {
-  height: 280px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* Ensure charts don't exceed container - exact same as dashboard */
+#weeklyChart {
+  max-height: 200px !important;
 }
 
-.progress-charts canvas {
-  width: 100% !important;
-  height: 180px !important;
-  flex: 1;
+#monthlyChart {
+  max-height: 200px !important;
 }
 
 /* === INSIGHTS & MOTIVATION === */
@@ -687,12 +735,12 @@ body::before {
     padding: 22px;
     margin: 0 auto;
     border-radius: 16px;
-    height: auto;
   }
 
-  .progress-charts canvas {
-    height: auto !important;
-    max-height: 200px !important;
+  /* Ensure chart text is readable */
+  .progress-charts .card h3 .icon {
+    width: 18px;
+    height: 18px;
   }
 
   .menu-toggle {
@@ -754,12 +802,17 @@ body::before {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
-    height: auto;
+    overflow-y: auto;
   }
 
-  .progress-charts canvas {
-    height: 250px !important;
+  /* Better text sizing for tablet */
+  .progress-charts .card h3 {
+    font-size: 1.1rem;
+  }
+
+  .progress-charts .card h3 .icon {
+    width: 20px;
+    height: 20px;
   }
 
   .menu-toggle {

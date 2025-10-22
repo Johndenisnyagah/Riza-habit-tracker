@@ -1,23 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
   <!-- =========================================================
-       Riza | Progress Page
-       - Visualizes habit consistency with charts
-       - Shows stats, streaks and insights
-       - Unified with shared components
+       RIZA HABIT TRACKER | PROGRESS PAGE
+       
+       Purpose: Progress tracking and analytics interface
+       
+       Features:
+       - Real-time statistics (total check-ins, longest streak, current streak)
+       - Animated flame streak visualization with milestones
+       - Weekly success rate with circular progress indicator
+       - Weekly bar chart (Mon-Sun completion data)
+       - Monthly overview bar chart (weeks since registration)
+       - Activity calendar with check-in history
+       - Daily motivation quotes with refresh functionality
+       
+       Data Flow:
+       - All data loaded from MongoDB via backend API
+       - Statistics calculated from user check-ins
+       - Charts dynamically generated with Chart.js
+       - Calendar shows activity for any selected month
+       
+       Dependencies:
+       - sidebar.css (Navigation sidebar styles)
+       - progress.css (Page-specific styles)
+       - Chart.js v4.4.1 (Chart visualization library)
+       - Lottie Player (Flame animation for streaks)
+       - daily-motivation.js (Quote management)
+       - main.js (Sidebar loader)
+       - progress.js (Progress functionality)
+       - chart.js (Chart initialization utilities)
+       - habit-manager.js (Habit data fetching)
+       - api.js (Backend API communication)
+       
+       Author: John Denis Kirungia Nyagah
        ========================================================= -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Riza | Progress</title>
 
-    <!-- Sidebar styles -->
+    <!-- ==================== STYLESHEETS ==================== -->
+    <!-- Sidebar Navigation Styles -->
     <link rel="stylesheet" href="../components/sidebar.css" />
-    <!-- Progress Page styles -->
+    <!-- Progress Page Specific Styles -->
     <link rel="stylesheet" href="progress.css" />
-    <!-- Load Chart.js -->
+
+    <!-- ==================== EXTERNAL LIBRARIES ==================== -->
+    <!-- Chart.js - Data Visualization Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- Load Lottie Player for animations -->
+    <!-- Lottie Player - Animation Library for Flame Effect -->
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"
       type="module"
@@ -25,14 +56,30 @@
   </head>
 
   <body>
+    <!-- =========================================================
+         MAIN CONTAINER
+         Purpose: Wrapper for sidebar and main content
+         Layout: Flexbox horizontal layout
+         ========================================================= -->
     <div class="progress-container">
-      <!-- ========================= SIDEBAR ========================= -->
+      <!-- =========================================================
+           SIDEBAR NAVIGATION
+           Purpose: App navigation menu
+           Note: Loaded dynamically by main.js
+           ========================================================= -->
       <div id="sidebar-container"></div>
 
-      <!-- ========================= MAIN ========================= -->
+      <!-- =========================================================
+           MAIN CONTENT AREA
+           Purpose: Progress page content
+           ========================================================= -->
       <main class="main-content">
-        <!-- ===================== HEADER ===================== -->
+        <!-- =====================================================
+             HEADER SECTION
+             Purpose: Page title and description
+             ===================================================== -->
         <header class="progress-header">
+          <!-- Mobile Menu Toggle Button -->
           <button class="menu-toggle" aria-label="Open menu">
             <img
               src="/frontend/assets/icons/menu.svg"
@@ -40,15 +87,33 @@
               class="menu-icon"
             />
           </button>
+
+          <!-- Header Text -->
           <div class="header-text">
             <h1>Progress Overview</h1>
             <p>Track your consistency and growth</p>
           </div>
         </header>
 
-        <!-- ===================== SUMMARY STATS ===================== -->
+        <!-- =====================================================
+             SUMMARY STATISTICS SECTION
+             Purpose: Display key metrics at a glance
+             Layout: Responsive grid (3 columns on desktop)
+             Contains:
+             - Total check-ins count
+             - Longest streak achieved
+             - Total active habits
+             ===================================================== -->
         <section class="progress-summary">
-          <!-- Stats card with total check-ins -->
+          <!-- ===================================================
+               STATS CARD
+               Purpose: Display multiple key statistics
+               Contains:
+               - Total check-ins count
+               - Longest streak achieved
+               - Total active habits count
+               Note: All values populated from MongoDB
+               =================================================== -->
           <div class="card total-checkins anim-1">
             <h3>
               <img
@@ -59,39 +124,55 @@
               Stats
             </h3>
             <div class="stats-content">
+              <!-- Total Check-ins Stat -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/calendar.svg" alt="Calendar" />
                 </div>
                 <div class="stat-info">
                   <span class="stat-label">Total Check-ins</span>
+                  <!-- Check-ins Count (Populated by JavaScript) -->
                   <span class="stat-value" id="total-checkins">134</span>
                 </div>
               </div>
+
+              <!-- Longest Streak Stat -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/flame.svg" alt="Flame" />
                 </div>
                 <div class="stat-info">
                   <span class="stat-label">Longest Streak</span>
+                  <!-- Longest Streak Value (Populated by JavaScript) -->
                   <span class="stat-value">
                     <strong id="longest-streak">7</strong> days
                   </span>
                 </div>
               </div>
+
+              <!-- Total Habits Stat -->
               <div class="stat-item">
                 <div class="stat-icon">
                   <img src="../assets/icons/target.svg" alt="Target" />
                 </div>
                 <div class="stat-info">
                   <span class="stat-label">Total Habits</span>
+                  <!-- Total Habits Count (Populated by JavaScript) -->
                   <span class="stat-value" id="total-habits">0</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Current streak card -->
+          <!-- ===================================================
+               CURRENT STREAK CARD
+               Purpose: Visual streak tracking with animation
+               Contains:
+               - Animated flame (scales with streak length)
+               - Current streak counter
+               - Milestone indicators (7, 30, 100 days)
+               Note: Flame size controlled by JavaScript
+               =================================================== -->
           <div class="card current-streak anim-2">
             <h3>
               <img
@@ -102,18 +183,30 @@
               Current Streak
             </h3>
             <div class="streak-content">
+              <!-- Flame Animation Container -->
               <div class="streak-flame-container">
+                <!-- Lottie Flame Animation
+                     Size ranges: 80px (start) to 200px (100+ days)
+                     Animated dynamically by JavaScript -->
                 <dotlottie-wc
                   id="flame-animation"
                   src="https://lottie.host/56d7da74-9728-4b30-9850-2f882c814d31/JxaPzJMak3.lottie"
                   autoplay
                   loop
                 ></dotlottie-wc>
+
+                <!-- Streak Counter Overlay -->
                 <div class="streak-overlay">
+                  <!-- Current Streak Number (Populated by JavaScript) -->
                   <span class="streak-number" id="current-streak">7</span>
                   <span class="streak-label">days</span>
                 </div>
               </div>
+
+              <!-- Milestone Indicators
+                   Purpose: Visual goals for motivation
+                   7 days = ⭐ Starter, 30 days = 🏆 Champion, 100 days = 👑 Legend
+                   JavaScript adds 'achieved' class when reached -->
               <div class="streak-milestones">
                 <div class="milestone" id="milestone-7">
                   <span class="milestone-icon">⭐</span>
@@ -131,7 +224,16 @@
             </div>
           </div>
 
-          <!-- Success rate card -->
+          <!-- ===================================================
+               SUCCESS RATE CARD
+               Purpose: Show weekly completion percentage
+               Contains:
+               - Circular SVG progress indicator
+               - Percentage display
+               - Weekly comparison trend
+               - Best performance day
+               Note: All data calculated from MongoDB check-ins
+               =================================================== -->
           <div class="card success-rate anim-3">
             <h3>
               <img
@@ -142,8 +244,12 @@
               Success Rate
             </h3>
             <div class="success-rate-content">
+              <!-- Circular Progress Indicator
+                   SVG-based progress ring
+                   Animated by JavaScript to show percentage -->
               <div class="circular-progress">
                 <svg class="progress-ring" width="120" height="120">
+                  <!-- Background Circle (Gray) -->
                   <circle
                     class="progress-ring-circle"
                     stroke="#e0e0e0"
@@ -153,6 +259,8 @@
                     cx="60"
                     cy="60"
                   />
+                  <!-- Progress Circle (Green)
+                       stroke-dashoffset controlled by JavaScript -->
                   <circle
                     id="progress-ring-fill"
                     class="progress-ring-circle"
@@ -166,11 +274,20 @@
                     stroke-dashoffset="326.73"
                   />
                 </svg>
+
+                <!-- Percentage Text Overlay -->
                 <div class="progress-text">
+                  <!-- Success Rate Percentage (Populated by JavaScript) -->
                   <span id="success-rate" class="percentage">82%</span>
                 </div>
               </div>
+
+              <!-- Success Details
+                   Shows additional context about performance -->
               <div class="success-details">
+                <!-- Weekly Comparison
+                     Shows trend vs last week (up/down/same)
+                     Populated by JavaScript -->
                 <p class="success-comparison" id="success-comparison">
                   <img
                     src="../assets/icons/up.svg"
@@ -179,6 +296,10 @@
                   />
                   <span class="comparison-text">12% from last week</span>
                 </p>
+
+                <!-- Best Performance Day
+                     Shows which weekday has highest completion rate
+                     Calculated by JavaScript from check-ins -->
                 <p class="best-day" id="best-day">
                   <span class="best-day-label">Best day:</span>
                   <span class="best-day-value">Monday</span>
@@ -188,9 +309,23 @@
           </div>
         </section>
 
-        <!-- ===================== CHART VISUALIZATIONS ===================== -->
+        <!-- =====================================================
+             CHART VISUALIZATIONS SECTION
+             Purpose: Visual data representation
+             Layout: 2-column grid
+             Contains:
+             - Weekly progress bar chart (Mon-Sun)
+             - Monthly overview bar chart (weeks since registration)
+             Note: Charts generated with Chart.js library
+             ===================================================== -->
         <section class="progress-charts">
-          <!-- Weekly progress line chart -->
+          <!-- ===================================================
+               WEEKLY PROGRESS CHART
+               Purpose: Shows habit completion by day of week
+               Type: Bar chart (Mon-Sun)
+               Data: Fetched from MongoDB check-ins
+               Note: Canvas element animated by Chart.js
+               =================================================== -->
           <div class="card weekly-chart anim-1">
             <h3>
               <img
@@ -200,10 +335,21 @@
               />
               Weekly Progress
             </h3>
+            <!-- Chart Canvas
+                 ID: weeklyChart
+                 Rendered by progress.js using Chart.js
+                 Shows completions for current week (Mon-Sun) -->
             <canvas id="weeklyChart"></canvas>
           </div>
 
-          <!-- Monthly overview pie chart -->
+          <!-- ===================================================
+               MONTHLY OVERVIEW CHART
+               Purpose: Shows habit completion since registration
+               Type: Bar chart (weeks since user joined)
+               Data: All check-ins grouped by week from MongoDB
+               Calculation: Weeks calculated from user.createdAt
+               Note: Dynamic labels (W1, W2, W3, etc.)
+               =================================================== -->
           <div class="card monthly-chart anim-2">
             <h3>
               <img
@@ -213,13 +359,32 @@
               />
               Monthly Overview
             </h3>
+            <!-- Chart Canvas
+                 ID: monthlyChart
+                 Rendered by progress.js using Chart.js
+                 Shows all weeks since registration -->
             <canvas id="monthlyChart"></canvas>
           </div>
         </section>
 
-        <!-- ===================== INSIGHTS & MOTIVATION ===================== -->
+        <!-- =====================================================
+             INSIGHTS & MOTIVATION SECTION
+             Purpose: Inspirational content and activity tracking
+             Layout: 2-column grid
+             Contains:
+             - Daily motivation quotes
+             - Activity calendar with check-in history
+             ===================================================== -->
         <section class="progress-insights">
-          <!-- Daily motivation quote -->
+          <!-- ===================================================
+               DAILY MOTIVATION CARD
+               Purpose: Display inspirational quotes
+               Features:
+               - Random quote from categories
+               - Refresh button to get new quote
+               - Quote category tag
+               Note: Quotes managed by daily-motivation.js
+               =================================================== -->
           <div class="card motivation anim-1">
             <h3>
               <img
@@ -230,13 +395,20 @@
               Daily Motivation
             </h3>
             <div class="motivation-content">
+              <!-- Quote Text (Populated by daily-motivation.js) -->
               <blockquote id="motivationText">
                 "Small progress each day adds up to big results."
               </blockquote>
+
+              <!-- Quote Footer -->
               <div class="motivation-footer">
+                <!-- Quote Category (e.g., Consistency, Growth, etc.) -->
                 <span class="quote-category" id="quoteCategory"
                   >Consistency</span
                 >
+
+                <!-- Refresh Button
+                     Click to load new random quote -->
                 <button
                   class="refresh-quote"
                   id="refreshQuote"
@@ -248,7 +420,17 @@
             </div>
           </div>
 
-          <!-- Activity Calendar -->
+          <!-- ===================================================
+               ACTIVITY CALENDAR
+               Purpose: Visual check-in history by date
+               Features:
+               - Month navigation (prev/next buttons)
+               - Highlights dates with activity (green)
+               - Shows current day (border)
+               - Interactive date grid
+               Data: All check-ins fetched from MongoDB
+               Note: Calendar rendered by renderCalendar() in progress.js
+               =================================================== -->
           <div class="card calendar anim-2">
             <h3>
               <img
@@ -259,15 +441,25 @@
               Activity Calendar
             </h3>
             <div class="calendar-container">
+              <!-- Calendar Header
+                   Contains: Navigation buttons + Month/Year display -->
               <div class="calendar-header">
+                <!-- Previous Month Button -->
                 <button class="calendar-nav" id="prevMonth">
                   <img src="../assets/icons/left.svg" alt="Previous" />
                 </button>
+
+                <!-- Current Month Display (e.g., "January 2025")
+                     Updated by JavaScript when navigating -->
                 <h4 id="currentMonth">January 2025</h4>
+
+                <!-- Next Month Button -->
                 <button class="calendar-nav" id="nextMonth">
                   <img src="../assets/icons/right.svg" alt="Next" />
                 </button>
               </div>
+
+              <!-- Weekday Labels (Sun-Sat) -->
               <div class="calendar-weekdays">
                 <div class="weekday">Sun</div>
                 <div class="weekday">Mon</div>
@@ -277,6 +469,14 @@
                 <div class="weekday">Fri</div>
                 <div class="weekday">Sat</div>
               </div>
+
+              <!-- Calendar Days Grid
+                   Purpose: Shows all days of the month
+                   Classes:
+                   - .logged-in: Date has check-ins (green)
+                   - .today: Current date (border)
+                   - .other-month: Days from prev/next month (grayed)
+                   Note: Dynamically generated by renderCalendar() -->
               <div class="calendar-days" id="calendarDays">
                 <!-- Days will be generated by JavaScript -->
               </div>
@@ -286,12 +486,26 @@
       </main>
     </div>
 
-    <!-- ==================== SCRIPTS ==================== -->
-    <!-- Daily motivation quotes module -->
+    <!-- =========================================================
+         JAVASCRIPT MODULES
+         ========================================================= -->
+    <!-- Daily Motivation Script
+         Purpose: Manages inspirational quotes
+         Functions: Load random quote, refresh quote, categorize -->
     <script src="../shared/daily-motivation.js"></script>
-    <!-- Main application script (sidebar loader, etc) -->
+
+    <!-- Main Application Script
+         Purpose: Loads sidebar navigation dynamically -->
     <script src="/frontend/main.js"></script>
-    <!-- Chart configuration and progress data visualization -->
+
+    <!-- Progress Page Script (ES6 Module)
+         Purpose: Handles all progress page functionality:
+         - Calculate statistics from MongoDB
+         - Render weekly/monthly charts
+         - Update circular progress indicator
+         - Render activity calendar
+         - Track daily login
+         Dependencies: api.js, chart.js, habit-manager.js -->
     <script type="module" src="progress.js"></script>
   </body>
 </html>

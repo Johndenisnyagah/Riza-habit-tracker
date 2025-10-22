@@ -2,37 +2,84 @@
    SHARED HABIT MANAGER
    - Unified CRUD operations for habits
    - Used across all pages (dashboard, habits, progress)
-   - Consistent storage keys and behavior
+   - NOW USING BACKEND API INSTEAD OF LOCALSTORAGE
    ========================================================= */
 
-// Storage keys - UNIFIED across all pages
-const STORAGE_KEY = "rizaHabits";
-const COMPLETIONS_KEY = "habitCompletions";
+import {
+  getHabits as apiGetHabits,
+  createHabit as apiCreateHabit,
+  updateHabit as apiUpdateHabit,
+  deleteHabit as apiDeleteHabit,
+  toggleHabitCompletion as apiToggleCompletion,
+  getCheckins as apiGetCheckins,
+  getHabitStreak as apiGetStreak,
+} from "./api.js";
+
+// Cache for habits (reduces API calls)
+let habitsCache = null;
+let checkinsCache = {};
 
 // State variables
 let isEditing = false;
 let currentHabitId = null;
 let chartInstance = null;
 let currentFilter = "all";
+let onHabitChangeCallback = null; // Callback for when habits are added/updated/deleted
+
+/**
+ * Load habits from API (with caching)
+ * @returns {Promise<Array>} Array of habits
+ */
+async function loadHabitsFromAPI() {
+  try {
+    const habits = await apiGetHabits();
+    habitsCache = habits;
+    return habits;
+  } catch (error) {
+    console.error("Failed to load habits:", error);
+    return [];
+  }
+}
+
+/**
+ * Get habits (uses cache or fetches from API)
+ * @param {boolean} forceRefresh - Force refresh from API
+ * @returns {Promise<Array>} Array of habits
+ */
+export async function getHabitsData(forceRefresh = false) {
+  if (!habitsCache || forceRefresh) {
+    return await loadHabitsFromAPI();
+  }
+  return habitsCache;
+}
 
 /**
  * Initialize the habit manager
  * @param {Object} options - Configuration options
+ * @param {Function} options.onHabitChange - Callback when habits change
  */
-export function initializeHabitManager(options = {}) {
-  console.log("Initializing shared habit manager");
+export async function initializeHabitManager(options = {}) {
+  console.log("Initializing shared habit manager with API");
 
   // Store chart instance if provided
   if (options.chartInstance) {
     chartInstance = options.chartInstance;
   }
 
+  // Store callback if provided
+  if (options.onHabitChange && typeof options.onHabitChange === "function") {
+    onHabitChangeCallback = options.onHabitChange;
+  }
+
+  // Load habits from API
+  await loadHabitsFromAPI();
+
   // Setup event listeners
   setupEventListeners(options);
 
   // Render habits if container exists
   const habitListId = options.habitListId || "habit-list";
-  updateHabitSummaryList(habitListId);
+  await updateHabitSummaryList(habitListId);
 }
 
 /**
@@ -167,6 +214,22 @@ export function openModal(habitData = null) {
     );
     if (freqBtn) freqBtn.classList.add("active");
 
+    // Show custom days section if frequency is custom
+    const customDaysDiv = document.querySelector(".custom-days");
+    if (habitData.frequency === "custom" && customDaysDiv) {
+      customDaysDiv.classList.remove("hidden");
+
+      // Check the custom days
+      if (habitData.customDays && habitData.customDays.length > 0) {
+        habitData.customDays.forEach((day) => {
+          const checkbox = document.querySelector(
+            `.day-checkboxes input[value="${day}"]`
+          );
+          if (checkbox) checkbox.checked = true;
+        });
+      }
+    }
+
     // Set icon
     const iconOption = document.querySelector(
       `.icon-option[data-icon="${habitData.icon || "meditation.svg"}"]`
@@ -205,6 +268,11 @@ export function closeModal() {
   const modal = document.getElementById("habit-modal");
   if (!modal) return;
 
+  // Remove focus from any focused element inside the modal
+  if (document.activeElement && modal.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
+
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
 
@@ -216,7 +284,7 @@ export function closeModal() {
 /**
  * Save the current habit (add or update)
  */
-function saveHabit() {
+async function saveHabit() {
   // Collect form data
   const nameField = document.getElementById("habit-name");
   if (!nameField) {
@@ -234,6 +302,20 @@ function saveHabit() {
   const frequencyBtn = document.querySelector(".freq-btn.active");
   const frequency = frequencyBtn ? frequencyBtn.dataset.value : "daily";
 
+  // Get custom days if frequency is custom
+  let customDays = [];
+  if (frequency === "custom") {
+    const checkedDays = document.querySelectorAll(
+      '.day-checkboxes input[type="checkbox"]:checked'
+    );
+    customDays = Array.from(checkedDays).map((cb) => cb.value);
+
+    if (customDays.length === 0) {
+      alert("Please select at least one day for custom frequency");
+      return;
+    }
+  }
+
   // Get selected icon
   const iconOption = document.querySelector(".icon-option.active");
   const icon = iconOption ? iconOption.dataset.icon : "meditation.svg";
@@ -244,49 +326,73 @@ function saveHabit() {
     name,
     description: document.getElementById("habit-description")?.value || "",
     frequency,
+    customDays: frequency === "custom" ? customDays : [],
     icon,
     createdAt: isEditing ? undefined : new Date().toISOString(),
     streak: isEditing ? undefined : 0,
   };
 
-  if (isEditing) {
-    updateHabit(habit);
-  } else {
-    addHabit(habit);
-  }
+  try {
+    if (isEditing) {
+      await updateHabit(habit);
+    } else {
+      await addHabit(habit);
+    }
 
-  // Close modal and refresh UI
-  closeModal();
-  refreshHabitDisplay();
+    // Close modal and refresh UI
+    closeModal();
+    await refreshHabitDisplay();
+  } catch (error) {
+    console.error("Failed to save habit:", error);
+    alert("Failed to save habit. Please try again.");
+  }
 }
 
 /**
  * Add a new habit to storage
  * @param {Object} habit - The habit object to add
  */
-export function addHabit(habit) {
-  let habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  habits.push(habit);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-  console.log("Habit added:", habit);
+export async function addHabit(habit) {
+  try {
+    const createdHabit = await apiCreateHabit(habit);
+    console.log("Habit created via API:", createdHabit);
+    // Refresh cache
+    await loadHabitsFromAPI();
+
+    // Call custom callback if provided
+    if (onHabitChangeCallback) {
+      await onHabitChangeCallback();
+    }
+
+    return createdHabit;
+  } catch (error) {
+    console.error("Failed to create habit:", error);
+    throw error;
+  }
 }
 
 /**
- * Update an existing habit in storage
+ * Update an existing habit via API
  * @param {Object} updatedHabit - The habit object with updates
  */
-export function updateHabit(updatedHabit) {
-  let habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  const index = habits.findIndex((h) => h.id === updatedHabit.id);
+export async function updateHabit(updatedHabit) {
+  try {
+    // Backend uses _id, frontend uses id
+    const habitId = updatedHabit._id || updatedHabit.id;
+    const updated = await apiUpdateHabit(habitId, updatedHabit);
+    console.log("Habit updated via API:", updated);
+    // Refresh cache
+    await loadHabitsFromAPI();
 
-  if (index !== -1) {
-    // Preserve fields not in the update
-    habits[index] = {
-      ...habits[index],
-      ...updatedHabit,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-    console.log("Habit updated:", updatedHabit);
+    // Call custom callback if provided
+    if (onHabitChangeCallback) {
+      await onHabitChangeCallback();
+    }
+
+    return updated;
+  } catch (error) {
+    console.error("Failed to update habit:", error);
+    throw error;
   }
 }
 
@@ -294,118 +400,139 @@ export function updateHabit(updatedHabit) {
  * Delete a habit from storage
  * @param {String} habitId - The ID of the habit to delete
  */
-export function deleteHabit(habitId) {
+export async function deleteHabit(habitId) {
   if (!confirm("Are you sure you want to delete this habit?")) return;
 
-  let habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  habits = habits.filter((h) => h.id !== habitId);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+  try {
+    await apiDeleteHabit(habitId);
+    console.log("Habit deleted via API:", habitId);
+    // Refresh cache
+    await loadHabitsFromAPI();
 
-  // Also remove completions
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
-  delete completions[habitId];
-  localStorage.setItem(COMPLETIONS_KEY, JSON.stringify(completions));
+    // Call custom callback if provided
+    if (onHabitChangeCallback) {
+      await onHabitChangeCallback();
+    }
 
-  console.log("Habit deleted:", habitId);
-
-  // Close modal and refresh UI
-  closeModal();
-  refreshHabitDisplay();
+    // Close modal and refresh UI
+    closeModal();
+    await refreshHabitDisplay();
+  } catch (error) {
+    console.error("Failed to delete habit:", error);
+    alert("Failed to delete habit. Please try again.");
+  }
 }
 
 /**
  * Update the habit summary list in a container
  * @param {String} elementId - ID of the container element
  */
-export function updateHabitSummaryList(elementId = "habit-list") {
+export async function updateHabitSummaryList(elementId = "habit-list") {
   const habitList = document.getElementById(elementId);
   if (!habitList) {
     console.warn(`Habit list element '${elementId}' not found`);
     return;
   }
 
-  let habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
-  const today = new Date().toISOString().split("T")[0];
+  try {
+    let habits = await getHabitsData();
+    const today = new Date().toISOString().split("T")[0];
 
-  // Apply filter
-  if (currentFilter !== "all") {
-    habits = habits.filter((habit) => habit.frequency === currentFilter);
-  }
+    // Apply filter
+    if (currentFilter !== "all") {
+      habits = habits.filter((habit) => habit.frequency === currentFilter);
+    }
 
-  habitList.innerHTML = "";
+    habitList.innerHTML = "";
 
-  if (habits.length === 0) {
-    const emptyMessage = document.createElement("li");
-    emptyMessage.textContent =
-      currentFilter === "all"
-        ? "No habits added yet. Click 'Add Habit' to get started."
-        : `No ${currentFilter} habits found.`;
-    emptyMessage.className = "empty-message";
-    habitList.appendChild(emptyMessage);
-    return;
-  }
+    if (habits.length === 0) {
+      const emptyMessage = document.createElement("li");
+      emptyMessage.textContent =
+        currentFilter === "all"
+          ? "No habits added yet. Click 'Add Habit' to get started."
+          : `No ${currentFilter} habits found.`;
+      emptyMessage.className = "empty-message";
+      habitList.appendChild(emptyMessage);
+      return;
+    }
 
-  habits.forEach((habit) => {
-    const isCompleted =
-      completions[habit.id] && completions[habit.id].includes(today);
+    // Get checkins for all habits
+    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
+    const checkinsArrays = await Promise.all(checkinPromises);
 
-    const item = document.createElement("li");
-    item.className = `habit-item ${isCompleted ? "completed" : ""}`;
-    item.dataset.id = habit.id;
+    // Build completion map
+    const completions = {};
+    habits.forEach((habit, index) => {
+      const habitId = habit._id || habit.id;
+      completions[habitId] = checkinsArrays[index].map(
+        (c) => c.date.split("T")[0]
+      );
+    });
 
-    item.innerHTML = `
-      <div class="habit-left">
-        <label class="checkbox-container">
-          <input type="checkbox" ${isCompleted ? "checked" : ""}>
-          <span class="checkmark"></span>
-        </label>
-        <img src="../assets/habit-icons/${
-          habit.icon || "meditation.svg"
-        }" class="icon" alt="">
-        <div class="habit-info">
-          <span class="habit-name">${habit.name}</span>
-          ${
-            habit.description
-              ? `<span class="habit-description">${habit.description}</span>`
-              : ""
-          }
+    habits.forEach((habit) => {
+      const habitId = habit._id || habit.id;
+      const isCompleted =
+        completions[habitId] && completions[habitId].includes(today);
+
+      const item = document.createElement("li");
+      item.className = `habit-item ${isCompleted ? "completed" : ""}`;
+      item.dataset.id = habitId;
+
+      item.innerHTML = `
+        <div class="habit-left">
+          <label class="checkbox-container">
+            <input type="checkbox" ${isCompleted ? "checked" : ""}>
+            <span class="checkmark"></span>
+          </label>
+          <img src="../assets/habit-icons/${
+            habit.icon || "meditation.svg"
+          }" class="icon" alt="">
+          <div class="habit-info">
+            <span class="habit-name">${habit.name}</span>
+            ${
+              habit.description
+                ? `<span class="habit-description">${habit.description}</span>`
+                : ""
+            }
+          </div>
         </div>
-      </div>
-      <div class="habit-actions">
-        <button class="btn-outline edit-btn" data-id="${habit.id}">
-          <i class="fa-solid fa-pen"></i>
-          <span class="btn-text">Edit</span>
-        </button>
-        <button class="btn-outline delete-btn-item" data-id="${habit.id}">
-          <i class="fa-solid fa-trash"></i>
-          <span class="btn-text">Delete</span>
-        </button>
-      </div>
-    `;
+        <div class="habit-actions">
+          <button class="btn-outline edit-btn" data-id="${habitId}">
+            <i class="fa-solid fa-pen"></i>
+            <span class="btn-text">Edit</span>
+          </button>
+          <button class="btn-outline delete-btn-item" data-id="${habitId}">
+            <i class="fa-solid fa-trash"></i>
+            <span class="btn-text">Delete</span>
+          </button>
+        </div>
+      `;
 
-    // Add click handler for checkbox
-    const checkbox = item.querySelector("input[type='checkbox']");
-    checkbox.addEventListener("change", function () {
-      toggleHabitCompletion(habit.id, this);
+      // Add click handler for checkbox
+      const checkbox = item.querySelector("input[type='checkbox']");
+      checkbox.addEventListener("change", function () {
+        toggleHabitCompletion(habitId, this);
+      });
+
+      // Add click handler for edit button
+      const editBtn = item.querySelector(".edit-btn");
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openModal(habit);
+      });
+
+      // Add click handler for delete button
+      const deleteBtn = item.querySelector(".delete-btn-item");
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteHabit(habitId);
+      });
+
+      habitList.appendChild(item);
     });
-
-    // Add click handler for edit button
-    const editBtn = item.querySelector(".edit-btn");
-    editBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openModal(habit);
-    });
-
-    // Add click handler for delete button
-    const deleteBtn = item.querySelector(".delete-btn-item");
-    deleteBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      deleteHabit(habit.id);
-    });
-
-    habitList.appendChild(item);
-  });
+  } catch (error) {
+    console.error("Failed to update habit list:", error);
+  }
 }
 
 /**
@@ -413,163 +540,167 @@ export function updateHabitSummaryList(elementId = "habit-list") {
  * @param {String} habitId - ID of the habit
  * @param {HTMLElement} checkbox - The checkbox element
  */
-export function toggleHabitCompletion(habitId, checkbox) {
-  const today = new Date().toISOString().split("T")[0];
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
-
-  // Initialize if doesn't exist
-  if (!completions[habitId]) {
-    completions[habitId] = [];
-  }
-
+export async function toggleHabitCompletion(habitId, checkbox) {
   const isChecked = checkbox.checked;
 
-  if (isChecked) {
-    // Add completion
-    if (!completions[habitId].includes(today)) {
-      completions[habitId].push(today);
+  try {
+    // Call API to toggle completion (backend handles today's date)
+    await apiToggleCompletion(habitId);
+    console.log("Toggled completion for habit:", habitId);
 
-      // Update habit streak
-      const habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      const habit = habits.find((h) => h.id === habitId);
-      if (habit) {
-        habit.streak = (habit.streak || 0) + 1;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+    // Update UI
+    const item = checkbox.closest(".habit-item");
+    if (item) {
+      if (isChecked) {
+        item.classList.add("completed");
+      } else {
+        item.classList.remove("completed");
       }
     }
-  } else {
-    // Remove completion
-    completions[habitId] = completions[habitId].filter((d) => d !== today);
 
-    // Update habit streak
-    const habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    const habit = habits.find((h) => h.id === habitId);
-    if (habit && habit.streak > 0) {
-      habit.streak--;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+    // Update chart if available
+    if (chartInstance) {
+      import("./chart.js").then(async (module) => {
+        await module.updateChartWithHabitData(chartInstance);
+      });
+    } else if (window.updateChartData) {
+      // Fallback to global function
+      await updateChartForToday();
     }
+
+    // Update other UI elements
+    await updateTodayCheckins();
+    await updateStreakCount();
+  } catch (error) {
+    console.error("Failed to toggle habit completion:", error);
+    // Revert checkbox on error
+    checkbox.checked = !checkbox.checked;
   }
-
-  // Save completions
-  localStorage.setItem(COMPLETIONS_KEY, JSON.stringify(completions));
-
-  // Update UI
-  const item = checkbox.closest(".habit-item");
-  if (item) {
-    if (isChecked) {
-      item.classList.add("completed");
-    } else {
-      item.classList.remove("completed");
-    }
-  }
-
-  // Update chart if available
-  if (chartInstance) {
-    import("./chart.js").then((module) => {
-      module.updateChartWithHabitData(chartInstance);
-    });
-  } else if (window.updateChartData) {
-    // Fallback to global function
-    updateChartForToday();
-  }
-
-  // Update other UI elements
-  updateTodayCheckins();
-  updateStreakCount();
 }
 
 /**
  * Update chart for today's completions
  */
-function updateChartForToday() {
-  const habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
-  const today = new Date().toISOString().split("T")[0];
+async function updateChartForToday() {
+  try {
+    const habits = await getHabitsData();
+    const today = new Date().toISOString().split("T")[0];
 
-  let todayCount = 0;
-  habits.forEach((habit) => {
-    if (completions[habit.id] && completions[habit.id].includes(today)) {
-      todayCount++;
+    // Get checkins for all habits
+    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
+    const checkinsArrays = await Promise.all(checkinPromises);
+
+    let todayCount = 0;
+    checkinsArrays.forEach((checkins) => {
+      if (checkins.some((c) => c.date.split("T")[0] === today)) {
+        todayCount++;
+      }
+    });
+
+    const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+    if (window.updateChartData) {
+      window.updateChartData(todayIndex, todayCount);
     }
-  });
-
-  const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
-  if (window.updateChartData) {
-    window.updateChartData(todayIndex, todayCount);
+  } catch (error) {
+    console.error("Failed to update chart:", error);
   }
 }
 
 /**
  * Update streak count display
  */
-export function updateStreakCount() {
+export async function updateStreakCount() {
   const streakElement = document.getElementById("streak-count");
   if (!streakElement) return;
 
-  const habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
+  try {
+    const habits = await getHabitsData();
 
-  let currentStreak = 0;
-  let checkDate = new Date();
+    // Get all checkins for all habits
+    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
+    const checkinsArrays = await Promise.all(checkinPromises);
 
-  // Check consecutive days backwards
-  while (true) {
-    const dateStr = checkDate.toISOString().split("T")[0];
-    let anyCompleted = false;
+    // Build completion map
+    const completions = {};
+    habits.forEach((habit, index) => {
+      const habitId = habit._id || habit.id;
+      completions[habitId] = checkinsArrays[index].map(
+        (c) => c.date.split("T")[0]
+      );
+    });
 
-    for (const habit of habits) {
-      if (completions[habit.id] && completions[habit.id].includes(dateStr)) {
-        anyCompleted = true;
+    let currentStreak = 0;
+    let checkDate = new Date();
+
+    // Check consecutive days backwards
+    while (true) {
+      const dateStr = checkDate.toISOString().split("T")[0];
+      let anyCompleted = false;
+
+      for (const habit of habits) {
+        const habitId = habit._id || habit.id;
+        if (completions[habitId] && completions[habitId].includes(dateStr)) {
+          anyCompleted = true;
+          break;
+        }
+      }
+
+      if (anyCompleted) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
         break;
       }
     }
 
-    if (anyCompleted) {
-      currentStreak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    } else {
-      break;
-    }
+    streakElement.textContent = `${currentStreak} day${
+      currentStreak !== 1 ? "s" : ""
+    }`;
+  } catch (error) {
+    console.error("Failed to update streak count:", error);
   }
-
-  streakElement.textContent = `${currentStreak} day${
-    currentStreak !== 1 ? "s" : ""
-  }`;
 }
 
 /**
  * Update today's checkins count
  */
-function updateTodayCheckins() {
-  const checkinsElement = document.querySelector(".checkins p");
+async function updateTodayCheckins() {
+  const checkinsElement = document.querySelector(".checkins-status");
   if (!checkinsElement) return;
 
-  const habits = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  const completions = JSON.parse(localStorage.getItem(COMPLETIONS_KEY)) || {};
-  const today = new Date().toISOString().split("T")[0];
+  try {
+    const habits = await getHabitsData();
+    const today = new Date().toISOString().split("T")[0];
 
-  let completed = 0;
-  habits.forEach((habit) => {
-    if (completions[habit.id] && completions[habit.id].includes(today)) {
-      completed++;
-    }
-  });
+    // Get checkins for all habits
+    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
+    const checkinsArrays = await Promise.all(checkinPromises);
 
-  checkinsElement.textContent = `${completed}/${habits.length} habits completed`;
+    let completed = 0;
+    checkinsArrays.forEach((checkins) => {
+      if (checkins.some((c) => c.date.split("T")[0] === today)) {
+        completed++;
+      }
+    });
+
+    checkinsElement.textContent = `${completed}/${habits.length} habits completed`;
+  } catch (error) {
+    console.error("Failed to update today's checkins:", error);
+  }
 }
 
 /**
  * Update all habit-related UI elements
  */
-export function refreshHabitDisplay() {
-  updateHabitSummaryList();
-  updateStreakCount();
-  updateTodayCheckins();
+export async function refreshHabitDisplay() {
+  await updateHabitSummaryList();
+  await updateStreakCount();
+  await updateTodayCheckins();
 
   // Update chart if available
   if (chartInstance) {
-    import("./chart.js").then((module) => {
-      module.updateChartWithHabitData(chartInstance);
+    import("./chart.js").then(async (module) => {
+      await module.updateChartWithHabitData(chartInstance);
     });
   }
 }

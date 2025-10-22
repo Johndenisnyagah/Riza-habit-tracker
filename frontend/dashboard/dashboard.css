@@ -1,8 +1,24 @@
 /* =========================================================
-   Riza Dashboard Styles (Standalone)
+   RIZA HABIT TRACKER | DASHBOARD STYLES
+   
+   Purpose: Complete styling for the dashboard page including
+            layout, cards, stats, habits list, and modal
+   
+   Organization:
+   - Reset & Base Styles
+   - Layout (Menu Toggle, Main Content, Header, Grid)
+   - Card Components (Base, Stats, Streak, Daily Overview)
+   - Habit Management (Summary List, Filters, Form)
+   - Modal System (Add/Edit Habit Popup)
+   - Animations & Transitions
+   - Responsive Design (Mobile, Tablet, Desktop)
+   
+   Author: John Denis kirungia Nyagah
    ========================================================= */
 
-/* ============== RESET & BASE ============== */
+/* ==================== RESET & BASE STYLES ==================== */
+/* Universal reset for consistent cross-browser behavior */
+/* Universal reset for consistent cross-browser behavior */
 * {
   margin: 0;
   padding: 0;
@@ -10,21 +26,21 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* === BASE === */
+/* Base body styles with background image overlay */
 body {
   min-height: 100vh;
   display: flex;
   color: #1b4332;
   line-height: 1.6;
   background: url("../assets/background.png") center center / cover no-repeat;
-  background-color: #f7fdf9;
-  background-attachment: fixed;
+  background-color: #f7fdf9; /* Light green fallback */
+  background-attachment: fixed; /* Parallax effect */
   position: relative;
-  overflow-x: hidden;
-  overflow-y: hidden; /* Hide outer scrollbar */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: hidden; /* Hide outer scrollbar (content scrolls in .main-content) */
 }
 
-/* soft overlay for readability */
+/* Soft white overlay for better text readability */
 body::before {
   content: "";
   position: fixed;
@@ -36,11 +52,10 @@ body::before {
   z-index: -1;
 }
 
-/* =========================================================
-   MENU TOGGLE BUTTON
-   ========================================================= */
+/* ==================== LAYOUT: MENU TOGGLE ==================== */
+/* Mobile hamburger menu button (hidden on desktop) */
 .menu-toggle {
-  display: none;
+  display: none; /* Hidden by default, shown on mobile */
   background: none;
   border: none;
   cursor: pointer;
@@ -51,28 +66,32 @@ body::before {
   z-index: 1100;
 }
 
+/* Hamburger icon with green color filter */
 .menu-icon {
   width: 28px;
   height: 28px;
+  /* CSS filter converts black icon to dark green (#1b4332) */
   filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
     brightness(96%) contrast(88%);
   opacity: 0.9;
 }
 
-/* ============== MAIN CONTENT WRAPPER ============== */
+/* ==================== LAYOUT: MAIN CONTENT WRAPPER ==================== */
+/* Main content area (right of sidebar on desktop) */
 .main-content {
-  margin-left: 250px;
-  margin-right: 0; /* Prevent right margin causing overflow */
+  margin-left: 250px; /* Offset for sidebar width */
+  margin-right: 0;
   padding: 30px 40px 30px 60px;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
-/* ============== HEADER ============== */
+/* ==================== LAYOUT: HEADER ==================== */
+/* Dashboard page header with welcome message */
 .dashboard-header {
   display: flex;
   align-items: center;
@@ -82,16 +101,17 @@ body::before {
   width: 100%;
   max-width: 1350px;
   margin-bottom: 10px;
+  /* Fade-in animation on page load */
   opacity: 0;
   animation: fadeInSmooth 0.8s ease forwards;
-
-  animation-delay: 0.4s;
+  animation-delay: 0.4s; /* Delayed for staggered effect */
 }
 
+/* Main heading: "Welcome back, [Username]!" */
 .dashboard-header h1 {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #1b4332;
+  color: #1b4332; /* Dark green */
   letter-spacing: 0.3px;
 }
 
@@ -99,6 +119,7 @@ body::before {
   color: #2d6a4f;
 }
 
+/* Subtitle text below header */
 .dashboard-header p {
   color: #555;
   margin-top: 6px;
@@ -106,48 +127,55 @@ body::before {
   text-align: center;
 }
 
-/* ============== GRID ============== */
+/* ==================== LAYOUT: DASHBOARD GRID ==================== */
+/* CSS Grid layout for dashboard cards (3 columns on desktop) */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(15px, 2vw, 25px);
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: clamp(15px, 2vw, 25px); /* Responsive gap */
   max-width: 1350px;
   margin: 0 auto;
   width: 100%;
   justify-content: center;
 }
 
+/* Weekly Progress Chart spans 2 columns */
 .progress-chart {
   grid-column: span 2;
 }
 
+/* Habit Summary Card spans full width (3 columns) */
 .habit-summary {
   grid-column: span 3;
 }
 
-/* ============== CARD BASE ============== */
+/* ==================== CARD COMPONENTS: BASE STYLES ==================== */
+/* Shared styles for all dashboard cards */
 .card {
   background: #ffffff;
-  border: 2px solid #c3c6ce;
+  border: 2px solid #c3c6ce; /* Light gray border */
   border-radius: 18px;
   padding: 28px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   min-height: 180px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
+  max-height: calc(100vh - 120px); /* Prevent overflow */
+  overflow-y: auto; /* Allow scrolling if content exceeds max-height */
+  /* Fade-up animation on page load */
   opacity: 0;
   transform: translateY(60px);
   animation: fadeUp 1.8s ease forwards;
-  transition: 0.5s ease-out; /* smoother hover transition */
+  transition: 0.5s ease-out;
 }
 
+/* Hover effect: lift card and highlight border */
 .card:hover {
-  transform: translateY(-6px);
-  border-color: #2d6a4f; /* highlight border */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px); /* Lift effect */
+  border-color: #2d6a4f; /* Green highlight */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); /* Stronger shadow */
 }
 
+/* Card heading styles */
 .card h3 {
   margin-bottom: 16px;
   font-weight: 600;
@@ -157,13 +185,15 @@ body::before {
   align-items: center;
 }
 
+/* Card paragraph text */
 .card p {
   color: #333;
   font-size: 0.95rem;
   margin-bottom: 5px;
 }
 
-/* ============== STATS CARD ENHANCEMENTS ============== */
+/* ==================== CARD COMPONENTS: STATISTICS CARD ==================== */
+/* Enhanced styling for the 3-stat card (Logins, Streak, Habits) */
 .stats-content {
   display: flex;
   flex-direction: column;
@@ -171,21 +201,24 @@ body::before {
   padding: 10px 0;
 }
 
+/* Individual stat item container */
 .stat-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px;
-  background: #f0f7f4;
+  background: #f0f7f4; /* Very light green */
   border-radius: 10px;
   transition: transform 0.2s ease;
 }
 
+/* Hover effect: slide to right */
 .stat-item:hover {
   transform: translateX(5px);
-  background: #e6f2ed;
+  background: #e6f2ed; /* Slightly darker on hover */
 }
 
+/* Icon container (white background circle) */
 .stat-icon {
   width: 45px;
   height: 45px;
@@ -194,34 +227,39 @@ body::before {
   justify-content: center;
   background: white;
   border-radius: 10px;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
+/* Icon image sizing */
 .stat-icon img {
   width: 24px;
   height: 24px;
   object-fit: contain;
 }
 
+/* Stat text container (label + value) */
 .stat-info {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
+/* Stat label (e.g., "Total Logins") */
 .stat-label {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #6b7280; /* Gray */
   margin-bottom: 2px;
 }
 
+/* Stat value (e.g., "42") */
 .stat-value {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #1b4332;
+  color: #1b4332; /* Dark green */
 }
 
-/* ============== CURRENT STREAK CARD ENHANCEMENTS ============== */
+/* ==================== CARD COMPONENTS: CURRENT STREAK CARD ==================== */
+/* Special styling for animated flame streak display */
 .streak-content {
   display: flex;
   flex-direction: column;
@@ -230,6 +268,7 @@ body::before {
   gap: 15px;
 }
 
+/* Container for flame animation and streak number */
 .streak-flame-container {
   position: relative;
   display: flex;
@@ -240,78 +279,90 @@ body::before {
   transition: all 0.3s ease;
 }
 
+/* Lottie flame animation element */
+/* Size dynamically adjusted by dashboard.js based on streak length */
 #dashboard-flame-animation {
   width: 120px;
   height: 120px;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* Smooth size changes */
 }
 
+/* Streak number and "days" text overlay */
 .streak-overlay {
   display: flex;
   flex-direction: row;
   align-items: baseline;
   justify-content: center;
   gap: 8px;
-  pointer-events: none;
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
+/* Large streak number */
 .streak-number {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #2d3748;
+  color: #2d3748; /* Dark gray */
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -1px; /* Tighter spacing */
 }
 
+/* "days" label next to number */
 .streak-label {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #4a5568;
+  color: #4a5568; /* Medium gray */
   letter-spacing: 0.5px;
 }
 
+/* Milestone badges container (7, 30, 100 days) */
 .streak-milestones {
   display: flex;
   gap: 10px;
   margin-top: 20px;
 }
 
+/* Individual milestone badge */
 .milestone {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 8px 12px;
-  background: #f5f5f5;
+  background: #f5f5f5; /* Gray background */
   border-radius: 8px;
   border: 2px solid #e0e0e0;
   transition: all 0.3s ease;
-  opacity: 0.5;
+  opacity: 0.5; /* Faded when not achieved */
 }
 
+/* Milestone badge when achieved (highlighted) */
 .milestone.achieved {
-  background: #e9f5ee;
-  border-color: #74c69d;
+  background: #e9f5ee; /* Light green */
+  border-color: #74c69d; /* Medium green */
   opacity: 1;
   box-shadow: 0 2px 8px rgba(45, 106, 79, 0.2);
 }
 
+/* Milestone emoji icon */
 .milestone-icon {
   font-size: 1.2rem;
   margin-bottom: 2px;
 }
 
+/* Milestone day count text */
 .milestone-text {
   font-size: 0.7rem;
-  color: #6b7280;
+  color: #6b7280; /* Gray when not achieved */
   font-weight: 500;
 }
 
+/* Milestone text when achieved (darker green) */
 .milestone.achieved .milestone-text {
   color: #2d6a4f;
   font-weight: 600;
 }
 
-/* ============== DAILY OVERVIEW CARD (COMBINED MOTIVATION + CHECK-INS) ============== */
+/* ==================== CARD COMPONENTS: DAILY OVERVIEW ==================== */
+/* Combined card with motivation quote and today's check-ins count */
 .card.daily-overview {
   min-height: auto;
   height: fit-content;
@@ -319,6 +370,7 @@ body::before {
   flex-direction: column;
 }
 
+/* ========== Motivation Quote Section ========== */
 .motivation-section {
   margin-bottom: 20px;
 }
@@ -332,6 +384,7 @@ body::before {
   padding: 10px 15px;
 }
 
+/* Quote text (italic, centered) */
 .motivation-content blockquote {
   font-size: 1rem;
   line-height: 1.5;
@@ -343,6 +396,7 @@ body::before {
   font-weight: 500;
 }
 
+/* Footer: category badge + refresh button */
 .motivation-footer {
   display: flex;
   align-items: center;
@@ -352,11 +406,12 @@ body::before {
   margin-top: auto;
 }
 
+/* Quote category badge (e.g., "Motivation") */
 .quote-category {
   font-size: 0.85rem;
   color: #2d6a4f;
   font-weight: 600;
-  background: #f0f7f4;
+  background: #f0f7f4; /* Light green pill */
   padding: 6px 14px;
   border-radius: 20px;
   display: flex;
@@ -364,6 +419,7 @@ body::before {
   height: 36px;
 }
 
+/* Refresh quote button (circular with icon) */
 .refresh-quote {
   background: #f0f7f4;
   border: none;
@@ -377,11 +433,13 @@ body::before {
   transition: all 0.2s ease;
 }
 
+/* Refresh button hover: green background */
 .refresh-quote:hover {
   background: #2d6a4f;
   transform: scale(1.05);
 }
 
+/* Refresh icon (converted to green by default) */
 .refresh-quote img {
   width: 18px;
   height: 18px;
@@ -390,10 +448,13 @@ body::before {
   transition: filter 0.2s ease;
 }
 
+/* Icon turns white on hover */
 .refresh-quote:hover img {
   filter: invert(100%) brightness(200%);
 }
 
+/* ========== Section Divider ========== */
+/* Gradient line between motivation and check-ins */
 .section-divider {
   height: 1px;
   background: linear-gradient(
@@ -406,24 +467,28 @@ body::before {
   margin: 20px 0;
 }
 
+/* ========== Today's Check-ins Section ========== */
 .checkins-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Header with icon and title */
 .checkins-header {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Checklist icon next to heading */
 .checkins-header .section-icon {
   width: 20px;
   height: 20px;
   opacity: 0.8;
 }
 
+/* "Today's Check-ins" heading */
 .checkins-header h4 {
   font-size: 1rem;
   font-weight: 600;
@@ -431,29 +496,34 @@ body::before {
   margin: 0;
 }
 
+/* Check-in status text (e.g., "3 out of 5 completed") */
+/* Updated in real-time by dashboard.js when habits checked */
 .checkins-status {
   font-size: 0.95rem;
   color: #4a5568;
   margin: 0;
-  padding-left: 30px;
+  padding-left: 30px; /* Align with heading text */
 }
 
+/* "View All Habits" button */
 .checkins-section .btn-outline {
   align-self: flex-start;
   margin-left: 30px;
 }
 
-/* ============== HABIT FORM ============== */
+/* ==================== HABIT MANAGEMENT: ADD HABIT FORM ==================== */
+/* Simple inline form in the "Add New Habit" card (not the modal) */
 .add-habit-form {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f1faf4;
+  background: #f1faf4; /* Very light green */
   border-radius: 12px;
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* Habit name input field */
 .add-habit-form input {
   flex: 1;
   border: none;
@@ -464,11 +534,13 @@ body::before {
   transition: transform 0.25s ease;
 }
 
+/* Input focus effect: bottom border */
 .add-habit-form input:focus {
   border-bottom: 2px solid #2d6a4f;
   transform: scale(1.01);
 }
 
+/* Add habit submit button */
 .add-habit-form .btn {
   background: #2d6a4f;
   color: #fff;
@@ -478,26 +550,31 @@ body::before {
   transition: all 0.3s ease;
 }
 
+/* Button hover: darker green */
 .add-habit-form .btn:hover {
   background: #1b4332;
   transform: scale(1.01);
 }
 
-/* ============== HABIT SUMMARY LIST ============== */
+/* ==================== HABIT MANAGEMENT: SUMMARY LIST ==================== */
+/* Scrollable list of all habits in the "Habit Summary" card */
+/* Data loaded from MongoDB via /api/habits */
 #habit-list {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
   max-height: 420px;
-  overflow-y: auto;
+  overflow-y: auto; /* Scroll if many habits */
   padding-right: 5px;
   margin: 0;
   padding: 0;
-  scrollbar-gutter: stable both-edges;
-  clip-path: inset(0 round 12px);
+  scrollbar-gutter: stable both-edges; /* Reserve space for scrollbar */
+  clip-path: inset(0 round 12px); /* Rounded scrollbar area */
 }
 
+/* ========== Custom Scrollbar Styling ========== */
+/* Webkit browsers (Chrome, Edge, Safari) */
 #habit-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -508,21 +585,25 @@ body::before {
 }
 
 #habit-list::-webkit-scrollbar-thumb {
-  background-color: rgba(45, 106, 79, 0.6);
+  background-color: rgba(45, 106, 79, 0.6); /* Semi-transparent green */
   border-radius: 10px;
   transition: background 0.3s ease;
 }
 
 #habit-list::-webkit-scrollbar-thumb:hover {
-  background-color: #1b4332;
+  background-color: #1b4332; /* Darker green on hover */
 }
 
+/* Firefox scrollbar styling */
 #habit-list {
   scrollbar-width: thin;
   scrollbar-color: rgba(45, 106, 79, 0.6) transparent;
 }
+
+/* ========== Habit List Item ========== */
+/* Individual habit card in the list */
 #habit-list .habit-item {
-  background: #e9f5ee;
+  background: #e9f5ee; /* Light green background */
   border-radius: 12px;
   padding: 12px 16px;
   display: flex;
@@ -532,32 +613,34 @@ body::before {
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   cursor: pointer;
-  margin-bottom: 0; /* Override any existing margin */
+  margin-bottom: 0;
 }
 
+/* Hover effect: slightly darker green */
 #habit-list .habit-item:hover {
   background: #74c69d9b;
   transition: background 0.25s ease;
 }
 
-/* Left side with checkbox and habit name */
+/* Left side: checkbox + habit name/description */
 #habit-list .habit-left {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-/* Checkbox styling */
+/* ========== Custom Checkbox Styling ========== */
 #habit-list .checkbox-container {
   display: inline-block;
   height: 1.3em;
   width: 1.3em;
   cursor: pointer;
   position: relative;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Prevent shrinking */
   margin-right: 10px;
 }
 
+/* Hide native checkbox */
 #habit-list .checkbox-container input {
   opacity: 0;
   position: absolute;
@@ -565,6 +648,7 @@ body::before {
   height: 0;
 }
 
+/* Custom checkbox square */
 #habit-list .checkbox-container .checkmark {
   display: block;
   width: 100%;
@@ -575,6 +659,8 @@ body::before {
   background-color: transparent;
 }
 
+/* When checked: transform into checkmark */
+/* Rotation + border manipulation creates checkmark shape */
 #habit-list .checkbox-container input:checked ~ .checkmark {
   transform: rotate(45deg);
   height: 1.2em;
@@ -585,6 +671,7 @@ body::before {
   border-radius: 0;
 }
 
+/* Habit name and description container */
 #habit-list .habit-info {
   flex: 1;
   display: flex;
@@ -593,11 +680,18 @@ body::before {
   margin-left: 5px;
 }
 
+/* Habit name text */
+#habit-list .habit-name {
+  color: #1b4332;
+  font-weight: 500;
+}
+/* Habit name text */
 #habit-list .habit-name {
   color: #1b4332;
   font-weight: 500;
 }
 
+/* Habit description (smaller, italic, gray) */
 #habit-list .habit-description {
   font-size: 0.85rem;
   color: #6b7280;
@@ -605,7 +699,8 @@ body::before {
   line-height: 1.3;
 }
 
-/* Button styling from habits.css */
+/* ========== Habit Action Buttons ========== */
+/* Edit and Delete buttons on the right side */
 #habit-list .habit-actions {
   display: flex;
   align-items: center;
@@ -614,6 +709,7 @@ body::before {
   margin-left: auto;
 }
 
+/* Button styling (transparent with green border) */
 #habit-list .btn-outline {
   padding: 6px 10px;
   font-size: 0.9rem;
@@ -628,6 +724,7 @@ body::before {
   gap: 8px;
 }
 
+/* Button hover: green fill */
 #habit-list .btn-outline:hover,
 #habit-list .btn-outline:focus {
   background: #2d6a4f;
@@ -636,12 +733,13 @@ body::before {
   outline: none;
 }
 
+/* Button text inherits color */
 #habit-list .btn-text {
   color: inherit;
   font-style: normal;
 }
 
-/* Empty state */
+/* Empty state message when no habits exist */
 .empty-message {
   color: #6b7280;
   font-style: italic;
@@ -649,7 +747,8 @@ body::before {
   padding: 15px 0;
 }
 
-/* ============== HABIT FILTERS ============== */
+/* ==================== HABIT MANAGEMENT: FILTERS ==================== */
+/* Filter buttons above habit list (All, Daily, Weekdays, etc.) */
 .habit-filters {
   display: flex;
   gap: 8px;
@@ -657,8 +756,9 @@ body::before {
   flex-wrap: wrap;
 }
 
+/* Individual filter button */
 .filter-btn {
-  background: #f5f5f5;
+  background: #f5f5f5; /* Gray by default */
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   padding: 6px 14px;
@@ -669,19 +769,22 @@ body::before {
   font-weight: 500;
 }
 
+/* Filter button hover */
 .filter-btn:hover {
-  background: #e9f5ee;
+  background: #e9f5ee; /* Light green */
   border-color: #2d6a4f;
   color: #2d6a4f;
 }
 
+/* Active filter button (green background) */
 .filter-btn.active {
   background: #2d6a4f;
   color: white;
   border-color: #2d6a4f;
 }
 
-/* ============== BUTTONS ============== */
+/* ==================== BUTTON COMPONENTS ==================== */
+/* Reusable outline button style (used across dashboard) */
 .btn-outline {
   border: 2px solid #2d6a4f;
   color: #2d6a4f;
@@ -691,20 +794,20 @@ body::before {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.25s ease;
-
-  /* remove anchor underline and match button layout */
+  /* Remove anchor underline */
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Hover: green fill with white text */
 .btn-outline:hover {
   background: #3f926d;
   color: #fff;
 }
 
-/* ensure no underline on link states and keep focus visible */
+/* Remove underline on all link states */
 .btn-outline:link,
 .btn-outline:visited,
 .btn-outline:hover,
@@ -713,34 +816,37 @@ body::before {
   color: inherit;
 }
 
+/* Focus state for accessibility */
 .btn-outline:focus {
   outline: 3px solid rgba(45, 106, 79, 0.18);
   outline-offset: 3px;
 }
 
-/* Habit actions button styles */
+/* Habit action buttons (smaller padding) */
 .habit-actions .btn-outline {
   padding: 6px 12px;
   border-radius: 14px;
   transition: background 0.22s ease, color 0.22s ease;
 }
 
-/* make sure icon and text inside inherit color */
+/* Icons and text inside buttons inherit color */
 .habit-actions .btn-outline i,
 .habit-actions .btn-outline .btn-text {
   color: inherit;
 }
 
-/* if a parent hover was changing color, override it when button is hovered */
+/* Keep button color when habit item is hovered */
 .habit-item:hover .habit-actions .btn-outline {
-  color: #2d6a4f; /* keep default unless button hovered */
+  color: #2d6a4f;
 }
 
+/* Override when button itself is hovered */
 .habit-item:hover .habit-actions .btn-outline:hover {
   color: #fff;
 }
 
-/* ============== ANIMATIONS ============== */
+/* ==================== ANIMATIONS ==================== */
+/* Smooth fade-in with slight upward movement */
 @keyframes fadeInSmooth {
   from {
     opacity: 0;
@@ -752,6 +858,7 @@ body::before {
   }
 }
 
+/* Card entrance animation (fade up from bottom) */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -763,12 +870,11 @@ body::before {
   }
 }
 
-/* =========================================================
-   HABIT MODAL
-   - Fullscreen popup for adding/editing habits
-   - Includes form fields and custom controls
-   ========================================================= */
+/* ==================== MODAL SYSTEM ==================== */
+/* Fullscreen modal overlay for adding/editing habits */
+/* Managed by habit-manager.js */
 
+/* Modal overlay (darkened background) */
 .modal {
   display: none;
   position: fixed;
@@ -776,7 +882,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* 50% black overlay */
   z-index: 1000;
   align-items: center;
   justify-content: center;
@@ -785,12 +891,14 @@ body::before {
   transition: opacity 0.3s ease;
 }
 
+/* Modal active state (visible) */
 .modal.active {
   display: flex;
   opacity: 1;
   pointer-events: auto;
 }
 
+/* Modal content box (white centered card) */
 .modal-content {
   background: white;
   border-radius: 16px;
@@ -800,19 +908,20 @@ body::before {
   transform: translateY(20px);
   transition: transform 0.3s ease;
   overflow: hidden;
-  position: relative; /* Add this */
-  z-index: 1001; /* Add this */
+  position: relative;
+  z-index: 1001;
 }
 
-/* Fix for form inputs */
+/* Fix for form inputs (ensure they're clickable) */
 .modal-body input,
 .modal-body textarea {
   opacity: 1 !important;
   pointer-events: auto !important;
-  position: relative !important; /* Add this */
-  z-index: 5 !important; /* Add this */
+  position: relative !important;
+  z-index: 5 !important;
 }
 
+/* ========== Modal Header ========== */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -821,11 +930,13 @@ body::before {
   border-bottom: 1px solid #eee;
 }
 
+/* Modal title ("Add New Habit" or "Edit Habit") */
 .modal-header h3 {
   color: #1b4332;
   margin: 0;
 }
 
+/* Close button (X) */
 .close-modal {
   background: none;
   border: none;
@@ -834,12 +945,14 @@ body::before {
   color: #777;
 }
 
+/* ========== Modal Body ========== */
 .modal-body {
   padding: 20px;
-  max-height: 70vh;
+  max-height: 70vh; /* Scrollable if content is tall */
   overflow-y: auto;
 }
 
+/* ========== Modal Footer ========== */
 .modal-footer {
   padding: 15px 20px;
   border-top: 1px solid #eee;
@@ -848,7 +961,7 @@ body::before {
   gap: 10px;
 }
 
-/* Make both cancel and save buttons match */
+/* Cancel and Save buttons (matching style) */
 .modal-footer .cancel-btn,
 .modal-footer .save-btn {
   background: transparent;
@@ -861,6 +974,7 @@ body::before {
   cursor: pointer;
 }
 
+/* Button hover: green fill */
 .modal-footer .cancel-btn:hover,
 .modal-footer .cancel-btn:focus,
 .modal-footer .save-btn:hover,
@@ -869,11 +983,12 @@ body::before {
   color: #ffffff;
 }
 
-/* Form styling */
+/* ========== Modal Form Styling ========== */
 .form-group {
   margin-bottom: 20px;
 }
 
+/* Form labels */
 .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -881,6 +996,7 @@ body::before {
   color: #1b4332;
 }
 
+/* Text inputs and text areas */
 .form-group input,
 .form-group textarea {
   width: 100%;
@@ -891,18 +1007,21 @@ body::before {
   font-size: 14px;
 }
 
+/* Description textarea */
 .form-group textarea {
   min-height: 80px;
-  resize: vertical;
+  resize: vertical; /* Allow vertical resizing only */
 }
 
-/* Frequency buttons */
+/* ========== Frequency Selection Buttons ========== */
+/* Daily, Weekdays, Weekends, Custom buttons */
 .frequency-options {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
+/* Individual frequency button */
 .freq-btn {
   background: #f5f5f5;
   border: 1px solid #ddd;
@@ -912,19 +1031,22 @@ body::before {
   transition: all 0.2s ease;
 }
 
+/* Active frequency button (dark green) */
 .freq-btn.active {
   background: #1b4332;
   color: white;
   border-color: #1b4332;
 }
 
-/* Custom days */
+/* ========== Custom Days Checkboxes ========== */
+/* Shown only when "Custom" frequency is selected */
 .day-checkboxes {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
+/* Day label wrapper */
 .day-checkboxes label {
   display: flex;
   align-items: center;
@@ -933,7 +1055,7 @@ body::before {
   user-select: none;
 }
 
-/* Custom checkbox animation for day selection */
+/* Hide native checkbox (using custom styling) */
 .day-checkboxes input[type="checkbox"] {
   opacity: 0;
   position: absolute;
@@ -941,12 +1063,14 @@ body::before {
   height: 0;
 }
 
+/* Custom checkbox positioning */
 .day-checkboxes label {
   position: relative;
   padding-left: 28px;
   cursor: pointer;
 }
 
+/* Custom checkbox square (::before pseudo-element) */
 .day-checkboxes label::before {
   content: "";
   position: absolute;
@@ -962,6 +1086,7 @@ body::before {
   background-color: transparent;
 }
 
+/* Checked state: transform into checkmark */
 .day-checkboxes input[type="checkbox"]:checked + label::before,
 .day-checkboxes label:has(input[type="checkbox"]:checked)::before {
   transform: translateY(-50%) rotate(45deg);
@@ -973,17 +1098,20 @@ body::before {
   border-radius: 0;
 }
 
+/* Hover effect: subtle shadow */
 .day-checkboxes label:hover::before {
   box-shadow: 0 0 4px rgba(45, 106, 79, 0.3);
 }
 
-/* Icon selector */
+/* ========== Icon Selector ========== */
+/* Grid of habit icons (loaded from habit-icons-config.js) */
 .icon-selector {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
+/* Individual icon option */
 .icon-option {
   width: 50px;
   height: 50px;
@@ -997,23 +1125,27 @@ body::before {
   transition: all 0.2s ease;
 }
 
+/* Icon hover effect */
 .icon-option:hover {
-  background: #edf4f0;
+  background: #edf4f0; /* Light green */
 }
 
+/* Selected icon (highlighted border) */
 .icon-option.active {
   border-color: #1b4332;
   background: rgba(27, 67, 50, 0.1);
 }
 
+/* Icon image sizing */
 .icon-option img {
   width: 24px;
   height: 24px;
 }
 
-/* Button styles */
+/* ========== Other Modal Buttons ========== */
+/* Delete button (red, shown only in edit mode) */
 .btn-danger {
-  background: #e76f51;
+  background: #e76f51; /* Coral red */
   color: white;
   border: none;
   border-radius: 8px;
@@ -1022,17 +1154,19 @@ body::before {
   transition: background 0.2s;
 }
 
+/* Delete button hover */
 .btn-danger:hover {
-  background: #d65c3e;
+  background: #d65c3e; /* Darker red */
 }
 
+/* Utility: hide elements */
 .hidden {
   display: none;
 }
 
-/* Button in the Add Habit card */
+/* "Open Habit Modal" button in Add Habit card */
 .open-habit-modal {
-  background: #1b4332;
+  background: #1b4332; /* Dark green */
   color: white;
   border: none;
   border-radius: 8px;
@@ -1043,22 +1177,30 @@ body::before {
   margin-top: 10px;
 }
 
+/* Hover: lighter green with lift effect */
 .open-habit-modal:hover {
   background: #2d6a4f;
   transform: translateY(-2px);
 }
 
-/* =========================================================
-   RESPONSIVE (Consolidated Media Queries)
-   ========================================================= */
+/* Hover: lighter green with lift effect */
+.open-habit-modal:hover {
+  background: #2d6a4f;
+  transform: translateY(-2px);
+}
 
-/* EXTRA SMALL PHONES (<375px) */
+/* ==================== RESPONSIVE DESIGN ==================== */
+/* Mobile-first adaptive layouts for different screen sizes */
+
+/* ========== EXTRA SMALL PHONES (<375px) ========== */
 @media (max-width: 374px) {
+  /* Tighter card spacing */
   .dashboard-grid .card {
     width: 92%;
     padding: 20px 18px;
   }
 
+  /* Compact habit items */
   .habit-item {
     padding: 12px;
   }
@@ -1067,6 +1209,7 @@ body::before {
     font-size: 0.9rem;
   }
 
+  /* Stack action buttons horizontally */
   .habit-actions {
     justify-content: space-between;
     width: 100%;
@@ -1080,18 +1223,21 @@ body::before {
   }
 }
 
-/* SMALL SCREENS (phones < 600px) */
+/* ========== SMALL SCREENS (Phones <600px) ========== */
 @media (max-width: 599px) {
+  /* Stack layout vertically */
   body {
     flex-direction: column;
     align-items: center;
   }
 
+  /* Remove sidebar offset */
   .main-content {
     margin-left: 0;
     padding: 25px 20px;
   }
 
+  /* Center header */
   .dashboard-header {
     flex-direction: column;
     text-align: center;
@@ -1101,6 +1247,7 @@ body::before {
     font-size: 1.4rem;
   }
 
+  /* Switch to single column grid */
   .dashboard-grid {
     display: flex;
     flex-direction: column;
@@ -1110,6 +1257,7 @@ body::before {
     max-width: 420px;
   }
 
+  /* Full-width cards */
   .dashboard-grid .card {
     width: 94%;
     max-width: 380px;
@@ -1118,19 +1266,21 @@ body::before {
     border-radius: 16px;
   }
 
+  /* Show hamburger menu */
   .menu-toggle {
     display: block;
   }
 
+  /* Adjust header text for menu button */
   .header-text {
     text-align: center;
     margin-left: 40px;
   }
 }
 
-/* SMALL SCREENS HABIT ITEMS (phones < 500px) */
+/* ========== SMALL SCREENS HABIT ITEMS (Phones <500px) ========== */
 @media (max-width: 500px) {
-  /* Filter buttons more compact on mobile */
+  /* Compact filter buttons */
   .habit-filters {
     gap: 6px;
   }
@@ -1140,15 +1290,15 @@ body::before {
     font-size: 0.8rem;
   }
 
-  /* Restructure habit item for small screens */
+  /* Restructure habit items for narrow screens */
   #habit-list .habit-item {
-    flex-direction: column;
+    flex-direction: column; /* Stack vertically */
     padding: 14px;
     align-items: flex-start;
     gap: 10px;
   }
 
-  /* Top row: checkbox, icon, and text */
+  /* Top row: checkbox and text */
   #habit-list .habit-left {
     display: flex;
     align-items: center;
@@ -1156,18 +1306,17 @@ body::before {
     gap: 10px;
   }
 
-  /* Checkbox stays on the left */
   #habit-list .checkbox-container {
     flex-shrink: 0;
     margin-right: 0;
   }
 
-  /* Habit info takes remaining space */
   #habit-list .habit-info {
     flex: 1;
     margin-left: 0;
   }
 
+  /* Allow text to wrap */
   #habit-list .habit-name {
     white-space: normal;
     overflow: visible;
@@ -1181,7 +1330,7 @@ body::before {
     line-height: 1.3;
   }
 
-  /* Buttons appear below in a row */
+  /* Buttons appear below text */
   #habit-list .habit-actions {
     display: flex;
     flex-direction: row;
@@ -1190,7 +1339,7 @@ body::before {
     margin-left: 0;
     margin-top: 4px;
     gap: 10px;
-    padding-left: 35px; /* Align with text above (checkbox width + gap) */
+    padding-left: 35px; /* Align with text above checkbox */
   }
 
   #habit-list .habit-actions .btn-outline {
@@ -1200,8 +1349,9 @@ body::before {
   }
 }
 
-/* TABLET SCREENS (600px-1200px) - BASE LAYOUT */
+/* ========== TABLET SCREENS (600px-1200px) ========== */
 @media (min-width: 600px) and (max-width: 1200px) {
+  /* Fixed sidebar, scrollable content */
   body {
     overflow-x: hidden;
     position: relative;
@@ -1216,6 +1366,7 @@ body::before {
     z-index: 999;
   }
 
+  /* Content area offset for sidebar */
   .main-content {
     position: relative;
     margin-left: 0;
@@ -1232,6 +1383,7 @@ body::before {
     align-items: center;
   }
 
+  /* Single column grid for tablets */
   .dashboard-grid {
     display: flex;
     flex-direction: column;
@@ -1241,6 +1393,7 @@ body::before {
     margin: 0 auto;
   }
 
+  /* Full-width cards */
   .dashboard-grid .card {
     width: 100%;
     max-width: 100%;
@@ -1249,21 +1402,24 @@ body::before {
     overflow: hidden;
   }
 
+  /* Hide menu toggle on tablets */
   .menu-toggle {
     display: none;
   }
 }
 
-/* LAPTOP SCREENS (901px-1440px) - CENTERED WITH MAX-WIDTH */
+/* ========== LAPTOP SCREENS (901px-1440px) ========== */
+/* Centered layout with max-width constraint */
 @media (min-width: 901px) and (max-width: 1440px) {
   .main-content {
-    margin-left: 250px;
+    margin-left: 250px; /* Sidebar width */
     padding: 40px 40px !important;
     width: calc(100% - 250px) !important;
     max-width: calc(100vw - 250px) !important;
     box-sizing: border-box !important;
   }
 
+  /* Center content with max-width */
   .dashboard-header {
     width: 100% !important;
     max-width: 1200px !important;
@@ -1279,7 +1435,8 @@ body::before {
   }
 }
 
-/* LARGE DESKTOP SCREENS (> 1440px) - FULL WIDTH LAYOUT */
+/* ========== LARGE DESKTOP SCREENS (>1440px) ========== */
+/* Full-width layout for wide monitors */
 @media (min-width: 1441px) {
   .main-content {
     margin-left: 250px !important;
@@ -1290,18 +1447,21 @@ body::before {
     box-sizing: border-box !important;
   }
 
+  /* Full-width header */
   .dashboard-header {
     width: 100% !important;
     max-width: none !important;
     margin: 0 0 25px 0 !important;
   }
 
+  /* Full-width grid */
   .dashboard-grid {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
   }
 
+  /* Full-width cards */
   .dashboard-grid .card {
     width: 100% !important;
     max-width: none !important;
@@ -1310,14 +1470,14 @@ body::before {
   }
 }
 
-/* =========================================================
-   CHECKBOX STYLING - Original style
-   ========================================================= */
+/* ==================== CHECKBOX STYLING (Original) ==================== */
+/* Alternative checkbox style (used in some contexts) */
 .checkbox-wrapper {
   position: relative;
   display: inline-block;
 }
 
+/* Hidden native checkbox */
 .habit-check {
   position: absolute;
   opacity: 0;
@@ -1326,6 +1486,7 @@ body::before {
   width: 0;
 }
 
+/* Custom checkbox square */
 .checkbox-wrapper label {
   display: inline-block;
   width: 24px;
@@ -1337,14 +1498,17 @@ body::before {
   transition: all 0.2s ease;
 }
 
+/* Hover effect */
 .checkbox-wrapper label:hover {
   background-color: rgba(45, 106, 79, 0.1);
 }
 
+/* Checked state: green background */
 .habit-check:checked + label {
   background-color: #2d6a4f;
 }
 
+/* Checkmark symbol when checked */
 .habit-check:checked + label::after {
   content: "✓";
   position: absolute;
@@ -1355,28 +1519,30 @@ body::before {
   transform: translate(-50%, -50%);
 }
 
-/* Fix for persistent scrollbar - already set in base body styles above */
+/* ==================== UTILITY FIXES ==================== */
+/* Additional fixes for overflow and layout issues */
 
-/* Dashboard container to prevent overflow */
+/* Dashboard container overflow prevention */
 .dashboard-container {
   width: 100%;
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  overflow-x: hidden;
 }
 
-/* Fix for oversized chart */
+/* Chart.js container height constraint */
 .chart-container {
-  height: 200px !important; /* Force fixed height */
+  height: 200px !important;
   max-height: 200px !important;
   width: 100%;
   position: relative;
   overflow: hidden;
 }
 
+/* Ensure chart doesn't exceed container */
 #progressChart {
   max-height: 200px !important;
 }
 
-/* Fix parent container constraints */
+/* Prevent chart parent from growing */
 .progress-wrapper {
   height: auto !important;
   flex-grow: 0 !important;

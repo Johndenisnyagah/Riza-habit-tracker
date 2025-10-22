@@ -2,10 +2,40 @@
 <html lang="en">
   <head>
     <!-- =========================================================
-         Riza Homepage
-         - Landing page introducing the brand and app purpose
-         - Designed to match the dashboard and sign-in pages
-         - Includes fade-up animation and responsive design
+         RIZA HABIT TRACKER | HOMEPAGE (LANDING PAGE)
+         
+         Purpose: 
+         - First impression landing page for new visitors
+         - Introduces brand identity and core value proposition
+         - Provides clear call-to-action for user onboarding
+         
+         Page Features:
+         - Hero section with tagline and description
+         - Navigation with login/signup access
+         - Staged fade-up animations for smooth entrance
+         - Responsive design (mobile-first approach)
+         - SEO optimized meta tags
+         
+         Design Elements:
+         - Background image with fixed attachment
+         - Playfair Display for elegant italics
+         - Poppins for clean modern body text
+         - Green color palette (#1b4332 primary)
+         - Smooth button hover effects
+         
+         User Flow:
+         1. User lands on homepage
+         2. Reads value proposition
+         3. Clicks "Get Started" or navigation links
+         4. Redirected to signin_signup.html
+         
+         Dependencies:
+         - homepageStyle.css (styling)
+         - Google Fonts (Playfair Display, Poppins)
+         - ../assets/logo.png (brand logo)
+         - ../assets/background.png (hero background)
+         
+         Author: John Denis Kirungia Nyagah
          ========================================================= -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +47,12 @@
     <link rel="icon" href="../assets/favicon.ico" type="image/x-icon" />
     <title>Riza | Mindful Habit Tracker</title>
 
-    <!-- Fonts -->
+    <!-- =========================================================
+         EXTERNAL FONTS
+         Google Fonts: Playfair Display (elegant serif for emphasis)
+                       Poppins (modern sans-serif for body text)
+         Preconnect: Improves font loading performance
+         ========================================================= -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,25 +60,55 @@
       rel="stylesheet"
     />
 
-    <!-- Stylesheet -->
+    <!-- =========================================================
+         STYLESHEET
+         Homepage specific styles (layout, animations, responsive)
+         ========================================================= -->
     <link rel="stylesheet" href="homepageStyle.css" />
   </head>
 
   <body>
     <!-- =========================================================
-         HEADER / NAVBAR
-         Contains brand logo and navigation links
+         NAVIGATION HEADER
+         Purpose: Brand identity and authentication access
+         
+         Components:
+         - Logo and brand name (Riza)
+         - Sign in link (opens login form)
+         - Sign up link (opens signup form)
+         
+         Features:
+         - Fixed top position with fade-in animation
+         - Links use ?mode parameter to open correct form
+         - Responsive layout (stacks on mobile)
+         
+         Navigation Flow:
+         - Sign in → signin_signup.html?mode=login
+         - Sign up → signin_signup.html?mode=signup
          ========================================================= -->
     <header class="navbar">
+      <!-- =========================================================
+           LOGO SECTION
+           Brand identity (logo image + "Riza" text)
+           ========================================================= -->
       <div class="logo-container">
-        <!-- Local brand logo -->
         <img src="../assets/logo.png" alt="Riza logo" class="logo" />
         <h2>Riza</h2>
       </div>
 
-      <!-- Navigation -->
+      <!-- =========================================================
+           AUTHENTICATION NAVIGATION
+           Links to login and signup forms
+           
+           URL Parameters:
+           - ?mode=login → Opens login card
+           - ?mode=signup → Opens signup card
+           
+           Styles:
+           - Sign in: Default button style (white bg, green border)
+           - Sign up: Inverted style (green bg, white text)
+           ========================================================= -->
       <nav class="nav-links">
-        <!-- Mode query ensures correct form opens -->
         <a href="../login/signin_signup.html?mode=login" class="signin"
           >Sign in</a
         >
@@ -54,21 +119,74 @@
     </header>
 
     <!-- =========================================================
-         HERO SECTION
-         Central tagline + brief intro text + call to action
+         HERO SECTION (Main Content)
+         Purpose: Value proposition and call-to-action
+         
+         Components:
+         - H1: Main tagline with italic emphasis
+         - P: Brief description of app purpose
+         - CTA Button: "Get Started" link to signup
+         
+         Animation:
+         - fade-up: Base animation class (opacity + translateY)
+         - delay-1: 0.3s delay for paragraph
+         - delay-2: 0.6s delay for button
+         
+         Typography:
+         - H1: Large bold with Playfair Display for "Consistent Habits"
+         - P: Smaller readable text with max-width constraint
+         
+         Accessibility:
+         - aria-label: Describes section purpose
+         - Semantic HTML: <section>, <h1>, <p>
          ========================================================= -->
     <section class="hero" aria-label="Introduction">
       <div class="hero-text">
+        <!-- =========================================================
+             MAIN HEADLINE
+             Tagline emphasizing consistency and gradual growth
+             
+             Design:
+             - "Consistent Habits" in italic serif (Playfair Display)
+             - Line break for readability on mobile
+             - Large font size (2.8rem desktop, scales down mobile)
+             
+             Animation: fade-up (appears from below with opacity)
+             ========================================================= -->
         <h1 class="fade-up">
           Grow Strong with<br />
           <em>Consistent Habits</em> One Day at a Time
         </h1>
+
+        <!-- =========================================================
+             DESCRIPTION TEXT
+             Brief explanation of app's core value
+             
+             Features:
+             - Max-width: 550px (readable line length)
+             - Centered alignment
+             - Delayed fade-up animation (0.3s)
+             ========================================================= -->
         <p class="fade-up delay-1">
           Riza helps you build better routines through mindfulness, focus, and
           simplicity.
         </p>
 
-        <!-- CTA button leading to login/signup -->
+        <!-- =========================================================
+             CALL-TO-ACTION BUTTON
+             Primary conversion button
+             
+             Destination: signin_signup.html (default to signup mode)
+             
+             Interaction:
+             - Hover: Lifts up with shadow (translateY + box-shadow)
+             - Active: Presses down slightly
+             - Focus: Visible outline for accessibility
+             
+             Animation: fade-up with 0.6s delay (appears last)
+             
+             Style: Matches navigation buttons (white bg, green border)
+             ========================================================= -->
         <a
           href="../login/signin_signup.html"
           class="simple-btn fade-up delay-2"
@@ -80,7 +198,11 @@
 
     <!-- =========================================================
          FOOTER
-         Copyright and additional links
+         Purpose: Copyright and branding
+         
+         Content: Copyright notice and tagline
+         Position: Bottom of page with padding
+         Style: Small text, semi-transparent, centered
          ========================================================= -->
     <footer>
       <p>© 2025 Riza. Build better habits, one day at a time.</p>

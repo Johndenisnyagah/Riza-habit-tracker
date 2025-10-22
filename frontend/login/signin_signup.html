@@ -1,44 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- =========================================================
+       RIZA HABIT TRACKER | SIGN IN / SIGN UP PAGE
+       
+       Purpose: User authentication interface (login and registration)
+       
+       Features:
+       - Animated glassmorphic card design
+       - Smooth slide transition between login/signup forms
+       - Floating underline input fields
+       - Real-time form validation
+       - Password confirmation matching
+       - Animated blob background effect
+       
+       Data Flow:
+       - User credentials sent to MongoDB via backend API
+       - JWT token returned and stored on successful authentication
+       - Redirects to dashboard after login/signup
+       
+       Dependencies:
+       - signin_signup.css (Page-specific styles)
+       - signin-signup.js (Form handling and validation)
+       - api.js (Backend API communication)
+       
+   Author: John Denis Kirungia Nyagah
+       ========================================================= -->
   <head>
-    <!-- =========================================================
-         Riza Sign In / Sign Up Page
-         - Glassmorphic card with animated blob
-         - Floating underline inputs
-         - Smooth slide transition between cards
-         ========================================================= -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Riza | Sign In / Sign Up</title>
+
+    <!-- ==================== STYLESHEETS ==================== -->
+    <!-- Authentication Page Specific Styles -->
     <link rel="stylesheet" href="signin_signup.css" />
   </head>
 
   <body>
+    <!-- =========================================================
+         MAIN CONTAINER
+         Purpose: Wrapper for authentication cards
+         Layout: Centered container with fixed dimensions
+         ========================================================= -->
     <div class="container">
-      <!-- ===================== LOGIN CARD ===================== -->
+      <!-- ===================================================
+           LOGIN CARD
+           Purpose: User login form
+           State: Active by default (visible on page load)
+           Contains:
+           - Email input field
+           - Password input field
+           - Submit button
+           - Link to switch to signup form
+           =================================================== -->
       <div class="card active" id="login-card" role="region" aria-live="polite">
+        <!-- Frosted Glass Background Layer -->
         <div class="bg"></div>
+
+        <!-- Animated Blob Background Effect -->
         <div class="blob"></div>
 
+        <!-- Card Content -->
         <div class="card-content">
+          <!-- Logo -->
           <img src="../assets/logo.png" alt="Riza Logo" class="logo" />
+
+          <!-- Header -->
           <h2>Welcome Back</h2>
           <p>Log in to continue your journey</p>
 
+          <!-- Login Form
+               Submission handled by signin-signup.js
+               Prevented from default submission with onsubmit -->
           <form onsubmit="return false;">
+            <!-- Email Input Field
+                 Floating label animates on focus/input -->
             <div class="input-box">
               <input type="email" id="login-email" required />
               <label for="login-email">Email</label>
             </div>
 
+            <!-- Password Input Field
+                 Floating label animates on focus/input -->
             <div class="input-box">
               <input type="password" id="login-password" required />
               <label for="login-password">Password</label>
             </div>
 
+            <!-- Submit Button
+                 Text changes to "Logging in..." during submission -->
             <button type="submit" class="btn">Log In</button>
           </form>
 
+          <!-- Switch to Signup Link
+               Triggers card slide animation to signup form -->
           <p class="switch-text">
             Don't have an account?
             <a href="#" id="go-signup">Sign Up</a>
@@ -46,35 +100,80 @@
         </div>
       </div>
 
-      <!-- ===================== SIGNUP CARD ===================== -->
+      <!-- ===================================================
+           SIGNUP CARD
+           Purpose: New user registration form
+           State: Hidden by default (slides in on demand)
+           Contains:
+           - Full name input field
+           - Email input field
+           - Password input field
+           - Confirm password input field
+           - Submit button
+           - Link to switch to login form
+           Validation:
+           - Password minimum 6 characters
+           - Password and confirm password must match
+           - Email must be unique (checked by backend)
+           =================================================== -->
       <div class="card" id="signup-card" role="region" aria-live="polite">
+        <!-- Frosted Glass Background Layer -->
         <div class="bg"></div>
+
+        <!-- Animated Blob Background Effect -->
         <div class="blob"></div>
 
+        <!-- Card Content -->
         <div class="card-content">
+          <!-- Logo -->
           <img src="../assets/logo.png" alt="Riza Logo" class="logo" />
+
+          <!-- Header -->
           <h2>Create Account</h2>
           <p>Join Riza and grow every day</p>
 
+          <!-- Signup Form
+               Submission handled by signin-signup.js
+               Prevented from default submission with onsubmit -->
           <form onsubmit="return false;">
+            <!-- Full Name Input Field
+                 Floating label animates on focus/input -->
+            <div class="input-box">
+              <input type="text" id="signup-name" required />
+              <label for="signup-name">Full Name</label>
+            </div>
+
+            <!-- Email Input Field
+                 Floating label animates on focus/input
+                 Must be unique (validated by backend) -->
             <div class="input-box">
               <input type="email" id="signup-email" required />
               <label for="signup-email">Email</label>
             </div>
 
+            <!-- Password Input Field
+                 Floating label animates on focus/input
+                 Minimum 6 characters required -->
             <div class="input-box">
               <input type="password" id="signup-password" required />
               <label for="signup-password">Password</label>
             </div>
 
+            <!-- Confirm Password Input Field
+                 Floating label animates on focus/input
+                 Must match password field -->
             <div class="input-box">
               <input type="password" id="confirm-password" required />
               <label for="confirm-password">Confirm Password</label>
             </div>
 
+            <!-- Submit Button
+                 Text changes to "Creating account..." during submission -->
             <button type="submit" class="btn">Sign Up</button>
           </form>
 
+          <!-- Switch to Login Link
+               Triggers card slide animation to login form -->
           <p class="switch-text">
             Already have an account?
             <a href="#" id="go-login">Log In</a>
@@ -83,13 +182,26 @@
       </div>
     </div>
 
-    <!-- ==================== FOOTER ==================== -->
+    <!-- =========================================================
+         FOOTER
+         Purpose: Copyright and branding information
+         ========================================================= -->
     <footer>
       <p>© 2025 Riza. Build better habits, one day at a time.</p>
     </footer>
 
-    <!-- ==================== SCRIPTS ==================== -->
-    <!-- Login/signup card switching and validation -->
-    <script src="signin-signup.js"></script>
+    <!-- =========================================================
+         JAVASCRIPT MODULES
+         ========================================================= -->
+    <!-- Authentication Script (ES6 Module)
+         Purpose: Handles all authentication functionality:
+         - Form submission for login and signup
+         - Input validation
+         - Password matching verification
+         - API calls to backend
+         - Card switching animations
+         - Loading state management
+         - Redirect after successful authentication -->
+    <script type="module" src="signin-signup.js"></script>
   </body>
 </html>

@@ -1,10 +1,35 @@
 /* =========================================================
-   RIZA SIGN IN / SIGN UP PAGE
-   Glassmorphic animated card + floating underline inputs
-   Smooth slide transition between cards
+   RIZA HABIT TRACKER | AUTHENTICATION PAGE STYLES
+   
+   Purpose: Styling for login and signup authentication page
+   
+   Design Features:
+   - Glassmorphic card design with frosted background
+   - Animated blob effect for visual interest
+   - Floating underline input fields
+   - Smooth slide transitions between forms
+   - Responsive layout for all screen sizes
+   
+   Animation Effects:
+   - Card slide in/out transitions (600ms)
+   - Blob floating animation (6s loop)
+   - Input label floating on focus
+   - Button hover lift effect
+   - Page fade-in on load
+   
+   Color Palette:
+   - Primary: #1b4332 (dark green)
+   - Secondary: #2d6a4f (medium green)
+   - Accent: #b7e4c7 (light green)
+   - Blob: #00fa70 (bright green)
+   - Background: White with blur effect
+   
+   Author: John Denis Kirungia Nyagah
    ========================================================= */
 
-/* ==================== RESET ==================== */
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +37,10 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* ==================== BODY ==================== */
+/* =========================================================
+   BODY & BACKGROUND
+   Purpose: Full-screen centered layout with background image
+   ========================================================= */
 body {
   min-height: 100vh;
   display: flex;
@@ -24,17 +52,33 @@ body {
   overflow: hidden;
 }
 
-/* ==================== CONTAINER ==================== */
+/* =========================================================
+   MAIN CONTAINER
+   Purpose: Fixed-size wrapper for authentication cards
+   Features:
+   - Fixed dimensions (350x560px)
+   - Fade-in animation on page load
+   - Positioned relative for absolute card stacking
+   ========================================================= */
 .container {
   position: relative;
   width: 350px;
   height: 560px;
   animation: fadeInSmooth 0.8s ease forwards;
-  opacity: 0; /* Fades in on page load */
+  opacity: 0; /* Initial state for fade-in animation */
 }
 
 /* =========================================================
-   CARD (Glassmorphic Container)
+   CARD COMPONENT (Glassmorphic Container)
+   Purpose: Authentication form container with glass effect
+   States:
+   - Default: Hidden (opacity: 0, scaled down)
+   - Active: Visible (opacity: 1, full scale)
+   Features:
+   - Absolute positioning for stacking
+   - Rounded corners (16px)
+   - Soft shadows for depth
+   - Smooth transitions (600ms)
    ========================================================= */
 .card {
   position: absolute;
@@ -50,13 +94,22 @@ body {
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
+/* Active card state - visible and full size */
 .card.active {
   opacity: 1;
   transform: scale(1);
-  z-index: 10;
+  z-index: 10; /* Bring to front */
 }
 
-/* ==================== Frosted Background ==================== */
+/* =========================================================
+   FROSTED GLASS BACKGROUND LAYER
+   Purpose: Creates glassmorphism effect
+   Features:
+   - White background with transparency
+   - Backdrop blur for frosted glass effect
+   - Inset from card edges (5px)
+   - White outline for definition
+   ========================================================= */
 .bg {
   position: absolute;
   top: 5px;
@@ -70,7 +123,16 @@ body {
   outline: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-/* ==================== Blob Animation Layer ==================== */
+/* =========================================================
+   ANIMATED BLOB BACKGROUND
+   Purpose: Decorative animated element
+   Features:
+   - Circular shape (180x180px)
+   - Bright green color (#00fa70)
+   - Blur effect for soft appearance
+   - Bouncing animation (6s infinite loop)
+   - Positioned behind content (z-index: 1)
+   ========================================================= */
 .blob {
   position: absolute;
   z-index: 1;
@@ -85,7 +147,12 @@ body {
   animation: blob-bounce 6s infinite ease-in-out;
 }
 
-/* ==================== Card Content ==================== */
+/* =========================================================
+   CARD CONTENT CONTAINER
+   Purpose: Wrapper for form elements
+   Layout: Centered with padding
+   z-index: 3 (above bg and blob)
+   ========================================================= */
 .card-content {
   position: relative;
   z-index: 3;
@@ -94,264 +161,360 @@ body {
 }
 
 /* =========================================================
-   HEADINGS & TEXT
+   HEADINGS & TEXT STYLES
+   Purpose: Typography for authentication cards
    ========================================================= */
+
+/* Logo image - brand identity */
 .logo {
   width: 60px;
   margin-bottom: 10px;
 }
 
+/* Card title (Login/Sign Up) */
 h2 {
   font-weight: 600;
   margin-bottom: 10px;
-  color: #1b4332;
+  color: #1b4332; /* Primary dark green */
 }
 
+/* Subtitle text */
 p {
   font-size: 0.9rem;
   margin-bottom: 25px;
-  opacity: 0.9;
+  opacity: 0.9; /* Slightly transparent for hierarchy */
 }
 
 /* =========================================================
-   INPUTS (Floating Underline)
+   FLOATING UNDERLINE INPUT FIELDS
+   Purpose: Modern material design inspired inputs
+   Features:
+   - Transparent background
+   - Underline border (bottom only)
+   - Floating label on focus/filled
+   - Smooth transitions (0.3s)
    ========================================================= */
+
+/* Input field wrapper */
 .input-box {
-  position: relative;
+  position: relative; /* For absolute positioned label */
   width: 100%;
-  margin-bottom: 25px;
+  margin-bottom: 25px; /* Spacing between inputs */
 }
 
+/* Input field styling */
 .input-box input {
   width: 100%;
-  border: none;
-  border-bottom: 2px solid #1b4332;
-  background: transparent;
-  outline: none;
+  border: none; /* No top/left/right borders */
+  border-bottom: 2px solid #1b4332; /* Underline only */
+  background: transparent; /* Glass effect visible */
+  outline: none; /* Remove default focus outline */
   font-size: 1rem;
   color: #1b4332;
-  padding: 10px 5px 6px;
-  transition: all 0.3s ease;
+  padding: 10px 5px 6px; /* Space for floating label */
+  transition: all 0.3s ease; /* Smooth border/shadow changes */
 }
 
+/* Floating label - initially positioned inside input */
 .input-box label {
   position: absolute;
   left: 5px;
-  top: 10px;
+  top: 10px; /* Inside input field */
   color: #1b4332;
   font-size: 0.95rem;
-  pointer-events: none;
-  transition: 0.3s ease all;
-}
-
-/* Input focus and filled effects */
-.input-box input:focus,
-.input-box input:valid {
-  border-bottom-color: #2d6a4f;
-  box-shadow: 0 1px 0 0 #b7e4c7;
-}
-
-.input-box input:focus + label,
-.input-box input:valid + label {
-  top: -12px;
-  left: 0;
-  font-size: 0.8rem;
-  color: #2d6a4f;
-  letter-spacing: 0.5px;
+  pointer-events: none; /* Click passes through to input */
+  transition: 0.3s ease all; /* Smooth float animation */
 }
 
 /* =========================================================
-   BUTTONS
+   INPUT STATES
+   Purpose: Visual feedback for user interaction
+   ========================================================= */
+
+/* Focus state - user is typing */
+/* Valid state - input has content */
+.input-box input:focus,
+.input-box input:valid {
+  border-bottom-color: #2d6a4f; /* Darker green */
+  box-shadow: 0 1px 0 0 #b7e4c7; /* Light green glow */
+}
+
+/* Floating label animation - moves up and shrinks */
+.input-box input:focus + label,
+.input-box input:valid + label {
+  top: -12px; /* Float above input */
+  left: 0;
+  font-size: 0.8rem; /* Smaller text */
+  color: #2d6a4f; /* Accent color */
+  letter-spacing: 0.5px; /* Slightly spaced */
+}
+
+/* =========================================================
+   SUBMIT BUTTON
+   Purpose: Primary action button for form submission
+   States:
+   - Default: Dark green background
+   - Hover: Lighter green with lift effect
+   - Focus: Visible outline for accessibility
+   Features:
+   - Full width
+   - Rounded corners (30px)
+   - Smooth transitions (0.3s)
+   - Lift on hover (-3px translateY)
    ========================================================= */
 .btn {
-  background: #1b4332;
-  color: #fff;
+  background: #1b4332; /* Primary dark green */
+  color: #fff; /* White text */
   border: none;
-  border-radius: 30px;
+  border-radius: 30px; /* Pill shape */
   padding: 10px;
   font-weight: 600;
   width: 100%;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* Smooth hover effect */
 }
 
+/* Hover state - lifts and changes color */
 .btn:hover {
-  background: #2d6a4f;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #2d6a4f; /* Lighter green */
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
 
 /* =========================================================
-   SWITCH TEXT (Login ↔ Signup)
+   SWITCH TEXT (Toggle between Login/Signup)
+   Purpose: Link to switch between authentication modes
+   Features:
+   - Small font size (0.85rem)
+   - Underline on hover
+   - Bold link text
    ========================================================= */
 .switch-text {
   margin-top: 15px;
   font-size: 0.85rem;
-  color: #333;
+  color: #333; /* Dark gray */
 }
 
+/* Link styling */
 .switch-text a {
-  color: #1b4332;
-  text-decoration: none;
-  font-weight: 600;
+  color: #1b4332; /* Primary color */
+  text-decoration: none; /* No underline by default */
+  font-weight: 600; /* Bold emphasis */
 }
 
+/* Hover state - underline appears */
 .switch-text a:hover {
   text-decoration: underline;
 }
 
 /* =========================================================
-   FOCUS STATES (for accessibility - match dashboard)
+   ACCESSIBILITY - FOCUS STATES
+   Purpose: Visible focus indicators for keyboard navigation
+   Standards: WCAG 2.1 AA compliance
+   Features:
+   - 3px outline for visibility
+   - 3px offset for clarity
+   - Matches color scheme
    ========================================================= */
+
+/* Focus state for buttons and links */
 .btn:focus,
 a:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18);
-  outline-offset: 3px;
+  outline: 3px solid rgba(45, 106, 79, 0.18); /* Subtle green outline */
+  outline-offset: 3px; /* Space from element */
 }
 
-/* Update the focus state for inputs only */
+/* Input focus - special handling (no outline, use underline) */
 .input-box input:focus {
-  outline: none; /* Remove the default outline */
-  border-bottom-color: #2d6a4f;
-  box-shadow: 0 1px 0 0 #b7e4c7;
+  outline: none; /* Remove default outline */
+  border-bottom-color: #2d6a4f; /* Green underline */
+  box-shadow: 0 1px 0 0 #b7e4c7; /* Light green glow */
 }
 
 /* High contrast focus for keyboard navigation */
 a:focus-visible {
-  outline: 3px solid #2d6a4f;
+  outline: 3px solid #2d6a4f; /* Stronger outline for keyboard users */
   outline-offset: 3px;
 }
 
 /* =========================================================
-   ANIMATIONS
+   ANIMATIONS & KEYFRAMES
+   Purpose: Smooth transitions and visual effects
    ========================================================= */
 
-/* Blob movement */
+/* =========================================================
+   BLOB FLOATING ANIMATION
+   Purpose: Decorative background movement
+   Duration: 6 seconds
+   Loop: Infinite
+   Path: Circular motion around center
+   ========================================================= */
 @keyframes blob-bounce {
   0%,
   100% {
+    /* Top-left position */
     transform: translate(-100%, -100%) translate3d(0, 0, 0);
   }
   25% {
+    /* Top-right position */
     transform: translate(-100%, -100%) translate3d(100%, 0, 0);
   }
   50% {
+    /* Bottom-right position */
     transform: translate(-100%, -100%) translate3d(100%, 100%, 0);
   }
   75% {
+    /* Bottom-left position */
     transform: translate(-100%, -100%) translate3d(0, 100%, 0);
   }
 }
 
-/* Slide transitions */
+/* =========================================================
+   CARD SLIDE TRANSITIONS
+   Purpose: Smooth card switching animations
+   Duration: 600ms (0.6s)
+   Applied by JavaScript: switchCard() function
+   ========================================================= */
+
+/* Applied when card enters from right */
 .slide-in-right {
   animation: slideInRight 0.6s ease forwards;
 }
+
+/* Applied when card enters from left */
 .slide-in-left {
   animation: slideInLeft 0.6s ease forwards;
 }
+
+/* Applied when card exits to left */
 .slide-out-left {
   animation: slideOutLeft 0.6s ease forwards;
 }
+
+/* Applied when card exits to right */
 .slide-out-right {
   animation: slideOutRight 0.6s ease forwards;
 }
 
+/* Slide in from right side (signup → login) */
 @keyframes slideInRight {
   from {
-    transform: translateX(100%) scale(0.95);
-    opacity: 0;
+    transform: translateX(100%) scale(0.95); /* Off-screen right, scaled down */
+    opacity: 0; /* Invisible */
   }
   to {
-    transform: translateX(0) scale(1);
-    opacity: 1;
+    transform: translateX(0) scale(1); /* Center position, full size */
+    opacity: 1; /* Fully visible */
   }
 }
 
+/* Slide out to left side (login → signup) */
 @keyframes slideOutLeft {
   from {
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1); /* Center position */
     opacity: 1;
   }
   to {
-    transform: translateX(-100%) scale(0.95);
-    opacity: 0;
+    transform: translateX(-100%) scale(0.95); /* Off-screen left, scaled down */
+    opacity: 0; /* Fade out */
   }
 }
 
+/* Slide in from left side (login → signup) */
 @keyframes slideInLeft {
   from {
-    transform: translateX(-100%) scale(0.95);
+    transform: translateX(-100%) scale(0.95); /* Off-screen left, scaled down */
     opacity: 0;
   }
   to {
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1); /* Center position, full size */
     opacity: 1;
   }
 }
 
+/* Slide out to right side (signup → login) */
 @keyframes slideOutRight {
   from {
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1); /* Center position */
     opacity: 1;
   }
   to {
-    transform: translateX(100%) scale(0.95);
+    transform: translateX(100%) scale(0.95); /* Off-screen right, scaled down */
     opacity: 0;
-  }
-}
-
-/* Fade-in effect on page load - renamed for consistency */
-@keyframes fadeInSmooth {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
 /* =========================================================
-   RESPONSIVE DESIGN (add to match other pages)
+   PAGE LOAD FADE-IN
+   Purpose: Smooth entrance when page loads
+   Duration: 0.8s
+   Applied to: .container element
    ========================================================= */
-
-/* EXTRA SMALL PHONES (<375px) */
-@media (max-width: 374px) {
-  .container {
-    width: 300px;
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0; /* Invisible */
+    transform: translateY(20px); /* Slightly below final position */
   }
-
-  .card-content {
-    padding: 40px 20px;
-  }
-
-  .logo {
-    width: 50px;
-  }
-
-  h2 {
-    font-size: 1.2rem;
+  to {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Final position */
   }
 }
 
-/* SMALL SCREENS (phones < 600px) */
+/* =========================================================
+   RESPONSIVE DESIGN
+   Purpose: Adapt layout for different screen sizes
+   Breakpoints:
+   - Extra Small Phones: < 375px
+   - Small Phones: < 600px
+   - Tablets: 600px - 1200px
+   - Desktop: > 1200px (default)
+   ========================================================= */
+
+/* =========================================================
+   EXTRA SMALL PHONES (< 375px)
+   Adjustments: Smaller container, tighter padding, smaller logo
+   ========================================================= */
+@media (max-width: 374px) {
+  .container {
+    width: 300px; /* Reduced from 350px */
+  }
+
+  .card-content {
+    padding: 40px 20px; /* Reduced from 50px 30px */
+  }
+
+  .logo {
+    width: 50px; /* Reduced from 60px */
+  }
+
+  h2 {
+    font-size: 1.2rem; /* Smaller title */
+  }
+}
+
+/* =========================================================
+   SMALL PHONES (< 600px)
+   Adjustments: Compact container, enhanced glass effect, smaller blob
+   ========================================================= */
 @media (max-width: 599px) {
   .container {
-    width: 320px;
+    width: 320px; /* Slightly larger than extra small */
   }
 
+  /* Enhanced background blur for readability on small screens */
   .bg {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.9); /* More opaque */
   }
 
+  /* Smaller blob animation */
   .blob {
-    width: 150px;
+    width: 150px; /* Reduced from 180px */
     height: 150px;
-    filter: blur(15px);
+    filter: blur(15px); /* Less blur for mobile performance */
   }
 
+  /* Smaller footer text */
   footer {
     font-size: 0.65rem;
     padding: 8px;
@@ -359,16 +522,25 @@ a:focus-visible {
   }
 }
 
-/* TABLET SCREENS (600px-1200px) */
+/* =========================================================
+   TABLET SCREENS (600px - 1200px)
+   Adjustments: Larger container for more comfortable viewing
+   ========================================================= */
 @media (min-width: 600px) and (max-width: 1200px) {
   .container {
-    width: 400px;
-    height: 580px;
+    width: 400px; /* Larger than mobile */
+    height: 580px; /* Slightly taller */
   }
 }
 
 /* =========================================================
    FOOTER
+   Purpose: Copyright and author attribution
+   Position: Fixed at bottom of viewport
+   Features:
+   - Centered text
+   - Semi-transparent for subtle appearance
+   - Small font size
    ========================================================= */
 footer {
   position: absolute;
@@ -378,6 +550,6 @@ footer {
   text-align: center;
   padding: 10px;
   font-size: 0.7rem;
-  color: #1b4332;
-  opacity: 0.8;
+  color: #1b4332; /* Primary color */
+  opacity: 0.8; /* Slightly transparent */
 }

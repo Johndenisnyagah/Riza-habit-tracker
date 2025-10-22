@@ -1,11 +1,51 @@
 /* =========================================================
-   Riza Homepage Styles
-   - Gradient background + center-aligned hero section
-   - Smooth entrance animations
-   - Responsive navbar + typography
+   RIZA HABIT TRACKER | HOMEPAGE STYLES
+   
+   Purpose: Styling for landing page (first visitor impression)
+   
+   Design Features:
+   - Fixed background image with parallax effect
+   - Center-aligned hero section with staged animations
+   - Responsive navigation bar with authentication links
+   - Modern button design with lift hover effect
+   - Mobile-first responsive breakpoints
+   
+   Layout Structure:
+   - Navbar: Fixed top with logo and auth links
+   - Hero: Centered content with tagline, description, CTA
+   - Footer: Bottom copyright with subtle opacity
+   
+   Animation System:
+   - fadeIn: Navbar entrance (1.2s)
+   - fadeUp: Hero content staged entrance (1s base)
+   - Delay classes: .delay-1 (0.3s), .delay-2 (0.6s)
+   
+   Color Palette:
+   - Primary: #1b4332 (dark green)
+   - Secondary: #2d6a4f (medium green)
+   - Accent: #95d5b2 (light green)
+   - Hover: #d8f3dc (soft green background)
+   - Text: #333 (dark gray)
+   
+   Typography:
+   - Headings: Poppins (600 weight)
+   - Body: Poppins (400 weight)
+   - Emphasis: Playfair Display (italic serif)
+   
+   Responsive Breakpoints:
+   - Extra Small: < 375px (very small phones)
+   - Small: < 600px (phones)
+   - Tablet: 600px - 1200px
+   - Desktop: > 1200px
+   - Large: > 1440px
+   
+   Author: John Denis Kirungia Nyagah
    ========================================================= */
 
-/* === RESET === */
+/* =========================================================
+   GLOBAL RESET
+   Purpose: Remove default browser spacing and set box-sizing
+   ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,21 +53,51 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* === BODY === */
+/* =========================================================
+   BODY & MAIN LAYOUT
+   Purpose: Full-screen flex container with background
+   
+   Layout:
+   - Flexbox column (navbar → hero → footer)
+   - Space-between for footer at bottom
+   - Min-height: 100vh (full viewport)
+   
+   Background:
+   - Image: ../assets/background.png
+   - Fixed attachment: Creates subtle parallax effect
+   - Cover size: Fills entire viewport
+   - Center position: Image stays centered
+   
+   Performance:
+   - overflow-x: hidden (prevents horizontal scroll)
+   - overflow-x: hidden (prevents horizontal scroll)
+   ========================================================= */
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: url("../assets/background.png") center center / cover no-repeat;
-  background-attachment: fixed; /* optional: creates subtle parallax effect */
+  background-attachment: fixed; /* Parallax effect on scroll */
   overflow-x: hidden;
 }
 
 /* =========================================================
-   NAVBAR
-   - Fixed header with logo and Sign in / Sign up links
-   - Fades in gently on page load
+   NAVIGATION BAR
+   Purpose: Top header with branding and authentication links
+   
+   Layout:
+   - Flexbox: Space-between for logo (left) and links (right)
+   - Padding: 25px 60px (generous spacing)
+   - Full width with alignment
+   
+   Animation:
+   - fadeIn: Drops down gently on page load (1.2s)
+   - will-change: transform (performance optimization)
+   
+   Components:
+   - Logo container: Image + text
+   - Nav links: Sign in + Sign up buttons
    ========================================================= */
 .navbar {
   display: flex;
@@ -38,30 +108,42 @@ body {
   will-change: transform; /* Performance optimization */
 }
 
+/* =========================================================
+   LOGO SECTION
+   Purpose: Brand identity (logo image + "Riza" text)
+   
+   Layout: Horizontal flex with 10px gap
+   Alignment: Vertically centered
+   ========================================================= */
 .logo-container {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Logo image sizing */
 .logo {
   width: 45px;
 }
 
+/* Brand name text */
 .logo-container h2 {
   font-size: 1.3rem;
   font-weight: 600;
 }
 
+/* =========================================================
+   NAVIGATION LINKS CONTAINER
+   Purpose: Wrapper for authentication buttons
+   
+   Layout: Horizontal flex with 20px gap
+   Alignment: Centered vertically
+   ========================================================= */
 .nav-links {
   display: flex;
   gap: 20px;
   align-items: center;
 }
-
-/* Removed redundant nav-links a styles since they're defined in NAVBAR BUTTONS section */
-
-/* Sign up button style */
 .signup {
   background: #95d5b2;
   padding: 8px 18px;
@@ -117,32 +199,52 @@ body {
 }
 
 /* =========================================================
-    CTA BUTTON 
+   PRIMARY CTA BUTTON ("Get Started")
+   Purpose: Main conversion button in hero section
+   
+   Design:
+   - Pill shape with rounded borders (10em)
+   - White background with green border
+   - Hover: Lifts up with shadow effect
+   - Active: Presses down slightly
+   
+   States:
+   - Default: White bg, green border, no shadow
+   - Hover: Soft green bg, lifts up (-4px), shadow appears
+   - Active: Presses down (+2px), shadow disappears
+   - Focus: Green outline (accessibility)
+   
+   Transition: 0.3s ease-in-out (all properties)
+   
+   Performance:
+   - will-change: transform (animation optimization)
    ========================================================= */
 .simple-btn {
   background-color: #ffffff;
-  color: #1b4332;
-  border-radius: 10em;
+  color: #1b4332; /* Primary dark green text */
+  border-radius: 10em; /* Pill shape */
   font-size: 17px;
   font-weight: 600;
   padding: 1em 2em;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   border: 2px solid #1b4332;
-  box-shadow: 0 0 0 0 #1b4332;
+  box-shadow: 0 0 0 0 #1b4332; /* Initial shadow (hidden) */
   will-change: transform;
-  text-decoration: none;
+  text-decoration: none; /* Remove link underline */
 }
 
+/* Hover state - lifts up with shadow */
 .simple-btn:hover {
-  transform: translateY(-4px) translateX(-2px);
-  box-shadow: 2px 5px 0 0 #1b4332;
-  background-color: #d8f3dc; /* soft green background on hover */
+  transform: translateY(-4px) translateX(-2px); /* Lift effect */
+  box-shadow: 2px 5px 0 0 #1b4332; /* Shadow appears */
+  background-color: #d8f3dc; /* Soft green background */
 }
 
+/* Active state - presses down */
 .simple-btn:active {
-  transform: translateY(2px) translateX(1px);
-  box-shadow: 0 0 0 0 #1b4332;
+  transform: translateY(2px) translateX(1px); /* Press down */
+  box-shadow: 0 0 0 0 #1b4332; /* Shadow disappears */
 }
 /* =========================================================
    NAVBAR BUTTONS (Sign in / Sign up)
@@ -187,207 +289,290 @@ body {
 .nav-links .signup:hover {
   background-color: #2d6a4f;
   box-shadow: 2px 5px 0 0 #1b4332;
-  color: #ffffff;
+  color: #ffffff; /* Keep white text */
 }
 
 /* =========================================================
    FOOTER
-   - Consistent with other pages
+   Purpose: Copyright and branding information
+   
+   Position: Bottom of page
+   Layout: Centered text with padding
+   Style: Small font, semi-transparent, subtle appearance
+   
+   Content: Copyright © year, tagline
+   Color: Primary green with reduced opacity
    ========================================================= */
 footer {
   text-align: center;
   padding: 20px;
   font-size: 0.8rem;
-  color: #1b4332;
-  opacity: 0.8;
+  color: #1b4332; /* Primary color */
+  opacity: 0.8; /* Semi-transparent for subtlety */
 }
 
 /* =========================================================
-   ANIMATIONS
-   - fadeIn: Navbar drop-in
-   - fadeUp: Hero staged content
+   ANIMATIONS & KEYFRAMES
+   Purpose: Smooth entrance effects for page elements
+   ========================================================= */
+
+/* =========================================================
+   NAVBAR FADE-IN ANIMATION
+   Purpose: Gentle drop-down entrance for header
+   Duration: 1.2s
+   Applied to: .navbar
    ========================================================= */
 @keyframes fadeIn {
   from {
-    opacity: 0;
-    transform: translateY(-10px);
+    opacity: 0; /* Invisible */
+    transform: translateY(-10px); /* Slightly above final position */
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Final position */
   }
 }
 
+/* =========================================================
+   HERO FADE-UP ANIMATION
+   Purpose: Staged entrance for hero content
+   Duration: 1s
+   Applied to: .fade-up class elements
+   
+   Usage:
+   - .fade-up (no delay) - appears first
+   - .fade-up.delay-1 (0.3s delay) - appears second
+   - .fade-up.delay-2 (0.6s delay) - appears third
+   ========================================================= */
 @keyframes fadeUp {
   from {
-    opacity: 0;
-    transform: translateY(30px);
+    opacity: 0; /* Invisible */
+    transform: translateY(30px); /* Below final position */
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Final position */
   }
 }
 
-/* Animation utility classes */
+/* =========================================================
+   ANIMATION UTILITY CLASSES
+   Purpose: Apply animations with optional delays
+   ========================================================= */
+
+/* Base fade-up animation (1s duration) */
 .fade-up {
-  opacity: 0;
+  opacity: 0; /* Start invisible */
   animation: fadeUp 1s ease forwards;
 }
 
+/* Delay class 1 (0.3s delay) - for paragraph */
 .delay-1 {
   animation-delay: 0.3s;
 }
 
+/* Delay class 2 (0.6s delay) - for CTA button */
 .delay-2 {
   animation-delay: 0.6s;
 }
 
 /* =========================================================
-   RESPONSIVE (Updated to match other pages)
-   - Proper mobile, tablet and desktop views
-   - Consistent with dashboard and other pages
+   RESPONSIVE DESIGN
+   Purpose: Adapt layout for different screen sizes
+   
+   Strategy: Mobile-first approach with scaling adjustments
+   
+   Breakpoints:
+   - Extra Small Phones: < 375px (very small devices)
+   - Small Phones: < 600px (standard mobile)
+   - Tablets: 600px - 1200px (iPad, etc.)
+   - Large Desktop: > 1440px (wide screens)
+   
+   Adjustments:
+   - Font sizes scale down for mobile
+   - Padding reduces on smaller screens
+   - Button sizes adjust for touch targets
+   - Navbar layout adapts (stacks on very small screens)
    ========================================================= */
 
-/* EXTRA SMALL PHONES (<375px) */
+/* =========================================================
+   EXTRA SMALL PHONES (< 375px)
+   Devices: iPhone SE, small Android phones
+   Adjustments: Minimal spacing, tiny buttons, compact text
+   ========================================================= */
 @media (max-width: 374px) {
+  /* Navbar: Tighter padding, smaller logo */
   .navbar {
     padding: 18px 15px;
-    flex-direction: row;
+    flex-direction: row; /* Keep horizontal layout */
     justify-content: space-between;
     gap: 5px;
   }
 
+  /* Logo: Reduced size */
   .logo {
     width: 32px;
   }
 
+  /* Brand name: Smaller text */
   .logo-container h2 {
     font-size: 1rem;
   }
 
-  /* Even smaller buttons */
+  /* Navigation: Tighter gap, smaller buttons */
   .nav-links {
     gap: 6px;
   }
 
+  /* Auth buttons: Much smaller for space */
   .nav-links a {
-    font-size: 10px; /* Removed !important */
-    padding: 0.25em 0.7em; /* Removed !important */
-    border-width: 1px; /* Removed !important */
+    font-size: 10px;
+    padding: 0.25em 0.7em;
+    border-width: 1px; /* Thinner border */
   }
 
+  /* CTA button: Smaller size */
   .simple-btn {
-    font-size: 11px; /* Removed !important */
-    padding: 0.5em 1em; /* Removed !important */
+    font-size: 11px;
+    padding: 0.5em 1em;
   }
 
-  /* Reduce hero text size */
+  /* Hero headline: Much smaller */
   .hero-text h1 {
-    font-size: 1.6rem; /* Removed !important */
+    font-size: 1.6rem;
     line-height: 1.3;
     margin-bottom: 15px;
   }
 
+  /* Hero description: Smaller text */
   .hero-text p {
-    font-size: 0.85rem; /* Removed !important */
-    max-width: 95%;
+    font-size: 0.85rem;
+    max-width: 95%; /* Almost full width */
     margin-bottom: 25px;
   }
 
+  /* Footer: Smaller text, less padding */
   footer {
     font-size: 0.7rem;
     padding: 15px;
   }
 }
 
-/* SMALL SCREENS (phones < 600px) */
+/* =========================================================
+   SMALL PHONES (< 600px)
+   Devices: iPhone 12/13/14, standard Android phones
+   Adjustments: Compact layout, readable text, touch-friendly buttons
+   ========================================================= */
 @media (max-width: 599px) {
+  /* Navbar: Reduced padding, horizontal layout */
   .navbar {
     padding: 20px 25px;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap; /* Keep on one line */
     justify-content: space-between;
   }
 
+  /* Logo container: No bottom margin */
   .logo-container {
     margin-bottom: 0;
   }
 
+  /* Brand name: Slightly smaller */
   .logo-container h2 {
     font-size: 1.1rem;
   }
 
+  /* Navigation: No top margin, small gap */
   .nav-links {
     margin-top: 0;
     gap: 8px;
   }
 
+  /* Auth buttons: Small but readable */
   .nav-links a {
-    font-size: 11px; /* Removed !important */
-    padding: 0.35em 0.8em; /* Removed !important */
-    border-width: 1px; /* Removed !important */
+    font-size: 11px;
+    padding: 0.35em 0.8em;
+    border-width: 1px;
   }
 
+  /* CTA button: Compact but touch-friendly */
   .simple-btn {
     padding: 0.7em 1.4em;
     font-size: 14px;
   }
 
-  /* Reduce hero text size */
+  /* Hero headline: Smaller for mobile */
   .hero-text h1 {
     font-size: 1.9rem;
     line-height: 1.35;
     margin-bottom: 15px;
   }
 
+  /* Hero description: Readable mobile size */
   .hero-text p {
     font-size: 0.9rem;
     max-width: 95%;
     margin-bottom: 30px;
   }
 
+  /* Footer: Compact */
   footer {
     font-size: 0.7rem;
     padding: 15px;
   }
 }
 
-/* TABLET SCREENS (600px-1200px) */
+/* =========================================================
+   TABLET SCREENS (600px - 1200px)
+   Devices: iPad, Android tablets, small laptops
+   Adjustments: Moderate sizing, comfortable viewing
+   ========================================================= */
 @media (min-width: 600px) and (max-width: 1200px) {
+  /* Navbar: Moderate padding */
   .navbar {
     padding: 25px 40px;
   }
 
+  /* Hero headline: Medium size */
   .hero-text h1 {
     font-size: 2.4rem;
     max-width: 90%;
     margin: 0 auto 20px;
   }
 
+  /* Hero description: Constrained width */
   .hero-text p {
     max-width: 70%;
   }
 
+  /* CTA button: Standard size */
   .simple-btn {
     font-size: 16px;
   }
 }
 
-/* LARGE SCREENS */
+/* =========================================================
+   LARGE DESKTOP SCREENS (> 1440px)
+   Devices: Wide monitors, ultra-wide displays
+   Adjustments: Larger text, more padding, max-width constraints
+   ========================================================= */
 @media (min-width: 1440px) {
+  /* Navbar: Generous padding */
   .navbar {
     padding: 30px 80px;
   }
 
+  /* Hero: Constrained max-width for readability */
   .hero {
     max-width: 1400px;
     margin: 0 auto;
   }
 
+  /* Hero headline: Large dramatic size */
   .hero-text h1 {
     font-size: 3.2rem;
   }
 
+  /* Hero description: Larger text, wider constraint */
   .hero-text p {
     font-size: 1.1rem;
     max-width: 650px;
@@ -395,9 +580,19 @@ footer {
   }
 }
 
-/* FOCUS STATES (for accessibility) */
+/* =========================================================
+   ACCESSIBILITY - FOCUS STATES
+   Purpose: Visible focus indicators for keyboard navigation
+   Standards: WCAG 2.1 AA compliance
+   
+   Applied to:
+   - Navigation links (.nav-links a)
+   - CTA button (.simple-btn)
+   
+   Style: Subtle green outline with offset
+   ========================================================= */
 .nav-links a:focus,
 .simple-btn:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18);
-  outline-offset: 3px;
+  outline: 3px solid rgba(45, 106, 79, 0.18); /* Subtle green outline */
+  outline-offset: 3px; /* Space from element */
 }

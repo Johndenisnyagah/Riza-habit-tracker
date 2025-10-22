@@ -1,30 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
   <!-- =========================================================
-       Riza | Profile Page
-       - Manage user information and settings
-       - Account management options
+       RIZA HABIT TRACKER | PROFILE PAGE
+       
+       Purpose: User profile management interface
+       
+       Features:
+       - Display user information (name, email, join date)
+       - Profile picture upload with validation
+       - Edit profile name
+       - Change password functionality
+       - Account logout
+       - Account deletion with confirmation
+       
+       Data Flow:
+       - All data loaded from MongoDB via backend API
+       - Real-time updates to profile changes
+       - Secure authentication required
+       
+       Dependencies:
+       - sidebar.css (Navigation sidebar styles)
+       - profile.css (Page-specific styles)
+       - main.js (Sidebar loader)
+       - profile.js (Profile functionality)
+       - api.js (Backend API communication)
+       
+       Author: John Denis Kirungia Nyagah
        ========================================================= -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Riza | Profile</title>
 
-    <!-- Sidebar Styles -->
+    <!-- ==================== STYLESHEETS ==================== -->
+    <!-- Sidebar Navigation Styles -->
     <link rel="stylesheet" href="../components/sidebar.css" />
-    <!-- Profile Page styles -->
+    <!-- Profile Page Specific Styles -->
     <link rel="stylesheet" href="profile.css" />
   </head>
 
   <body>
+    <!-- =========================================================
+         MAIN CONTAINER
+         Purpose: Wrapper for sidebar and main content
+         Layout: Flexbox horizontal layout
+         ========================================================= -->
     <div class="profile-container">
-      <!-- ========================= SIDEBAR ========================= -->
+      <!-- =========================================================
+           SIDEBAR NAVIGATION
+           Purpose: App navigation menu
+           Note: Loaded dynamically by main.js
+           ========================================================= -->
       <div id="sidebar-container"></div>
 
-      <!-- ========================= MAIN ========================= -->
+      <!-- =========================================================
+           MAIN CONTENT AREA
+           Purpose: Profile page content
+           ========================================================= -->
       <main class="main-content">
-        <!-- ===================== HEADER ===================== -->
+        <!-- =====================================================
+             HEADER SECTION
+             Purpose: Page title and description
+             ===================================================== -->
         <header class="profile-header">
+          <!-- Mobile Menu Toggle Button -->
           <button class="menu-toggle" aria-label="Open menu">
             <img
               src="/frontend/assets/icons/menu.svg"
@@ -32,29 +71,53 @@
               class="menu-icon"
             />
           </button>
+
+          <!-- Header Text -->
           <div class="header-text">
             <h1>Your Profile</h1>
             <p>Manage your personal information and account settings</p>
           </div>
         </header>
 
+        <!-- =====================================================
+             PROFILE GRID
+             Purpose: Two-column layout for profile and settings
+             Layout: 1.2fr (profile card) | 1fr (settings)
+             ===================================================== -->
         <div class="profile-grid">
-          <!-- ===================== USER PROFILE ===================== -->
+          <!-- ===================================================
+               USER PROFILE CARD
+               Purpose: Display and edit user information
+               Contains:
+               - Profile picture with upload button
+               - User name (editable)
+               - User email (read-only)
+               - Join date
+               - Edit profile button
+               =================================================== -->
           <section class="profile-card card anim-1">
+            <!-- Profile Picture Container -->
             <div class="profile-pic-wrapper">
+              <!-- Upload Picture Button (Overlay) -->
               <button
                 class="edit-icon"
                 id="uploadPicBtn"
                 title="Upload Picture"
+                aria-label="Upload profile picture"
               >
                 <img src="../assets/icons/edit.svg" aria-hidden="true" />
               </button>
+
+              <!-- Hidden File Input (Triggered by upload button) -->
               <input
                 type="file"
                 id="profilePicInput"
                 accept="image/*"
                 style="display: none"
+                aria-label="Select profile picture file"
               />
+
+              <!-- Profile Picture Image -->
               <img
                 src="../assets/profile-placeholder.jpg"
                 alt="Profile Picture"
@@ -62,28 +125,58 @@
                 id="profilePic"
               />
             </div>
+
+            <!-- User Information -->
             <div class="info">
-              <h2 id="user-name">John N.</h2>
-              <p id="user-email">john@example.com</p>
-              <p class="joined-date">Joined: March 2025</p>
+              <!-- User Name (Populated by JavaScript) -->
+              <h2 id="user-name"></h2>
+
+              <!-- User Email (Populated by JavaScript) -->
+              <p id="user-email"></p>
+
+              <!-- Join Date (Populated by JavaScript) -->
+              <p class="joined-date"></p>
+
+              <!-- Edit Profile Button -->
               <button class="edit-btn">Edit Profile</button>
             </div>
           </section>
 
-          <!-- ===================== SETTINGS ===================== -->
+          <!-- ===================================================
+               SETTINGS PANEL
+               Purpose: Account management actions
+               Contains:
+               - Change password
+               - Logout
+               - Delete account
+               =================================================== -->
           <div class="settings-side">
-            <section class="card settings-card anim-2">
+            <section class="card anim-2">
+              <!-- Change Password Setting -->
               <div class="setting-row">
                 <p>Change Password</p>
-                <button class="setting-btn">Update</button>
+                <button class="setting-btn" aria-label="Change password">
+                  Update
+                </button>
               </div>
+
+              <!-- Logout Setting -->
               <div class="setting-row">
                 <p>Log Out</p>
-                <button class="setting-btn logout-btn">Log Out</button>
+                <button class="setting-btn logout-btn" aria-label="Log out">
+                  Log Out
+                </button>
               </div>
+
+              <!-- Delete Account Setting -->
               <div class="setting-row">
                 <p>Delete Account</p>
-                <button class="setting-btn delete-btn">Delete</button>
+                <button
+                  class="setting-btn delete-btn"
+                  aria-label="Delete account"
+                >
+                  Delete
+                </button>
               </div>
             </section>
           </div>
@@ -91,10 +184,21 @@
       </main>
     </div>
 
-    <!-- ==================== SCRIPTS ==================== -->
-    <!-- Main application script (sidebar loader, etc) -->
+    <!-- =========================================================
+         JAVASCRIPT MODULES
+         ========================================================= -->
+    <!-- Main Application Script
+         Purpose: Loads sidebar navigation dynamically -->
     <script src="/frontend/main.js"></script>
-    <!-- Profile page specific functionality -->
+
+    <!-- Profile Page Script (ES6 Module)
+         Purpose: Handles all profile page functionality:
+         - Load user profile from API
+         - Profile picture upload
+         - Edit profile name
+         - Change password
+         - Logout
+         - Delete account -->
     <script type="module" src="/frontend/profile/profile.js"></script>
   </body>
 </html>

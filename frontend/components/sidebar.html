@@ -1,37 +1,81 @@
 <!-- =========================================================
-     Riza Sidebar Component
-     Shared by all pages 
-     Dynamically loaded via main.js
+     RIZA HABIT TRACKER | SIDEBAR COMPONENT
+     
+     Purpose: Shared navigation sidebar component loaded 
+              dynamically across all application pages
+     
+     Features:
+     - Logo and brand identity display
+     - Navigation links (Home, Habits, Progress, Profile)
+     - Active page highlighting (managed by main.js)
+     - Logout functionality
+     - Responsive behavior via sidebar.css
+     - SVG icons with CSS filter coloring
+     
+     Integration:
+     - Loaded dynamically by main.js on page load
+     - Injected into #sidebar-container div on each page
+     - Active link detection based on current URL
+     - Mobile toggle managed by main.js
+     
+     Navigation Structure:
+     - Home → ../dashboard/dashboard.html
+     - Habits → ../habits/habits.html
+     - Progress → ../progress/progress.html
+     - Profile → ../profile/profile.html
+     - Logout → ../homepage/homepage.html (clears localStorage)
+     
+     Styling: sidebar.css
+     JavaScript: main.js (handles loading and active state)
+
+     John Denis Kirungia Nyagah
      ========================================================= -->
+
+<!-- Sidebar stylesheet (component-specific styles) -->
 <link rel="stylesheet" href="/frontend/components/sidebar.css" />
 
 <aside class="sidebar">
-  <!-- === Logo Section === -->
+  <!-- ==================== LOGO SECTION ==================== -->
+  <!-- Brand identity with logo image and app name -->
   <div class="logo-container">
+    <!-- Riza app logo (50px on desktop, 45px on tablet) -->
     <img src="../assets/logo.png" alt="Riza logo" class="logo" />
+    <!-- App name: "Riza" -->
     <h2>Riza</h2>
   </div>
 
-  <!-- === Navigation Links === -->
+  <!-- ==================== NAVIGATION LINKS ==================== -->
+  <!-- Main navigation menu -->
+  <!-- Active class added by main.js based on current page URL -->
   <nav class="nav-links">
+    <!-- Home / Dashboard link -->
     <a href="../dashboard/dashboard.html">
-      <img src="../assets/icons/home.svg" class="icon" /> Home
+      <img src="../assets/icons/home.svg" class="icon" alt="" /> Home
     </a>
+
+    <!-- Habits management link -->
     <a href="../habits/habits.html">
-      <img src="../assets/icons/clipboard-list.svg" class="icon" /> Habits
+      <img src="../assets/icons/clipboard-list.svg" class="icon" alt="" />
+      Habits
     </a>
+
+    <!-- Progress tracking link -->
     <a href="../progress/progress.html">
-      <img src="../assets/icons/line-chart.svg" class="icon" /> Progress
+      <img src="../assets/icons/line-chart.svg" class="icon" alt="" /> Progress
     </a>
+
+    <!-- User profile link -->
     <a href="../profile/profile.html">
-      <img src="../assets/icons/user.svg" class="icon" /> Profile
+      <img src="../assets/icons/user.svg" class="icon" alt="" /> Profile
     </a>
   </nav>
 
-  <!-- === Logout Link === -->
+  <!-- ==================== LOGOUT SECTION ==================== -->
+  <!-- Logout link (pushed to bottom by flexbox space-between) -->
+  <!-- Returns user to homepage and clears authentication data -->
   <div class="logout">
     <a href="../homepage/homepage.html">
-      <img src="../assets/icons/log-out.svg" class="icon" /> Logout
+      <img src="../assets/icons/log-out.svg" class="icon" alt="" /> Logout
     </a>
   </div>
 </aside>

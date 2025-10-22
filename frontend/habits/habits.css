@@ -1,11 +1,55 @@
 /* =========================================================
-   Riza Habits Stylesheet - Updated v2.0
-   - Layout: 3 top equal-height cards + 1 full-width list card
-   - Responsive, animated, dashboard-consistent
-   - Last updated: Now with full dashboard styling
+   RIZA HABIT TRACKER | HABITS PAGE STYLES
+   
+   Purpose: Styling for habits management page
+   
+   Page Layout:
+   - Top Row: 3 equal-height cards (Daily Overview, Stats, Streak)
+   - Bottom: Full-width habit list with filters
+   - Sidebar: Left navigation (250px, imported)
+   
+   Design Features:
+   - Card-based layout with hover effects
+   - Animated flame for streak visualization
+   - Custom scrollbar for habit list
+   - Filter system with active states
+   - Modal for habit creation/editing
+   - Responsive design (mobile, tablet, desktop)
+   
+   Key Components:
+   1. Daily Overview Card (Add habit + motivation quote)
+   2. Stats Card (Total habits, logins, longest streak)
+   3. Streak Card (Animated flame with milestones)
+   4. Habit List (Scrollable with filters)
+   5. Habit Modal (Create/edit form)
+   
+   Color Palette:
+   - Primary: #1b4332 (dark green)
+   - Secondary: #2d6a4f (medium green)
+   - Accent: #f0f7f4 (light green background)
+   - Border: #c3c6ce (light gray)
+   - Text: #1b4332 (dark green)
+   - Background: #f7fdf9 (very light green)
+   
+   Animation System:
+   - fadeUp: Card entrance (1.8s)
+   - .anim-1 to .anim-4: Staggered delays
+   - Hover: Lift effect (-6px translateY)
+   
+   Responsive Breakpoints:
+   - Extra Small: < 375px
+   - Small: < 600px
+   - Tablet: 600px - 900px
+   - Laptop: 901px - 1440px
+   - Desktop: > 1440px
+
+   John Denis Kirungia Nyagah
    ========================================================= */
 
-/* === RESET & BASE === */
+/* =========================================================
+   GLOBAL RESET
+   Purpose: Remove default browser spacing and set box-sizing
+   ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,59 +57,107 @@
   font-family: "Poppins", sans-serif;
 }
 
+/* =========================================================
+   BODY & MAIN LAYOUT
+   Purpose: Full-screen flex container with background
+   
+   Layout:
+   - Flexbox for sidebar + main content
+   - Fixed background with overlay
+   - Min-height: 100vh (full viewport)
+   
+   Background:
+   - Image: ../assets/background.png
+   - Fixed attachment for parallax effect
+   - Light green overlay (rgba(255, 255, 255, 0.3))
+   
+   Colors:
+   - Text: #1b4332 (dark green)
+   - Background: #f7fdf9 (light green tint)
+   ========================================================= */
 body {
   min-height: 100vh;
   display: flex;
-  color: #1b4332;
-  line-height: 1.6;
+  color: #1b4332; /* Primary text color */
+  line-height: 1.6; /* Readable spacing */
   background: url("../assets/background.png") center center / cover no-repeat;
-  background-color: #f7fdf9;
-  background-attachment: fixed;
+  background-color: #f7fdf9; /* Fallback color */
+  background-attachment: fixed; /* Parallax effect */
   position: relative;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Soft overlay for large screens */
+/* =========================================================
+   BACKGROUND OVERLAY
+   Purpose: Soft white overlay for large screens
+   Creates subtle depth and improves text readability
+   ========================================================= */
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: 0; /* Cover entire viewport */
   background: linear-gradient(
     rgba(255, 255, 255, 0.3),
     rgba(255, 255, 255, 0.3)
   );
-  z-index: -1;
-  pointer-events: none;
+  z-index: -1; /* Behind all content */
+  pointer-events: none; /* Allow clicks through */
 }
 
-/* === DASHBOARD CONTAINER === */
+/* =========================================================
+   DASHBOARD CONTAINER
+   Purpose: Wrapper for entire page layout
+   ========================================================= */
 .dashboard-container {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* === ICONS === */
+/* =========================================================
+   ICON STYLING
+   Purpose: Consistent styling for all page icons
+   
+   Filter:
+   - Converts icons to dark green (#1b4332)
+   - Uses CSS filter for color transformation
+   
+   Usage: Applied to icons in card headers and buttons
+   ========================================================= */
 .icon {
   width: 18px;
   height: 18px;
-  margin-right: 8px;
+  margin-right: 8px; /* Space from text */
   filter: invert(22%) sepia(16%) saturate(703%) hue-rotate(91deg)
-    brightness(96%) contrast(88%);
+    brightness(96%) contrast(88%); /* Dark green color */
   opacity: 0.9;
 }
 
-/* === MAIN === */
+/* =========================================================
+   MAIN CONTENT AREA
+   Purpose: Container for all page content (excluding sidebar)
+   
+   Layout:
+   - Margin-left: 250px (sidebar width on desktop)
+   - Padding: Comfortable spacing from edges
+   - Flexbox column: Stack cards vertically
+   - Centered alignment
+   
+   Scrolling:
+   - overflow-y: auto (vertical scroll when needed)
+   - overflow-x: hidden (no horizontal scroll)
+   - Height: 100vh (full viewport for scrolling)
+   ========================================================= */
 .main-content {
-  margin-left: 250px;
+  margin-left: 250px; /* Sidebar offset */
   margin-right: 0;
-  padding: 30px 40px 30px 60px;
-  flex: 1;
+  padding: 30px 40px 30px 60px; /* Generous spacing */
+  flex: 1; /* Take remaining space */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Center cards */
   height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: auto; /* Vertical scroll */
+  overflow-x: hidden; /* No horizontal scroll */
 }
 
 /* =========================================================
