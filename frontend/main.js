@@ -35,7 +35,7 @@
    - HTML: /frontend/components/sidebar.html
    - CSS: /frontend/components/sidebar.css
    
-   Author: John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 /* =========================================================

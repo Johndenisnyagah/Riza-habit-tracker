@@ -1,10 +1,10 @@
 # Comprehensive Testing Guide - Riza Habit Tracker
 
-## 📋 Overview
+## Overview
 
 This document provides complete testing documentation for the Riza Habit Tracker application, including test cases, test data, backend integration steps, and troubleshooting guides.
 
-## 🏗️ System Architecture
+## System Architecture
 
 - **Frontend**: Vanilla JavaScript (ES6 modules)
 - **Backend**: Node.js + Express (Port 5000)
@@ -15,7 +15,7 @@ This document provides complete testing documentation for the Riza Habit Tracker
 
 ---
 
-## ✅ Pre-Testing Checklist
+## Pre-Testing Checklist
 
 ### Backend Status
 
@@ -33,7 +33,7 @@ npm start
 
 ---
 
-## 🧪 Test Data
+## Test Data
 
 ### Sample Habits (MongoDB Documents)
 
@@ -116,7 +116,7 @@ npm start
 
 ---
 
-## 🔄 Quick Integration Testing Steps
+## Quick Integration Testing Steps
 
 ### 1. Test Authentication & Profile
 
@@ -221,7 +221,7 @@ npm start
 
 ---
 
-## 📝 Detailed Test Cases
+## Detailed Test Cases
 
 ### TC-001: User Registration
 
@@ -720,7 +720,7 @@ npm start
 
 ---
 
-## 🐛 Edge Cases & Error Handling
+## Edge Cases & Error Handling
 
 ### EC-001: Invalid Input Validation
 
@@ -911,7 +911,7 @@ npm start
 
 ---
 
-## 🚨 Common Issues & Troubleshooting
+## Common Issues & Troubleshooting
 
 ### Issue 1: Backend Not Running
 
@@ -1037,7 +1037,7 @@ app.use(
 
 ---
 
-## ✅ Success Criteria
+## Success Criteria
 
 All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
@@ -1061,7 +1061,7 @@ All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
 ---
 
-## 📊 Test Coverage Summary
+## Test Coverage Summary
 
 | Component              | Test Cases | Passed | Failed |
 | ---------------------- | ---------- | ------ | ------ |
@@ -1081,7 +1081,7 @@ All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
 ---
 
-## 🎯 API Endpoints Reference
+## API Endpoints Reference
 
 ### Authentication
 
@@ -1112,7 +1112,7 @@ All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
 ---
 
-## 🚀 Future Testing Improvements
+## Future Testing Improvements
 
 1. **Automated Unit Tests**
 
@@ -1152,7 +1152,7 @@ All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
 ---
 
-## 📝 Test Execution Log
+## Test Execution Log
 
 | Date       | Tester            | Environment    | Results | Notes                            |
 | ---------- | ----------------- | -------------- | ------- | -------------------------------- |
@@ -1161,7 +1161,7 @@ All these should work **WITHOUT localStorage** (except JWT token & profile pic):
 
 ---
 
-## 🎬 Next Steps After Testing
+## Next Steps After Testing
 
 Once all tests pass:
 
@@ -1176,7 +1176,7 @@ Once all tests pass:
 ---
 
 **Last Updated**: October 22, 2025  
-**Tested By**: John Kirungia Denis Nyagah  
+**Tested By**: John Denis Nyagah  
 **Test Environment**: Chrome 120.0, Windows 11, 1920x1080  
 **Backend**: Node.js + Express + MongoDB Atlas  
 **Status**: ✅ All Tests Passing

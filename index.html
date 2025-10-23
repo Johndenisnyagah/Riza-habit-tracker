@@ -1,54 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=frontend/homepage/homepage.html">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 
+        REDIRECT FILE - Root Entry Point
+        
+        Purpose:
+        - Provides clean URL access at root level (/)
+        - Automatically redirects to homepage after 0 seconds
+        - Shows fallback message during redirect
+        - Serves as project entry point for GitHub Pages or hosting
+        
+        Usage:
+        - User visits: http://localhost:8000/
+        - Auto-redirects to: http://localhost:8000/frontend/homepage/homepage.html
+        - Meta refresh handles automatic redirect
+        - Manual link provided as fallback
+        
+        Note: This is a convenience file for better UX
+        Users can also access /frontend/login/signin_signup.html directly
+    -->
+    <meta
+      http-equiv="refresh"
+      content="0; url=frontend/homepage/homepage.html"
+    />
+
     <title>Riza - Habit Tracker</title>
+
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        a {
-            display: inline-block;
-            padding: 12px 30px;
-            background: white;
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-        a:hover {
-            transform: scale(1.05);
-        }
+      /* Fallback styling while redirect loads */
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+      a {
+        display: inline-block;
+        padding: 12px 30px;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: transform 0.2s;
+      }
+      a:hover {
+        transform: scale(1.05);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Redirect message shown briefly before auto-redirect -->
     <div class="container">
-        <h1>🎯 Riza Habit Tracker</h1>
-        <p>Redirecting to the app...</p>
-        <p>If you're not redirected automatically, <a href="frontend/homepage/homepage.html">click here</a>.</p>
+      <h1>🎯 Riza Habit Tracker</h1>
+      <p>Redirecting to the app...</p>
+
+      <!-- Fallback manual link if JavaScript is disabled or redirect fails -->
+      <p>
+        If you're not redirected automatically,
+        <a href="frontend/homepage/homepage.html">click here</a>.
+      </p>
     </div>
-</body>
+  </body>
 </html>

@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Habit Tracker Backend API",
+  "description": "Habit Tracker Backend API - Express.js REST API with MongoDB Atlas database, JWT authentication, and bcrypt password hashing. Provides endpoints for user management, habit CRUD operations, daily check-ins, and login tracking.",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -12,7 +12,10 @@
   "keywords": [
     "habit-tracker",
     "express",
-    "mongodb"
+    "mongodb",
+    "rest-api",
+    "jwt-authentication",
+    "full-stack"
   ],
   "author": "John Denis Nyagah",
   "license": "ISC",
@@ -23,5 +26,21 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.0"
+  },
+  "_comments": {
+    "type": "ES6 modules enabled - allows import/export syntax instead of require()",
+    "dependencies": {
+      "express": "Web server framework - handles HTTP requests, routing, and middleware",
+      "mongoose": "MongoDB ODM (Object Data Modeling) - connects to MongoDB Atlas and defines schemas",
+      "bcrypt": "Password hashing library - securely hashes passwords before storing (10 salt rounds)",
+      "jsonwebtoken": "JWT token generation and verification - handles user authentication",
+      "cors": "Cross-Origin Resource Sharing - allows frontend (different port) to access backend API",
+      "dotenv": "Environment variables loader - reads .env file for sensitive configuration (MONGO_URI, JWT_SECRET)"
+    },
+    "scripts": {
+      "start": "Production mode - runs server with node (use this for deployment)",
+      "dev": "Development mode - auto-restarts server on file changes (requires nodemon installed globally)",
+      "test": "Placeholder for future unit tests"
+    }
   }
 }

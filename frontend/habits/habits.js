@@ -9,7 +9,7 @@
    
    Data Source: All data fetched from MongoDB via backend API
 
-   John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 import {

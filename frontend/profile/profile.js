@@ -11,7 +11,7 @@
    
    Data Source: All user data fetched from MongoDB via backend API
    
-   Author: John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 /* =========================================================

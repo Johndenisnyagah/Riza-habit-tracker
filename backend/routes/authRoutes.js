@@ -1,3 +1,40 @@
+/**
+ * ============================================================================
+ * AUTHENTICATION ROUTES
+ * ============================================================================
+ *
+ * Purpose:
+ * - Handles all user authentication and profile management endpoints
+ * - Implements JWT-based authentication system
+ * - Provides secure user registration, login, and profile operations
+ *
+ * Routes:
+ * - POST   /api/auth/register          → Register new user account
+ * - POST   /api/auth/login             → Login and receive JWT token
+ * - GET    /api/auth/profile           → Get authenticated user profile
+ * - PUT    /api/auth/profile           → Update user profile name
+ * - PUT    /api/auth/profile-picture   → Update profile picture (base64)
+ * - PUT    /api/auth/change-password   → Change user password
+ * - DELETE /api/auth/account           → Delete user account and all data
+ * - POST   /api/auth/logout            → Logout user (server-side tracking)
+ *
+ * Security Features:
+ * - Password hashing with bcrypt (10 salt rounds)
+ * - JWT tokens for stateless authentication
+ * - Protected routes require valid JWT token
+ * - Password validation and strength requirements
+ * - Secure profile picture upload with size limits (5MB max)
+ *
+ * Dependencies:
+ * - bcrypt: Password hashing and comparison
+ * - jsonwebtoken: JWT token generation and verification
+ * - User model: MongoDB user schema
+ * - authMiddleware: JWT verification middleware
+ *
+ * Author: John Denis Nyagah
+ * ============================================================================
+ */
+
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -6,7 +43,29 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// REGISTER a new user
+// ============================================================================
+// USER REGISTRATION
+// ============================================================================
+/**
+ * POST /api/auth/register
+ *
+ * Purpose: Register a new user account
+ *
+ * Request Body:
+ * - name: string (user's full name)
+ * - email: string (unique email address)
+ * - password: string (will be hashed before storage)
+ *
+ * Response:
+ * - 201: User registered successfully
+ * - 400: Email already exists
+ * - 500: Server error
+ *
+ * Security:
+ * - Checks for duplicate email addresses
+ * - Hashes password with bcrypt (10 salt rounds)
+ * - Never stores plain text passwords
+ */
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -30,7 +89,29 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN a user
+// ============================================================================
+// USER LOGIN
+// ============================================================================
+/**
+ * POST /api/auth/login
+ *
+ * Purpose: Authenticate user and issue JWT token
+ *
+ * Request Body:
+ * - email: string (user's email address)
+ * - password: string (user's password)
+ *
+ * Response:
+ * - 200: Login successful with JWT token and user data
+ * - 400: User not found or invalid password
+ * - 500: Server error
+ *
+ * Security:
+ * - Validates user credentials
+ * - Compares hashed passwords using bcrypt
+ * - Generates JWT token valid for 1 hour
+ * - Token includes user ID and email in payload
+ */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,7 +151,26 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// A protected route (only accessible with a valid token)
+// ============================================================================
+// GET USER PROFILE
+// ============================================================================
+/**
+ * GET /api/auth/profile
+ *
+ * Purpose: Get authenticated user's profile information
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Response:
+ * - 200: User profile data
+ * - 404: User not found
+ * - 500: Server error
+ *
+ * Security:
+ * - Protected route (requires valid JWT token)
+ * - Password field excluded from response
+ * - User ID extracted from JWT token
+ */
 router.get("/profile", protect, async (req, res) => {
   try {
     console.log("Profile endpoint called, user ID:", req.user.id);
@@ -104,7 +204,29 @@ router.get("/profile", protect, async (req, res) => {
   }
 });
 
-// PUT /api/auth/profile → Update user profile (name)
+// ============================================================================
+// UPDATE USER PROFILE
+// ============================================================================
+/**
+ * PUT /api/auth/profile
+ *
+ * Purpose: Update user's profile name
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Request Body:
+ * - name: string (new user name, trimmed)
+ *
+ * Response:
+ * - 200: Profile updated successfully with updated user data
+ * - 400: Invalid name (empty or whitespace only)
+ * - 404: User not found
+ * - 500: Server error
+ *
+ * Validation:
+ * - Name must not be empty after trimming
+ * - Whitespace is automatically removed
+ */
 router.put("/profile", protect, async (req, res) => {
   try {
     const { name } = req.body;
@@ -141,7 +263,35 @@ router.put("/profile", protect, async (req, res) => {
   }
 });
 
-// PUT /api/auth/profile-picture → Update user profile picture
+// ============================================================================
+// UPDATE PROFILE PICTURE
+// ============================================================================
+/**
+ * PUT /api/auth/profile-picture
+ *
+ * Purpose: Update user's profile picture (base64 encoded image)
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Request Body:
+ * - profilePicture: string (base64 encoded image with data URI scheme)
+ *
+ * Response:
+ * - 200: Profile picture updated successfully
+ * - 400: Invalid image format or size exceeds limit
+ * - 404: User not found
+ * - 500: Server error
+ *
+ * Validation:
+ * - Must be valid base64 image (starts with "data:image/")
+ * - Maximum size: 5MB (before base64 encoding)
+ * - Calculates actual size from base64 string length
+ *
+ * Storage:
+ * - Stores base64 string directly in MongoDB
+ * - No external file storage required
+ * - Images displayed via data URI in frontend
+ */
 router.put("/profile-picture", protect, async (req, res) => {
   try {
     const { profilePicture } = req.body;
@@ -208,7 +358,32 @@ router.put("/profile-picture", protect, async (req, res) => {
   }
 });
 
-// PUT /api/auth/change-password → Change user password
+// ============================================================================
+// CHANGE PASSWORD
+// ============================================================================
+/**
+ * PUT /api/auth/change-password
+ *
+ * Purpose: Change user's password
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Request Body:
+ * - currentPassword: string (current password for verification)
+ * - newPassword: string (new password, minimum 6 characters)
+ *
+ * Response:
+ * - 200: Password updated successfully
+ * - 400: Missing fields, incorrect current password, or weak new password
+ * - 404: User not found
+ * - 500: Server error
+ *
+ * Security:
+ * - Verifies current password before allowing change
+ * - Enforces minimum password length (6 characters)
+ * - Hashes new password with bcrypt (10 salt rounds)
+ * - Never stores plain text passwords
+ */
 router.put("/change-password", protect, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -250,7 +425,31 @@ router.put("/change-password", protect, async (req, res) => {
   }
 });
 
-// DELETE /api/auth/account → Delete user account and all associated data
+// ============================================================================
+// DELETE USER ACCOUNT
+// ============================================================================
+/**
+ * DELETE /api/auth/account
+ *
+ * Purpose: Delete user account and all associated data
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Response:
+ * - 200: Account deleted successfully
+ * - 500: Server error
+ *
+ * Cascading Deletion:
+ * - Deletes all user's habits
+ * - Deletes all user's check-ins
+ * - Deletes all user's login records
+ * - Deletes the user account
+ *
+ * Security:
+ * - User ID extracted from JWT token (prevents deleting other users)
+ * - Irreversible operation (permanent data deletion)
+ * - Maintains data integrity by removing all related records
+ */
 router.delete("/account", protect, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -279,7 +478,26 @@ router.delete("/account", protect, async (req, res) => {
   }
 });
 
-// POST /api/auth/logout → Logout user (server-side tracking)
+// ============================================================================
+// USER LOGOUT
+// ============================================================================
+/**
+ * POST /api/auth/logout
+ *
+ * Purpose: Logout user (server-side tracking)
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Response:
+ * - 200: Logged out successfully
+ * - 500: Server error
+ *
+ * Note:
+ * - JWT-based authentication is stateless
+ * - Actual logout happens client-side (remove token from localStorage)
+ * - This endpoint provides server-side logging for tracking purposes
+ * - Could implement token blacklisting here for additional security
+ */
 router.post("/logout", protect, async (req, res) => {
   try {
     // In a JWT-based system, logout is typically client-side (removing token)

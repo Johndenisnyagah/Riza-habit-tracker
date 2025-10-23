@@ -45,4 +45,4 @@ This folder contains all the icons users can select when creating or editing hab
 - [Feather Icons](https://feathericons.com/) - Simply beautiful open source icons
 - [Iconoir](https://iconoir.com/) - Modern, high-quality icons
 
-**Note**: Make sure any icons you add are properly licensed for your use!
+**Note**: Make sure any icons you add are properly licensed for your use! - All icons used are from [Lucide Icons](https://lucide.dev/) made by the community and free to use.

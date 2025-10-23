@@ -21,7 +21,7 @@
    Dependencies:
    - api.js (Backend API communication functions)
    
-   Author: John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 import { loginUser, registerUser } from "../shared/api.js";

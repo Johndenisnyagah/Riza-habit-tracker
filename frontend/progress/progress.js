@@ -10,7 +10,7 @@
    
    Data Source: All data fetched from MongoDB via backend API
    
-   Author: John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 import {
@@ -628,13 +628,25 @@ async function renderCalendar() {
     for (const habit of habits) {
       const checkIns = await apiGetCheckins(habit._id);
       checkIns.forEach((checkIn) => {
-        const dateStr = new Date(checkIn.date).toISOString().split("T")[0];
+        // Extract date from MongoDB (already in UTC midnight format)
+        // Backend stores as: 2025-10-23T00:00:00.000Z
+        const dateStr = checkIn.date.split("T")[0];
         activeDays.add(dateStr);
       });
     }
 
+    // Get today's date in local timezone (YYYY-MM-DD format)
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayYear = today.getFullYear();
+    const todayMonth = String(today.getMonth() + 1).padStart(2, "0");
+    const todayDay = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${todayYear}-${todayMonth}-${todayDay}`;
+
+    const todayDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
     // Clear calendar
     const calendarDays = document.getElementById("calendarDays");
@@ -655,12 +667,15 @@ async function renderCalendar() {
       dayDiv.className = "calendar-day";
       dayDiv.textContent = day;
 
+      // Create date for this calendar day
       const currentDate = new Date(year, month, day);
-      currentDate.setHours(0, 0, 0, 0);
-      const dateStr = currentDate.toISOString().split("T")[0];
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const currentDay = String(currentDate.getDate()).padStart(2, "0");
+      const dateStr = `${currentYear}-${currentMonth}-${currentDay}`;
 
       // Check if it's today
-      if (currentDate.getTime() === today.getTime()) {
+      if (dateStr === todayStr) {
         dayDiv.classList.add("today");
       }
 
@@ -671,12 +686,15 @@ async function renderCalendar() {
         // Check if part of current streak (consecutive days)
         const yesterday = new Date(currentDate);
         yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split("T")[0];
+        const yesterdayYear = yesterday.getFullYear();
+        const yesterdayMonth = String(yesterday.getMonth() + 1).padStart(
+          2,
+          "0"
+        );
+        const yesterdayDay = String(yesterday.getDate()).padStart(2, "0");
+        const yesterdayStr = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
 
-        if (
-          activeDays.has(yesterdayStr) ||
-          currentDate.getTime() === today.getTime()
-        ) {
+        if (activeDays.has(yesterdayStr) || dateStr === todayStr) {
           dayDiv.classList.add("streak");
         }
       }

@@ -18,9 +18,9 @@
  *
  * ERROR HANDLING:
  * - All functions use try-catch blocks
- * - Console errors prefixed with  for easy testing verification TO DO
- * - Success logs prefixed with
- * - Data logs prefixed with
+ * - Console errors prefixed with ❌ for easy testing verification
+ * - Success logs prefixed with ✅
+ * - Data logs prefixed with 📊
  *
  * STORAGE STRATEGY:
  * - JWT tokens stored in localStorage under key 'token'
@@ -29,6 +29,8 @@
  *
  * BASE URL:
  * - Development: http://localhost:5000/api
+ *
+ * Author: John Denis Nyagah
  * ============================================================================
  */
 

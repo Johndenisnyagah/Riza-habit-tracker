@@ -35,7 +35,7 @@
    
    Data Source: MongoDB via backend API (replaces localStorage)
    
-   Author: John Denis Kirungia Nyagah
+   Author: John Denis Nyagah
    ========================================================= */
 
 import {

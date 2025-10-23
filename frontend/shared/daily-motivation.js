@@ -32,8 +32,8 @@
    - #motivationText (blockquote for quote text)
    - #quoteCategory (span for category badge)
    - #refreshQuote (button for manual refresh)
-   
-   Author: John Denis Kirungia Nyagah
+
+   Author: John Denis Nyagah
    ========================================================= */
 
 /* =========================================================

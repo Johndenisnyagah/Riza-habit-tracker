@@ -1,29 +1,83 @@
-# Operating System Files
-.DS_Store
-Thumbs.db
+# ============================================================================
+# RIZA HABIT TRACKER - Git Ignore File
+# ============================================================================
+# Prevents sensitive and unnecessary files from being committed to GitHub
+# ============================================================================
 
-# Editor/IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Operating System Files
+# ----------------------------------------------------------------------------
+.DS_Store          # macOS folder metadata
+Thumbs.db          # Windows thumbnail cache
+desktop.ini        # Windows folder settings
+
+# Editor/IDE Files
+# ----------------------------------------------------------------------------
+.vscode/           # VS Code settings (keep local only)
+.idea/             # JetBrains IDEs
+*.swp              # Vim swap files
+*.swo              # Vim swap files
+*~                 # Backup files
+
+# Node.js / Backend Dependencies
+# ----------------------------------------------------------------------------
+node_modules/      # NPM packages (backend/)
+package-lock.json  # Lock file (optional, can commit if needed)
+yarn.lock          # Yarn lock file
+
+# Environment Variables (CRITICAL - Contains secrets!)
+# ----------------------------------------------------------------------------
+.env               # MongoDB URI, JWT_SECRET, etc. NEVER commit this!
+.env.local
+.env.production
+.env.development
+backend/.env       # Backend-specific env file
 
 # Logs
+# ----------------------------------------------------------------------------
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log.*
 
-# Dependencies (if you add node_modules later)
-node_modules/
-
-# Environment variables
-.env
-.env.local
-
-# Build outputs (if you add a build process)
+# Build Outputs (if added later)
+# ----------------------------------------------------------------------------
 dist/
 build/
+out/
+.next/
 
-# Temporary files
+# Temporary Files
+# ----------------------------------------------------------------------------
 *.tmp
 .cache/
+.temp/
+
+# Testing Coverage (if added later)
+# ----------------------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# MongoDB Local Data (if running locally)
+# ----------------------------------------------------------------------------
+data/
+mongodb-data/
+
+# Backup Files
+# ----------------------------------------------------------------------------
+*.bak
+*.backup
+*.old
+
+# macOS
+# ----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+# ----------------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
