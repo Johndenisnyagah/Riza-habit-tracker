@@ -175,11 +175,26 @@ habit-tracker/
    - Generate a JWT secret (see `.env.example` for command)
    - Fill in the values in `.env`
 
+   **⚙️ Note**: For security reasons, the actual `.env` file is not included in the repository.
+   Use the provided `.env.example` file as a template and add your own credentials.
+
+   **🔐 Reviewer Access**:
+   Please use your own MongoDB Atlas free cluster for testing, as credentials are not public.
+   Connection string format:
+
+   ```
+   mongodb+srv://<username>:<password>@cluster.mongodb.net/riza-habit-tracker
+   ```
+
 4. **Start the Backend Server**
 
    ```bash
    npm start
    ```
+
+   **💻 Deployment Note**:
+   This application is designed to run locally for evaluation.
+   It does not require online hosting—all features run via the local backend and MongoDB Atlas connection.
 
 5. **Open the Application**
    - Open `index.html` in your browser
