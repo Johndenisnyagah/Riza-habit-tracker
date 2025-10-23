@@ -514,7 +514,7 @@ http://localhost:5000/api
 ```javascript
 // POST /api/auth/register
 {
-  "username": "john_doe",
+  "username": "john_denis",
   "email": "john@example.com",
   "password": "securePassword123"
 }
