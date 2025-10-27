@@ -4,10 +4,10 @@
  * ============================================================================
  *
  * Purpose:
- * - Centralized habit management system used across all pages
- * - Provides unified CRUD operations for habits (Create, Read, Update, Delete)
- * - Integrates with backend API for persistent data storage
- * - Manages UI rendering and user interactions for habit operations
+ * - To centralize habit management system used across all pages
+ * - To provide unified CRUD operations for habits (Create, Read, Update, Delete)
+ * - To integrate with backend API for persistent data storage
+ * - To manage UI rendering and user interactions for habit operations
  *
  * Key Features:
  * - API integration with caching for performance optimization
@@ -31,7 +31,7 @@
  * 6. Callback execution (if provided)
  *
  * Architecture Migration:
- * - Previously: localStorage (client-side only)
+ * - Previously: localStorage (client-side only purposed for testing the user interface first)
  * - Currently: Backend API + MongoDB (full-stack with cloud sync)
  * - Benefits: Multi-user support, data persistence, security
  *

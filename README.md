@@ -1,6 +1,6 @@
 # Riza - Habit Tracker Web Application
 
-A modern, full-stack habit tracking web application built with Node.js, Express, MongoDB, and vanilla JavaScript. Track your daily habits, visualize your progress, and build consistency with secure cloud-based data storage.
+This is a modern, full-stack habit tracking web application built with Node.js, Express, MongoDB, and vanilla JavaScript. Track your daily habits, visualize your progress, and build consistency with secure, cloud-based data storage.
 
 ## Table of Contents
 
@@ -175,10 +175,10 @@ habit-tracker/
    - Generate a JWT secret (see `.env.example` for command)
    - Fill in the values in `.env`
 
-   **⚙️ Note**: For security reasons, the actual `.env` file is not included in the repository.
+   **Note**: For security reasons, the actual `.env` file is not included in the repository.
    Use the provided `.env.example` file as a template and add your own credentials.
 
-   **🔐 Reviewer Access**:
+   **Reviewer Access**:
    Please use your own MongoDB Atlas free cluster for testing, as credentials are not public.
    Connection string format:
 
@@ -192,7 +192,7 @@ habit-tracker/
    npm start
    ```
 
-   **💻 Deployment Note**:
+   **Deployment Note**:
    This application is designed to run locally for evaluation.
    It does not require online hosting—all features run via the local backend and MongoDB Atlas connection.
 

@@ -7,7 +7,7 @@
  * All HTTP requests to the Express backend flow through this centralized API layer.
  *
  * @module api
- * @author John Denis Kirungia Nyagah
+ * @author John Denis Nyagah
  *
  * API ENDPOINTS:
  * - Authentication: register, login, logout, changePassword, deleteAccount

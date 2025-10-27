@@ -2,10 +2,11 @@
    RIZA HABIT TRACKER | DAILY MOTIVATION QUOTES
    
    Purpose: 
-   - Provides daily inspirational quotes for habit building
-   - Consistent quote system across multiple pages
-   - Day-based rotation with manual refresh option
-   
+   - To provide daily inspirational quotes for habit building
+   - To ensure a consistent quote system across multiple pages
+   - To implement day-based rotation with manual refresh option
+   - To integrate seamlessly with existing frontend architecture
+
    Used By:
    - dashboard.html (motivation card)
    - habits.html (daily overview card)

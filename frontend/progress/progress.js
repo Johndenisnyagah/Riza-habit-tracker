@@ -1,7 +1,7 @@
 /* =========================================================
    PROGRESS PAGE SCRIPT
-   
-   Purpose: Manages progress tracking page including:
+
+   Purpose: To manage progress tracking page including:
    - Weekly and monthly chart visualizations
    - Statistics (total logins, longest streak, current streak)
    - Activity calendar with check-in history

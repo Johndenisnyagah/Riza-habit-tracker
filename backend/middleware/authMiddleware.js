@@ -4,13 +4,13 @@
  * ============================================================================
  *
  * Purpose:
- * - Protects routes that require user authentication
+ * - To protect routes that require user authentication
  * - Verifies JWT tokens from client requests
  * - Extracts user information from valid tokens
  * - Blocks unauthorized access to protected endpoints
  *
  * How It Works:
- * 1. Client sends request with JWT token in Authorization header
+ * 1. The client sends request with JWT token in Authorization header
  * 2. Middleware extracts token from "Bearer <token>" format
  * 3. Verifies token signature using JWT_SECRET from .env
  * 4. Decodes token payload (contains user id and email)
@@ -23,14 +23,14 @@
  * - Token generated during login with 1-hour expiration
  *
  * Protected Routes:
- * - GET  /api/auth/profile (get user profile)
- * - PUT  /api/auth/profile (update profile)
+ * - GET  /api/auth/profile (gets user profile)
+ * - PUT  /api/auth/profile (updates user profile)
  * - All /api/habits routes (CRUD operations)
  * - All /api/checkins routes (check-in management)
  * - All /api/logins routes (login tracking)
  *
  * Security Features:
- * - Validates token signature (prevents tampering)
+ * - Validates the token's signature (it prevents tampering)
  * - Checks token expiration (1 hour from creation)
  * - Requires exact "Bearer " prefix format
  * - Logs errors for debugging
@@ -67,7 +67,7 @@ import jwt from "jsonwebtoken";
 /**
  * Protect Middleware Function
  *
- * Purpose: Verify JWT token and authenticate user
+ * Purpose: Verify the JWT token and authenticate the user
  *
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object

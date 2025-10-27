@@ -1,7 +1,7 @@
 /* =========================================================
    PROFILE PAGE SCRIPT
-   
-   Purpose: Manages user profile page functionality including:
+
+   Purpose: To manage user profile page functionality including:
    - Loading and displaying user information from MongoDB
    - Profile editing (name update)
    - Profile picture upload with validation
@@ -10,7 +10,7 @@
    - Account deletion with confirmation
    
    Data Source: All user data fetched from MongoDB via backend API
-   
+  
    Author: John Denis Nyagah
    ========================================================= */
 

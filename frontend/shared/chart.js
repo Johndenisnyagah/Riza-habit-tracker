@@ -33,7 +33,7 @@
    - Chart.js library (must be loaded globally)
    - api.js (getHabits, getCheckins functions)
    
-   Data Source: MongoDB via backend API (replaces localStorage)
+   Data Source: MongoDB via backend API (replaces localStorage initially used for UI testing)
    
    Author: John Denis Nyagah
    ========================================================= */

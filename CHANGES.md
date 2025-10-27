@@ -12,7 +12,7 @@ The implementation evolved significantly from the initial conception, with impro
 
 ### Original Conception: Two Separate Systems
 
-- **V1 System**: Basic habit tracking with localStorage
+- **V1 System**: Basic habit tracking with localStorage for local testing purposes
 - **V2 System**: Full authentication with backend (Express + MongoDB)
 - **Problem**: Two disconnected systems causing confusion
 
@@ -167,7 +167,7 @@ frontend/
     └── profile.js
 
   assets/
-    └── habit-icons/          [NEW] - 30+ custom icons
+    └── habit-icons/          [NEW] - 15+ custom icons
         ├── habit-icons-config.js
         └── README.md
 

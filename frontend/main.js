@@ -2,11 +2,11 @@
    RIZA HABIT TRACKER | MAIN APPLICATION LOADER
    
    Purpose: 
-   - Dynamically loads shared sidebar navigation component
-   - Handles mobile sidebar toggle and overlay functionality
-   - Highlights current active page in navigation
-   - Manages responsive behavior (mobile ≤768px)
-   
+   - To dynamically load the shared sidebar navigation component
+   - To handle mobile sidebar toggle and overlay functionality
+   - To highlight the current active page in navigation
+   - To manage responsive behavior (mobile ≤768px)
+
    Used By: All authenticated pages
    - dashboard.html
    - habits.html
