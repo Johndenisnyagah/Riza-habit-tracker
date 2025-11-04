@@ -4,10 +4,18 @@
 
 This guide helps you set up and run the backend server locally for testing and grading purposes.
 
+### CREDENTIALS PROVIDED
+
+All credentials needed to run this backend are provided on the **presentation title slide**:
+
+- MongoDB Atlas connection string
+- JWT secret key
+
+Simply copy these credentials from the presentation and paste them into your `.env` file.
+
 ### Prerequisites
 
 - **Node.js v18+** installed ([Download here](https://nodejs.org/))
-- **MongoDB Atlas account** (free tier - cloud database)
 
 ### Setup Steps
 
@@ -30,31 +38,11 @@ This guide helps you set up and run the backend server locally for testing and g
    copy .env.example .env
    ```
 
-   Then edit `.env` and fill in your MongoDB Atlas credentials:
+   Then edit `.env` and **paste the credentials from the presentation title slide**.
 
-   **Set up MongoDB Atlas (Free Cloud Database):**
+   **Note**: No need to create your own MongoDB Atlas account for grading purposes. All credentials are provided in the presentation.
 
-   1. Sign up at https://www.mongodb.com/cloud/atlas/register
-   2. Create a new project
-   3. Build a cluster (select FREE tier - M0)
-   4. Create a database user (username + password)
-   5. Add your IP to whitelist (or use 0.0.0.0/0 for testing)
-   6. Click "Connect" → "Connect your application"
-   7. Copy the connection string
-   8. Replace `MONGO_URI` in `.env` with your connection string
-   9. Replace `<password>` with your database user password
-
-3. **Generate JWT Secret**
-
-   Generate a secure JWT secret:
-
-   ```bash
-   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-   ```
-
-   Copy the output and replace `JWT_SECRET` in `.env`
-
-4. **Start the Server**
+3. **Start the Server**
 
    ```bash
    npm start
@@ -67,7 +55,7 @@ This guide helps you set up and run the backend server locally for testing and g
    🚀 Server running on port 5000
    ```
 
-5. **Verify Backend is Running**
+4. **Verify Backend is Running**
 
    Open your browser and visit:
 
@@ -77,7 +65,7 @@ This guide helps you set up and run the backend server locally for testing and g
 
    You should see: "Riza Habit Tracker API is running"
 
-6. **Test the Frontend**
+5. **Test the Frontend**
 
    Open the main project folder in a browser:
 
@@ -215,5 +203,4 @@ backend/
 For issues or questions about the backend:
 
 - Check TESTING.md in project root
-- Review ARCHITECTURE.md for system design
 - See main README.md for complete setup guide
