@@ -20,14 +20,14 @@ This is a modern, full-stack habit tracking web application built with Node.js, 
 ### Core Functionality
 
 - **User Authentication**: Secure registration and login with JWT tokens
-- **Habit Management**: Create, edit, and delete habits with custom icons and colors
+- **Habit Management**: Create, edit, and delete habits with custom icons
 - **Progress Tracking**: Visual charts showing daily, weekly, and monthly completion rates
 - **Streak System**: Track current and longest streaks with dynamic flame animations
 - **Activity Calendar**: View your habit completion history at a glance
 - **Daily Motivation**: Inspirational quotes to keep you motivated
 - **Statistics Dashboard**: Comprehensive stats including success rates and best days
 - **User Profile**: Manage your account, upload profile pictures, and change password
-- **Cloud Sync**: All data stored securely in MongoDB Atlas, accessible from any device
+- **Cloud Sync**: All data is stored securely in MongoDB Atlas, accessible from any device
 
 ### Technical Features
 
