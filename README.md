@@ -9,7 +9,6 @@ This is a modern, full-stack habit tracking web application built with Node.js, 
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Architecture](#architecture)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
 - [Development Notes](#development-notes)
@@ -126,8 +125,6 @@ habit-tracker/
 │   │   ├── checkinRoutes.js    # Check-in endpoints
 │   │   └── loginRoutes.js      # Login tracking endpoints
 │   └── package.json            # Backend dependencies
-├── Architecture/
-│   └── ARCHITECTURE.md         # System architecture documentation
 ├── TESTING.md                  # Comprehensive testing guide
 ├── .env                        # Environment variables (not in repo)
 └── README.md
@@ -335,7 +332,6 @@ cd habit-tracker
 
    - Click "Add Habit" button on Dashboard
    - Enter habit name
-   - Choose a color (visual identification)
    - Pick an icon (15+ categories available)
    - Click "Save"
 
@@ -384,106 +380,15 @@ cd habit-tracker
 - Change password functionality
 - Account settings
 - Delete account option
-- Logout functionality
-
-## Architecture
-
-The application uses a **3-tier full-stack architecture** with separation of concerns:
-
-### System Layers
-
-1. **Frontend (Client)** - User interface and interaction
-2. **Backend (Server)** - Business logic and API
-3. **Database (Storage)** - MongoDB Atlas cloud database
-
-### Data Flow
-
-```
-User Action (Browser)
-    ↓
-Frontend JavaScript (api.js)
-    ↓
-HTTP Request with JWT Token
-    ↓
-Express Backend (authMiddleware verifies token)
-    ↓
-MongoDB Atlas (user-specific data query)
-    ↓
-Response back to Frontend
-    ↓
-UI Updates in Real-time
-```
-
-### Shared Frontend Modules
-
-- **api.js** (NEW): Centralized HTTP client for all backend communication
-
-  - Manages JWT tokens
-  - Handles all API requests
-  - Error logging and handling
-
-- **chart.js**: Chart initialization and data visualization
-
-  - Fetches data via api.js
-  - Calculates weekly aggregations
-  - Renders Chart.js visualizations
-
-- **habit-manager.js**: All habit CRUD operations and UI logic
-
-  - Modal management
-  - Form handling
-  - Communicates with backend via api.js
-  - Updates charts and statistics
-
-- **daily-motivation.js**: Quote system used across multiple pages
-  - 10 curated inspirational quotes
-  - Day-based rotation
-  - Manual refresh functionality
-
-### Backend Architecture
-
-- **Express REST API**: Handles all HTTP requests
-- **JWT Authentication**: Secure token-based auth with 24h expiry
-- **MongoDB + Mongoose**: ODM for schema validation and queries
-- **Middleware**: authMiddleware verifies JWT on protected routes
-- **Routes**: Organized by feature (auth, habits, checkins, logins)
-
-### Security Features
-
-- **Password Hashing**: bcrypt with 10 salt rounds
-- **JWT Tokens**: Signed tokens with secret key
-- **User Isolation**: All queries filtered by userId
-- **Protected Routes**: authMiddleware guards sensitive endpoints
-- **CORS**: Configured for secure cross-origin requests
-
-### Database Schema
-
-**Collections:**
-
-- `users` - User accounts, auth credentials, profile data
-- `habits` - User habits with userId reference
-- `checkins` - Daily completions (unique: userId + habitId + date)
-- `logins` - Page visit tracking
-
-### Key Benefits
-
-- ✅ **Multi-user support** - Each user has isolated data
-- ✅ **Cloud sync** - Access from any device
-- ✅ **Secure authentication** - JWT + bcrypt
-- ✅ **Scalable architecture** - Can handle many concurrent users
-- ✅ **Single source of truth** - MongoDB as central data store
-- ✅ **Modular code** - Easy to maintain and extend
-- ✅ **RESTful API** - Standard HTTP methods and status codes
-
-See [ARCHITECTURE.md](Architecture/ARCHITECTURE.md) for detailed system design, data flow diagrams, and API documentation.
+  - Logout functionality
 
 ## API Documentation
 
-### Base URL
+### Base URL```
 
-```
 http://localhost:5000/api
-```
+
+````
 
 ### Authentication Endpoints
 
@@ -543,7 +448,7 @@ http://localhost:5000/api
     "email": "john@example.com"
   }
 }
-```
+````
 
 #### Create Habit
 
@@ -552,7 +457,6 @@ http://localhost:5000/api
 // Headers: { Authorization: "Bearer <token>" }
 {
   "title": "Morning Jog",
-  "color": "#e74c3c",
   "icon": "🏃"
 }
 
@@ -561,7 +465,6 @@ http://localhost:5000/api
   "_id": "67891xyz456",
   "userId": "67891abc123",
   "title": "Morning Jog",
-  "color": "#e74c3c",
   "icon": "🏃",
   "streak": 0,
   "createdAt": "2025-10-23T10:30:00Z",
@@ -585,8 +488,6 @@ http://localhost:5000/api
   "streak": 5
 }
 ```
-
-For complete API documentation, see [ARCHITECTURE.md](Architecture/ARCHITECTURE.md).
 
 ## Testing
 
