@@ -443,8 +443,85 @@ While not in the current implementation, these could be added:
 
 ---
 
+## Changes Based on Professor Feedback (November 2025)
+
+### Feedback Received
+
+Professor Christian provided feedback on the second submission with the following points:
+
+1. **MongoDB Credentials Required**: Provide test credentials on presentation title slide (professors will not register for third-party services)
+2. **Architecture Document Not Needed**: No longer required for submission
+3. **Design Choices Approved**: Current design is sufficient for the project
+4. **Ready for Final Phase**: Can proceed with final submission
+
+### Actions Taken
+
+#### 1. Removed Architecture Documentation (November 4, 2025)
+
+**Changes Made:**
+- Deleted `Architecture/ARCHITECTURE.md` file from repository
+- Removed architecture section from README.md Table of Contents
+- Removed entire "Architecture" section (~90 lines) from README.md including:
+  - System Layers explanation
+  - Data Flow diagram
+  - Shared Frontend Modules details
+  - Backend Architecture details
+  - Security Features
+  - Database Schema
+  - Key Benefits
+- Removed architecture folder from Project Structure listing in README.md
+- Removed architecture references at end of API Documentation section
+- Updated CHANGES.md to document this removal
+
+**Git Commits:**
+```bash
+# Commit 39b173c - Remove Architecture folder per professor feedback
+# Commit 1aff2f3 - Removed architecture references from README
+```
+
+**Rationale**: Professor confirmed architecture documentation is not needed for final submission. Removed to streamline documentation and focus on core project deliverables.
+
+#### 2. MongoDB Credentials for Grading (Planned)
+
+**Action Required:**
+- Add MongoDB Atlas connection credentials to presentation title slide
+- Create/provide test user credentials (email + password) for app login
+- Ensure professors can access application without registering for MongoDB Atlas
+
+**Format for Presentation:**
+```
+🔐 GRADING ACCESS CREDENTIALS
+
+MongoDB Atlas Connection:
+mongodb+srv://[username]:[password]@[cluster].mongodb.net/riza-habit-tracker
+
+Test User Login:
+Email: [test-user@example.com]
+Password: [test-password]
+
+Note: Please use these credentials to access and grade the application.
+```
+
+**Status**: To be added to presentation materials before final submission.
+
+**Rationale**: Enables professors to grade application functionality without creating their own MongoDB Atlas accounts, as requested in feedback.
+
+### Documentation Updates
+
+**Files Modified:**
+- `Architecture/ARCHITECTURE.md` - DELETED
+- `README.md` - Removed all architecture references (5 locations)
+- `CHANGES.md` - Added this section documenting professor feedback changes
+
+**Repository Status:**
+- All changes committed and pushed to GitHub
+- Repository clean and ready for final phase
+- Focus now on presentation preparation and MongoDB credentials
+
+---
+
 **Document Created**: October 21, 2025  
-**Last Updated**: October 23, 2025 (MongoDB Backend Integration Complete)  
+**Last Updated**: November 4, 2025 (Professor Feedback Implementation - Architecture Removed)  
 **Author**: John Denis Kirungia Nyagah  
 **Project**: Riza Habit Tracker - Full-Stack Web Application  
 **Course**: DLBCSPJWD01 - Project: Java and Web Development  
