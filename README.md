@@ -134,12 +134,24 @@ habit-tracker/
 
 ### For Reviewers
 
-**Quick Setup Guide** - The reviewer should set up their own MongoDB Atlas (cloud) database to test the application locally.
+**CREDENTIALS PROVIDED**
+
+All credentials needed to run this application are provided on the **presentation title slide**:
+
+- MongoDB Atlas connection string
+- JWT secret key
+- Test user login credentials
+
+Simply copy these credentials from the presentation and paste them into your `.env` file following the template in `.env.example`.
+**No need to create your own MongoDB Atlas account for grading purposes.**
+
+---
+
+**Quick Setup Guide**
 
 #### Prerequisites
 
 - Node.js v18+ ([Download here](https://nodejs.org/))
-- MongoDB Atlas account (free tier - [Sign up here](https://www.mongodb.com/cloud/atlas/register))
 
 #### Setup Steps
 
@@ -164,21 +176,10 @@ habit-tracker/
    copy .env.example .env
    ```
 
-   Then edit `.env` and add your MongoDB Atlas credentials:
-
-   - Sign up at https://www.mongodb.com/cloud/atlas/register (free)
-   - Create a new cluster (M0 free tier)
-   - Get your connection string
-   - Generate a JWT secret (see `.env.example` for command)
-   - Fill in the values in `.env`
+   Then edit `.env` and paste the credentials from the presentation title slide.
 
    **Note**: For security reasons, the actual `.env` file is not included in the repository.
-   Use the provided `.env.example` file as a template and add your own credentials.
-
-   **For Reviewers**:
-   All credentials (MongoDB connection string, JWT secret, and test user login) are provided on the **presentation title slide**.
-   Simply copy the credentials from the presentation and paste them into your `.env` file following the template in `.env.example`.
-   No need to create your own MongoDB Atlas account for grading purposes.
+   Use the provided `.env.example` file as a template and add the credentials from the presentation.
 
 4. **Start the Backend Server**
 
