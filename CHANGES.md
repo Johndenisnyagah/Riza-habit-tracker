@@ -443,13 +443,13 @@ While not in the current implementation, these could be added:
 
 ---
 
-## Changes Based on Professor Feedback (November 2025)
+## Changes Based on Phase 2 Feedback (November 2025)
 
 ### Feedback Received
 
 Professor Christian provided feedback on the second submission with the following points:
 
-1. **MongoDB Credentials Required**: Provide test credentials on presentation title slide (professors will not register for third-party services)
+1. **MongoDB Credentials Required**: Provide test credentials on presentation title slide
 2. **Architecture Document Not Needed**: No longer required for submission
 3. **Design Choices Approved**: Current design is sufficient for the project
 4. **Ready for Final Phase**: Can proceed with final submission
@@ -459,6 +459,7 @@ Professor Christian provided feedback on the second submission with the followin
 #### 1. Removed Architecture Documentation (November 4, 2025)
 
 **Changes Made:**
+
 - Deleted `Architecture/ARCHITECTURE.md` file from repository
 - Removed architecture section from README.md Table of Contents
 - Removed entire "Architecture" section (~90 lines) from README.md including:
@@ -474,6 +475,7 @@ Professor Christian provided feedback on the second submission with the followin
 - Updated CHANGES.md to document this removal
 
 **Git Commits:**
+
 ```bash
 # Commit 39b173c - Remove Architecture folder per professor feedback
 # Commit 1aff2f3 - Removed architecture references from README
@@ -484,44 +486,79 @@ Professor Christian provided feedback on the second submission with the followin
 #### 2. MongoDB Credentials for Grading (Planned)
 
 **Action Required:**
+
 - Add MongoDB Atlas connection credentials to presentation title slide
 - Create/provide test user credentials (email + password) for app login
 - Ensure professors can access application without registering for MongoDB Atlas
 
-**Format for Presentation:**
-```
-🔐 GRADING ACCESS CREDENTIALS
-
-MongoDB Atlas Connection:
-mongodb+srv://[username]:[password]@[cluster].mongodb.net/riza-habit-tracker
-
-Test User Login:
-Email: [test-user@example.com]
-Password: [test-password]
-
-Note: Please use these credentials to access and grade the application.
-```
-
-**Status**: To be added to presentation materials before final submission.
+**Status**: MongoDB Atlas Connection and credentials added to presentation materials for the final submission.
 
 **Rationale**: Enables professors to grade application functionality without creating their own MongoDB Atlas accounts, as requested in feedback.
 
 ### Documentation Updates
 
 **Files Modified:**
+
 - `Architecture/ARCHITECTURE.md` - DELETED
 - `README.md` - Removed all architecture references (5 locations)
 - `CHANGES.md` - Added this section documenting professor feedback changes
 
 **Repository Status:**
+
 - All changes committed and pushed to GitHub
 - Repository clean and ready for final phase
-- Focus now on presentation preparation and MongoDB credentials
+
+#### 3. Enhanced Security and Documentation (November 4, 2025)
+
+**Changes Made:**
+
+**A. JWT Secret Key Upgrade:**
+
+- **Old Key**: `supersecretkey123` (19 characters, weak)
+- **New Key**: Cryptographically secure 128-character random key
+- **Generation Method**: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
+- **Security Level**: Production-grade security
+- **Impact**: All existing JWT tokens invalidated (users must re-login)
+
+**B. Environment File Documentation:**
+
+- Added comprehensive comments to `backend/.env` file:
+  - Security warnings about not committing to GitHub
+  - Detailed breakdown of MongoDB connection string components
+  - JWT secret key explanation and generation instructions
+  - Optional PORT configuration
+
+**C. Reviewer-Friendly Setup Instructions:**
+
+- Updated `backend/.env.example` with prominent section for reviewers
+- Clear instructions that credentials are provided in presentation
+- Simple copy-paste setup process (no MongoDB account creation needed)
+- Separated instructions for reviewers vs developers
+- Step-by-step guide with all required credentials referenced to presentation
+
+**Git Commits:**
+
+```bash
+# Commit 4dcb6e0 - Update .env.example with clear instructions for reviewer
+```
+
+**Rationale**:
+
+- **Security**: Production-grade JWT secret protects user authentication
+- **Documentation**: Clear comments help reviewers understand configuration
+- **Ease of Grading**: Professors can copy credentials from presentation without creating accounts
+- **Professional Standards**: Proper environment variable documentation and security practices
+
+**Files Modified:**
+
+- `backend/.env` - Added comprehensive comments and upgraded JWT secret (not in Git - local only)
+- `backend/.env.example` - Enhanced with reviewer-specific instructions (committed to Git)
+- `CHANGES.md` - Documented security and documentation improvements
 
 ---
 
 **Document Created**: October 21, 2025  
-**Last Updated**: November 4, 2025 (Professor Feedback Implementation - Architecture Removed)  
+**Last Updated**: November 4, 2025 (Security Enhancements & Reviewer Documentation)  
 **Author**: John Denis Kirungia Nyagah  
 **Project**: Riza Habit Tracker - Full-Stack Web Application  
 **Course**: DLBCSPJWD01 - Project: Java and Web Development  

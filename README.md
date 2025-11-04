@@ -175,13 +175,10 @@ habit-tracker/
    **Note**: For security reasons, the actual `.env` file is not included in the repository.
    Use the provided `.env.example` file as a template and add your own credentials.
 
-   **Reviewer Access**:
-   Please use your own MongoDB Atlas free cluster for testing, as credentials are not public.
-   Connection string format:
-
-   ```
-   mongodb+srv://<username>:<password>@cluster.mongodb.net/riza-habit-tracker
-   ```
+   **For Reviewers**:
+   All credentials (MongoDB connection string, JWT secret, and test user login) are provided on the **presentation title slide**.
+   Simply copy the credentials from the presentation and paste them into your `.env` file following the template in `.env.example`.
+   No need to create your own MongoDB Atlas account for grading purposes.
 
 4. **Start the Backend Server**
 
