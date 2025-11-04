@@ -62,6 +62,12 @@ This is a modern, full-stack habit tracking web application built with Node.js, 
 
 ### Development Tools
 
+- **VS Code**: Primary code editor with extensions:
+  - Live Server: Local development server
+  - ESLint: Code quality and formatting
+  - Prettier: Code formatting
+  - GitLens: Git integration and history
+  - REST Client: API testing within VS Code
 - **Git & GitHub**: Version control and collaboration
 - **npm**: Package management
 - **nodemon**: Auto-restart server during development
