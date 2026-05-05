@@ -140,16 +140,10 @@ habit-tracker/
 
 ### For Reviewers
 
-**CREDENTIALS PROVIDED**
+**CREDENTIALS **
 
-All credentials needed to run this application are provided on the **presentation title slide**:
-
-- MongoDB Atlas connection string
-- JWT secret key
-- Test user login credentials
-
-Simply copy these credentials from the presentation and paste them into your `.env` file following the template in `.env.example`.
-**No need to create your own MongoDB Atlas account for grading purposes.**
+Environment variables are managed through a .env file and are not included in the public repository. 
+Reviewers can configure their own MongoDB Atlas connection and JWT secret using the provided .env.example template.
 
 ---
 
