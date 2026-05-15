@@ -87,6 +87,24 @@ let currentFilter = "all";
 let onHabitChangeCallback = null;
 
 // ============================================================================
+// SECURITY HELPERS
+// ============================================================================
+/**
+ * Sanitize HTML strings to prevent Cross-Site Scripting (XSS)
+ * @param {string} str - String to escape
+ * @returns {string} Escaped string
+ */
+function escapeHTML(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ============================================================================
 // DATA FETCHING & CACHING
 // ============================================================================
 /**
@@ -881,14 +899,16 @@ export async function updateHabitSummaryList(elementId = "habit-list") {
             <input type="checkbox" ${isCompleted ? "checked" : ""}>
             <span class="checkmark"></span>
           </label>
-          <img src="../assets/habit-icons/${
+          <img src="../assets/habit-icons/${escapeHTML(
             habit.icon || "meditation.svg"
-          }" class="icon" alt="">
+          )}" class="icon" alt="">
           <div class="habit-info">
-            <span class="habit-name">${habit.name}</span>
+            <span class="habit-name">${escapeHTML(habit.name)}</span>
             ${
               habit.description
-                ? `<span class="habit-description">${habit.description}</span>`
+                ? `<span class="habit-description">${escapeHTML(
+                    habit.description
+                  )}</span>`
                 : ""
             }
           </div>
