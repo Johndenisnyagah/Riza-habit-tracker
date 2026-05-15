@@ -589,7 +589,15 @@ async function saveHabit() {
     streak: isEditing ? undefined : 0,
   };
 
+  const saveBtn = document.querySelector(".save-btn");
+  const originalBtnText = saveBtn ? saveBtn.textContent : "Save Habit";
+
   try {
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+    }
+
     if (isEditing) {
       await updateHabit(habit);
     } else {
@@ -602,6 +610,11 @@ async function saveHabit() {
   } catch (error) {
     console.error("Failed to save habit:", error);
     alert("Failed to save habit. Please try again.");
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalBtnText;
+    }
   }
 }
 
