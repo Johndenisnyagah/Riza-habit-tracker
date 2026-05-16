@@ -37,6 +37,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
+import helmet from "helmet";
 
 // Import route handlers
 import authRoutes from "./routes/authRoutes.js";
@@ -56,6 +57,13 @@ const app = express();
 // ============================================================================
 // MIDDLEWARE CONFIGURATION
 // ============================================================================
+/**
+ * Helmet Security Middleware
+ * - Sets various security-related HTTP headers
+ * - Helps protect the app from common web vulnerabilities
+ */
+app.use(helmet());
+
 /**
  * JSON Parser Middleware
  * - Parses incoming JSON request bodies
