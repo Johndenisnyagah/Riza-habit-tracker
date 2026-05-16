@@ -11,31 +11,31 @@ import nodemailer from "nodemailer";
  * - Provides a console fallback for local testing without SMTP credentials
  *
  * Environment Variables:
- * - SMTP_HOST: The hostname of the SMTP server
- * - SMTP_PORT: The port of the SMTP server
- * - SMTP_USER: The username for SMTP authentication
- * - SMTP_PASS: The password for SMTP authentication
- * - FROM_EMAIL: The email address to appear in the "From" field
+ * - EMAIL_HOST: The hostname of the SMTP server
+ * - EMAIL_PORT: The port of the SMTP server
+ * - EMAIL_USER: The username for SMTP authentication
+ * - EMAIL_PASS: The password for SMTP authentication
+ * - EMAIL_FROM: The email address to appear in the "From" field
  */
 
 const sendEmail = async (options) => {
   // Check if SMTP credentials are provided
-  const useSMTP = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+  const useSMTP = process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS;
 
   if (useSMTP) {
     // Create a transporter using SMTP
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 587,
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT || 587,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     // Email options
     const mailOptions = {
-      from: process.env.FROM_EMAIL || "Riza Habit Tracker <noreply@riza.com>",
+      from: process.env.EMAIL_FROM || "Riza Habit Tracker <noreply@riza.com>",
       to: options.email,
       subject: options.subject,
       text: options.message,
