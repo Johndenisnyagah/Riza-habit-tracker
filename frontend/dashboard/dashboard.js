@@ -18,6 +18,7 @@ import {
   logoutUser,
   getHabits as apiGetHabits,
   getCheckins as apiGetCheckins,
+  getAllCheckins as apiGetAllCheckins,
   getUserProfile,
   trackDailyLogin,
   getTotalLoginDays,
@@ -204,16 +205,13 @@ async function calculateLongestStreak() {
     const habits = await getHabitsData();
     if (habits.length === 0) return 0;
 
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call to optimize performance
+    const allCheckins = await apiGetAllCheckins();
 
     // Collect all unique completion dates
     const allDatesSet = new Set();
-    checkinsArrays.forEach((checkins) => {
-      checkins.forEach((checkin) => {
-        allDatesSet.add(checkin.date.split("T")[0]);
-      });
+    allCheckins.forEach((checkin) => {
+      allDatesSet.add(checkin.date.split("T")[0]);
     });
 
     // Sort dates chronologically
@@ -315,17 +313,18 @@ async function updateTodayCheckins() {
     const habits = await getHabitsData();
     const today = new Date().toISOString().split("T")[0];
 
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call to optimize performance
+    const allCheckins = await apiGetAllCheckins();
 
-    // Count habits with today's check-in
-    let completed = 0;
-    checkinsArrays.forEach((checkins) => {
-      if (checkins.some((c) => c.date.split("T")[0] === today)) {
-        completed++;
+    // Count unique habits with today's check-in
+    const completedToday = new Set();
+    allCheckins.forEach((checkin) => {
+      if (checkin.date.split("T")[0] === today) {
+        completedToday.add(checkin.habitId);
       }
     });
+
+    let completed = completedToday.size;
 
     // Update display
     const checkinsCard = document.querySelector(".checkins-status");
@@ -363,17 +362,17 @@ async function updateCurrentStreak() {
   try {
     const habits = await getHabitsData();
 
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call to optimize performance
+    const allCheckins = await apiGetAllCheckins();
 
     // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     // Calculate current streak (consecutive days from today backwards)

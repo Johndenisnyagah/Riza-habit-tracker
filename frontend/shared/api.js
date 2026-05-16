@@ -367,6 +367,25 @@ export async function toggleHabitCompletion(habitId, date) {
 }
 
 /**
+ * Get all check-ins for current user
+ * @returns {Promise<Array>} Array of all check-in records
+ */
+export async function getAllCheckins() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/checkins`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    console.log("✅ All check-ins fetched:", data);
+    return data;
+  } catch (error) {
+    console.error("❌ Get all check-ins error:", error);
+    throw error;
+  }
+}
+
+/**
  * Get check-ins for a habit within date range
  * @param {string} habitId - ID of habit
  * @param {string} startDate - (Optional) Start date in YYYY-MM-DD format
