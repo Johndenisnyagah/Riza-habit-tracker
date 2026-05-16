@@ -10,6 +10,7 @@
  * - All routes are protected and require JWT authentication
  *
  * Routes:
+ * - GET  /api/checkins                 → Get all check-ins for the user
  * - POST /api/checkins/toggle          → Toggle habit completion for today
  * - GET  /api/checkins/:habitId        → Get all check-ins for a habit
  * - GET  /api/checkins/:habitId/streak → Calculate current streak
@@ -40,6 +41,36 @@ import Habit from "../models/Habit.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+// ============================================================================
+// GET ALL USER CHECK-INS
+// ============================================================================
+/**
+ * GET /api/checkins
+ *
+ * Purpose: Retrieve all check-ins for the authenticated user
+ *
+ * Authentication: Required (JWT token)
+ *
+ * Response:
+ * - 200: Array of all check-in objects (sorted newest first)
+ * - 500: Server error
+ *
+ * Performance:
+ * - Used for batch fetching all habit completions to avoid N+1 query problem
+ * - Enables efficient dashboard and habit list rendering
+ */
+router.get("/", protect, async (req, res) => {
+  try {
+    const checkins = await Checkin.find({
+      userId: req.user.id,
+    }).sort({ date: -1 });
+
+    res.status(200).json(checkins);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
 
 // ============================================================================
 // TOGGLE HABIT CHECK-IN

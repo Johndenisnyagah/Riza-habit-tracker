@@ -55,6 +55,7 @@ import {
   toggleHabitCompletion as apiToggleCompletion,
   getCheckins as apiGetCheckins,
   getHabitStreak as apiGetStreak,
+  getAllCheckins as apiGetAllCheckins,
 } from "./api.js";
 
 // ============================================================================
@@ -871,17 +872,18 @@ export async function updateHabitSummaryList(elementId = "habit-list") {
       return;
     }
 
-    // Get checkins for all habits
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call to optimize performance
+    // This avoids the N+1 query problem by replacing multiple API calls with one
+    const allCheckins = await apiGetAllCheckins();
 
-    // Build completion map
+    // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     habits.forEach((habit) => {
@@ -1066,16 +1068,18 @@ async function updateChartForToday() {
     const habits = await getHabitsData();
     const today = new Date().toISOString().split("T")[0];
 
-    // Get checkins for all habits
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call
+    const allCheckins = await apiGetAllCheckins();
 
-    let todayCount = 0;
-    checkinsArrays.forEach((checkins) => {
-      if (checkins.some((c) => c.date.split("T")[0] === today)) {
-        todayCount++;
+    // Build completion map for today
+    const completedToday = new Set();
+    allCheckins.forEach((checkin) => {
+      if (checkin.date.split("T")[0] === today) {
+        completedToday.add(checkin.habitId);
       }
     });
+
+    let todayCount = completedToday.size;
 
     const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
     if (window.updateChartData) {
@@ -1131,17 +1135,17 @@ export async function updateStreakCount() {
   try {
     const habits = await getHabitsData();
 
-    // Get all checkins for all habits
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call to optimize performance
+    const allCheckins = await apiGetAllCheckins();
 
-    // Build completion map
+    // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     let currentStreak = 0;
@@ -1217,16 +1221,18 @@ async function updateTodayCheckins() {
     const habits = await getHabitsData();
     const today = new Date().toISOString().split("T")[0];
 
-    // Get checkins for all habits
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    // Fetch all check-ins for the user in a single batch call
+    const allCheckins = await apiGetAllCheckins();
 
-    let completed = 0;
-    checkinsArrays.forEach((checkins) => {
-      if (checkins.some((c) => c.date.split("T")[0] === today)) {
-        completed++;
+    // Build completion map for today
+    const completedToday = new Set();
+    allCheckins.forEach((checkin) => {
+      if (checkin.date.split("T")[0] === today) {
+        completedToday.add(checkin.habitId);
       }
     });
+
+    let completed = completedToday.size;
 
     checkinsElement.textContent = `${completed}/${habits.length} habits completed`;
   } catch (error) {
