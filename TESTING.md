@@ -223,6 +223,43 @@ npm start
 
 ## Detailed Test Cases
 
+### TC-021: Email Verification Flow
+
+**Objective**: Verify the full email verification lifecycle.
+
+**Test Steps**:
+1. Register a new user with a valid email.
+2. Observe backend terminal for the verification link (console fallback).
+3. Attempt to login immediately with the new credentials.
+4. Click the verification link from the terminal.
+5. Attempt to login again after verification.
+
+**Expected Result**:
+- User document created with `isEmailVerified: false`.
+- Registration shows "Account created! Please check your email" message.
+- Immediate login attempt fails with 403 Forbidden ("Please verify your email").
+- Verification page shows success message.
+- Post-verification login succeeds.
+
+**Status**: ✅ Complete & Works
+
+### TC-022: Resend Verification Email
+
+**Objective**: Verify the resend functionality and cooldown.
+
+**Test Steps**:
+1. Attempt login with an unverified account.
+2. Click the "Resend verification email" link in the error message.
+3. Immediately click the resend link again.
+4. Check backend terminal for the new link.
+
+**Expected Result**:
+- First resend request succeeds and logs a new link.
+- Second rapid resend request fails with a cooldown message (2-minute limit).
+- Token in database is updated and previous token is invalidated.
+
+**Status**: ✅ Complete & Works
+
 ### TC-001: User Registration
 
 **Objective**: Verify user signup functionality

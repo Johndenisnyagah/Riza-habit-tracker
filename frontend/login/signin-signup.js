@@ -24,7 +24,7 @@
    Author: John Denis Nyagah
    ========================================================= */
 
-import { loginUser, registerUser } from "../shared/api.js";
+import { loginUser, registerUser, resendVerification } from "../shared/api.js";
 
 /* =========================================================
    FORM SUBMISSION HANDLERS
@@ -72,12 +72,29 @@ async function handleLogin(e) {
     // Redirect to dashboard
     window.location.href = "/frontend/dashboard/dashboard.html";
   } catch (error) {
-    alert(error.message || "Login failed. Please check your credentials.");
     console.error("Login error:", error);
+
+    if (error.status === 403 && error.data && !error.data.isEmailVerified) {
+      const resend = confirm(
+        `${error.message}\n\nWould you like us to resend the verification email?`
+      );
+      if (resend) {
+        try {
+          await resendVerification(email);
+          alert(
+            "Verification email sent! Please check your inbox (and spam folder)."
+          );
+        } catch (resendError) {
+          alert(resendError.message);
+        }
+      }
+    } else {
+      alert(error.message || "Login failed. Please check your credentials.");
+    }
 
     // Reset button state
     const submitBtn = e.target.querySelector('button[type="submit"]');
-    submitBtn.textContent = "Login";
+    submitBtn.textContent = "Log In";
     submitBtn.disabled = false;
   }
 }
@@ -136,10 +153,10 @@ async function handleSignup(e) {
     submitBtn.disabled = true;
 
     // Call API (creates user in MongoDB)
-    await registerUser(name, email, password);
+    const response = await registerUser(name, email, password);
 
     console.log("Signup successful");
-    alert("Account created successfully! Please login.");
+    alert(response.message || "Account created successfully! Please check your email to verify your account.");
 
     // Switch to login form
     switchCard("login");

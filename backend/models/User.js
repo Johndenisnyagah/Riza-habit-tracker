@@ -78,6 +78,24 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "", // Empty string if no picture uploaded
     },
+
+    // Email verification status
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Hashed verification token
+    verificationToken: String,
+
+    // Verification token expiry date
+    verificationTokenExpire: Date,
+
+    // Timestamp when email was verified
+    emailVerifiedAt: Date,
+
+    // Cooldown for resending verification email
+    resendCooldown: Date,
   },
   {
     // Automatically manage createdAt and updatedAt timestamps

@@ -38,8 +38,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import User from "../models/User.js";
 import { protect } from "../middleware/authMiddleware.js";
+import sendEmail from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -79,11 +81,65 @@ router.post("/register", async (req, res) => {
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash the token for storage
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+
+    // Token expires in 24 hours
+    const tokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+
     // Create and save user
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      verificationToken: hashedToken,
+      verificationTokenExpire: tokenExpire,
+      isEmailVerified: false,
+    });
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    // Verification link
+    // Note: In production, FRONTEND_URL should be an environment variable
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8000";
+    const verificationUrl = `${frontendUrl}/frontend/login/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    // Email content
+    const message = `Welcome to Riza! Please verify your email by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.`;
+    const html = `
+      <h1>Welcome to Riza!</h1>
+      <p>Please verify your email by clicking the button below:</p>
+      <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Verify Email</a>
+      <p>If the button doesn't work, copy and paste the following link into your browser:</p>
+      <p>${verificationUrl}</p>
+      <p>This link will expire in 24 hours.</p>
+    `;
+
+    // Send email
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Riza | Email Verification",
+        message,
+        html,
+      });
+    } catch (emailError) {
+      console.error("Email could not be sent:", emailError);
+      // We don't return an error to the user since the account was created successfully.
+      // They can request a resend later.
+    }
+
+    res.status(201).json({
+      message:
+        "User registered successfully. Please check your email to verify your account.",
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -128,6 +184,15 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        message: "Please verify your email before logging in.",
+        isEmailVerified: false,
+        email: user.email,
+      });
+    }
+
     // Create JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email },
@@ -146,6 +211,155 @@ router.post("/login", async (req, res) => {
         createdAt: user.createdAt,
       },
     });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// ============================================================================
+// VERIFY EMAIL
+// ============================================================================
+/**
+ * POST /api/auth/verify-email
+ *
+ * Purpose: Verify user's email address using token
+ *
+ * Request Body:
+ * - email: string (user's email address)
+ * - token: string (raw verification token)
+ *
+ * Response:
+ * - 200: Email verified successfully
+ * - 400: Invalid or expired token
+ * - 500: Server error
+ */
+router.post("/verify-email", async (req, res) => {
+  try {
+    const { email, token } = req.body;
+
+    if (!email || !token) {
+      return res.status(400).json({ message: "Email and token are required" });
+    }
+
+    // Hash the token to match the stored version
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find user with matching email, token and valid expiry
+    const user = await User.findOne({
+      email,
+      verificationToken: hashedToken,
+      verificationTokenExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    // Update user status
+    user.isEmailVerified = true;
+    user.emailVerifiedAt = Date.now();
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// ============================================================================
+// RESEND VERIFICATION EMAIL
+// ============================================================================
+/**
+ * POST /api/auth/resend-verification
+ *
+ * Purpose: Resend verification email to user
+ *
+ * Request Body:
+ * - email: string (user's email address)
+ *
+ * Response:
+ * - 200: Verification email sent (message is same regardless of email existence)
+ * - 429: Too many requests (cooldown active)
+ * - 500: Server error
+ */
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    // Success message is returned even if user doesn't exist for security
+    const successMessage =
+      "If an account with that email exists, a new verification link has been sent.";
+
+    if (!user) {
+      return res.status(200).json({ message: successMessage });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(200).json({ message: successMessage });
+    }
+
+    // Cooldown check (2 minutes)
+    if (user.resendCooldown && user.resendCooldown > Date.now()) {
+      const remainingSeconds = Math.ceil(
+        (user.resendCooldown - Date.now()) / 1000
+      );
+      return res.status(429).json({
+        message: `Please wait ${remainingSeconds} seconds before requesting another email.`,
+      });
+    }
+
+    // Generate new token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+
+    // Update user
+    user.verificationToken = hashedToken;
+    user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+    user.resendCooldown = Date.now() + 2 * 60 * 1000; // 2 minutes cooldown
+
+    await user.save();
+
+    // Send email
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8000";
+    const verificationUrl = `${frontendUrl}/frontend/login/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    const message = `Please verify your email by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.`;
+    const html = `
+      <h1>Riza | Email Verification</h1>
+      <p>Please verify your email by clicking the button below:</p>
+      <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Verify Email</a>
+      <p>If the button doesn't work, copy and paste the following link into your browser:</p>
+      <p>${verificationUrl}</p>
+      <p>This link will expire in 24 hours.</p>
+    `;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Riza | Resend Email Verification",
+        message,
+        html,
+      });
+    } catch (emailError) {
+      console.error("Email could not be sent:", emailError);
+    }
+
+    res.status(200).json({ message: successMessage });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

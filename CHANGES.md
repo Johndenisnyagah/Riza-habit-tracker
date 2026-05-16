@@ -385,12 +385,26 @@ README.md                     [ENHANCED] - Complete setup guide
 
 ---
 
+## New Feature: Email Verification (Implementation Phase 3)
+
+### Implementation: Mandatory Email Verification
+
+- **Secure Verification Flow**: Users must verify their email address before accessing the application.
+- **Token Hashing**: Verification tokens are generated securely and hashed (SHA-256) before being stored in the database.
+- **Email/Console Fallback**: Integration with Nodemailer for production, with a terminal-logging fallback for local testing.
+- **Login Blocking**: Backend rejects login attempts for unverified accounts with a 403 Forbidden status.
+- **Resend Capability**: Users can request a new verification link with a built-in 2-minute cooldown to prevent abuse.
+- **Information Security**: Verification and resend endpoints are designed to avoid user enumeration.
+
+**Rationale**: Improves account security, ensures valid email addresses, and provides a professional authentication experience.
+
+---
+
 ## Future Enhancements (Post-Submission)
 
 While not in the current implementation, these could be added:
 
-1. **Email Verification**: Verify user emails on registration
-2. **Password Reset**: Email-based password recovery
+1. **Password Reset**: Email-based password recovery
 3. **Two-Factor Authentication**: Enhanced security with 2FA
 4. **Social Features**: Share progress with friends, team challenges
 5. **Push Notifications**: Reminder system for daily habits

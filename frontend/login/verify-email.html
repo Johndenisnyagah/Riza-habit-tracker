@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riza | Email Verification</title>
+    <link rel="stylesheet" href="signin_signup.css" />
+    <style>
+      .verification-status {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .verification-status i {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+      }
+      .success { color: #4caf50; }
+      .error { color: #f44336; }
+      .loading { color: #2196f3; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card active" id="verify-card">
+        <div class="bg"></div>
+        <div class="blob"></div>
+        <div class="card-content">
+          <img src="../assets/logo.png" alt="Riza Logo" class="logo" />
+          <h2>Email Verification</h2>
+          <div id="status-container" class="verification-status">
+            <p class="loading">Verifying your email, please wait...</p>
+          </div>
+          <p class="switch-text" id="back-to-login" style="display: none;">
+            <a href="signin_signup.html">Back to Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>© 2025 Riza. Build better habits, one day at a time.</p>
+    </footer>
+    <script type="module" src="verify-email.js"></script>
+  </body>
+</html>

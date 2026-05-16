@@ -78,11 +78,12 @@ export async function registerUser(name, email, password) {
       body: JSON.stringify({ name, email, password }),
     });
     const data = await response.json();
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      console.log("✅ User registered successfully");
+
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
     }
+
+    console.log("✅ User registered successfully, verification email sent");
     return data;
   } catch (error) {
     console.error("❌ Registration error:", error);
@@ -104,6 +105,14 @@ export async function loginUser(email, password) {
       body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
+
+    if (!response.ok) {
+      const error = new Error(data.message || "Login failed");
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
     if (data.token) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -112,6 +121,59 @@ export async function loginUser(email, password) {
     return data;
   } catch (error) {
     console.error("❌ Login error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Verify user email address
+ * @param {string} email - User's email address
+ * @param {string} token - Verification token
+ * @returns {Promise<Object>} Response message
+ */
+export async function verifyEmail(email, token) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, token }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Email verification failed");
+    }
+
+    console.log("✅ Email verified successfully");
+    return data;
+  } catch (error) {
+    console.error("❌ Email verification error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Resend verification email
+ * @param {string} email - User's email address
+ * @returns {Promise<Object>} Response message
+ */
+export async function resendVerification(email) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/resend-verification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Resend verification failed");
+    }
+
+    console.log("✅ Resend verification email success");
+    return data;
+  } catch (error) {
+    console.error("❌ Resend verification error:", error);
     throw error;
   }
 }

@@ -18,7 +18,7 @@ This is a modern, full-stack habit tracking web application built with Node.js, 
 
 ### Core Functionality
 
-- **User Authentication**: Secure registration and login with JWT tokens
+- **User Authentication**: Secure registration and login with mandatory email verification
 - **Habit Management**: Create, edit, and delete habits with custom icons
 - **Progress Tracking**: Visual charts showing daily, weekly, and monthly completion rates
 - **Streak System**: Track current and longest streaks with dynamic flame animations
@@ -31,7 +31,8 @@ This is a modern, full-stack habit tracking web application built with Node.js, 
 ### Technical Features
 
 - **Full-Stack Architecture**: RESTful API with Express.js backend and MongoDB database
-- **JWT Authentication**: Secure token-based authentication with bcrypt password hashing
+- **Secure Authentication**: JWT-based auth with bcrypt password hashing and mandatory email verification
+- **Email Verification**: Secure SHA-256 token hashing and email service integration (with console fallback for testing)
 - **Multi-User Support**: Each user has their own isolated data
 - **Fully Responsive**: Optimized for mobile, tablet, laptop, and large desktop screens
 - **Modern UI**: Clean, green-themed interface with smooth animations
@@ -258,7 +259,14 @@ cd habit-tracker
    🚀 Server running on port 5000
    ```
 
-### Step 3: Frontend Setup
+### Step 3: Local Email Testing
+
+The application includes an email verification flow. For local evaluation without configuring a real SMTP server:
+
+1.  **Console Fallback**: If SMTP credentials are not provided in `.env`, the backend will log the verification link directly to the terminal.
+2.  **To Test**: Register a new user, look at the backend terminal output for the "Verification Link", and open it in your browser.
+
+### Step 4: Frontend Setup
 
 1. **Open a new terminal** (keep the backend running)
 
