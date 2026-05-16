@@ -20,7 +20,8 @@ desktop.ini        # Windows folder settings
 
 # Node.js / Backend Dependencies
 # ----------------------------------------------------------------------------
-node_modules/      # NPM packages (backend/)
+node_modules/
+**/node_modules/
 package-lock.json  # Lock file (optional, can commit if needed)
 yarn.lock          # Yarn lock file
 
