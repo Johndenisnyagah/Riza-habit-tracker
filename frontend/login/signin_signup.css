@@ -215,6 +215,37 @@ p {
   transition: all 0.3s ease; /* Smooth border/shadow changes */
 }
 
+/* Adjust padding for password inputs to accommodate toggle button */
+.input-box input[type="password"],
+.input-box input[type="text"] {
+  padding-right: 35px;
+}
+
+/* Password visibility toggle button */
+.password-toggle {
+  position: absolute;
+  right: 5px;
+  bottom: 8px;
+  background: none;
+  border: none;
+  color: #1b4332;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  z-index: 4;
+}
+
+.password-toggle:hover { color: #2d6a4f; }
+
+.password-toggle:focus {
+  outline: 3px solid #2d6a4f;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Floating label - initially positioned inside input */
 .input-box label {
   position: absolute;
@@ -319,8 +350,9 @@ p {
 
 /* Focus state for buttons and links */
 .btn:focus,
-a:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18); /* Subtle green outline */
+a:focus,
+.password-toggle:focus {
+  outline: 3px solid #2d6a4f; /* Stronger green outline for better visibility */
   outline-offset: 3px; /* Space from element */
 }
 
