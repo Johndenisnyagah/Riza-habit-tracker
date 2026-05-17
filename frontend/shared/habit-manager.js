@@ -210,6 +210,11 @@ async function saveHabit() {
     icon,
   };
 
+  const saveBtn = document.querySelector(".save-btn");
+  const originalText = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = isEditing ? "Updating..." : "Adding...";
+
   try {
     if (isEditing) await updateHabit({ ...habit, _id: currentHabitId });
     else await addHabit(habit);
@@ -218,6 +223,9 @@ async function saveHabit() {
   } catch (error) {
     console.error("Failed to save habit:", error);
     alert("Failed to save habit.");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
   }
 }
 
@@ -272,21 +280,22 @@ export async function updateHabitSummaryList(elementId = "habit-list") {
       const isCompleted = completions[habitId]?.includes(today);
       const item = document.createElement("li");
       item.className = `habit-item ${isCompleted ? "completed" : ""}`;
+      const escapedName = escapeHTML(habit.name);
       item.innerHTML = `
         <div class="habit-left">
           <label class="checkbox-container">
-            <input type="checkbox" ${isCompleted ? "checked" : ""}>
+            <input type="checkbox" ${isCompleted ? "checked" : ""} aria-label="Mark ${escapedName} as completed">
             <span class="checkmark"></span>
           </label>
           <img src="../assets/habit-icons/${escapeHTML(habit.icon || "meditation.svg")}" class="icon" alt="">
           <div class="habit-info">
-            <span class="habit-name">${escapeHTML(habit.name)}</span>
+            <span class="habit-name">${escapedName}</span>
             ${habit.description ? `<span class="habit-description">${escapeHTML(habit.description)}</span>` : ""}
           </div>
         </div>
         <div class="habit-actions">
-          <button class="btn-outline edit-btn"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn-outline delete-btn-item"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn-outline edit-btn" aria-label="Edit ${escapedName} habit"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn-outline delete-btn-item" aria-label="Delete ${escapedName} habit"><i class="fa-solid fa-trash"></i></button>
         </div>
       `;
 
