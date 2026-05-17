@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    DASHBOARD.JS - Main Dashboard Controller
    
    Purpose: Manages the user dashboard interface including:
@@ -118,6 +118,25 @@ async function loadUserName() {
   }
 }
 
+/**
+ * Update all dashboard UI elements using pre-fetched data
+ * This avoids redundant API calls and N+1 query patterns.
+ */
+async function updateUI() {
+  try {
+    const [habits, allCheckins] = await Promise.all([
+      getHabitsData(),
+      apiGetAllCheckins(),
+    ]);
+
+    await updateStatsDisplay(habits, allCheckins);
+    updateTodayCheckins(habits, allCheckins);
+    updateCurrentStreak(habits, allCheckins);
+  } catch (error) {
+    console.error("❌ Failed to update dashboard UI:", error);
+  }
+}
+
 /* =========================================================
    MAIN INITIALIZATION
    ========================================================= */
@@ -169,16 +188,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     onHabitChange: async () => {
       // Callback: Update all dashboard statistics when habits change
       // This ensures UI stays synchronized with backend
-      await updateStatsDisplay();
-      await updateTodayCheckins();
-      await updateCurrentStreak();
+      await updateUI();
     },
   });
 
   // Initial update of all UI elements
-  await updateStatsDisplay();
-  await updateTodayCheckins();
-  await updateCurrentStreak();
+  await updateUI();
 
   console.log("✅ Dashboard initialization complete");
 });
@@ -191,22 +206,15 @@ document.addEventListener("DOMContentLoaded", async () => {
  * Calculates the longest consecutive streak across all habits
  *
  * Algorithm:
- * 1. Fetch all habit check-ins from backend
- * 2. Collect all unique completion dates
- * 3. Sort dates and find longest consecutive sequence
+ * 1. Collect all unique completion dates from pre-fetched check-ins
+ * 2. Sort dates and find longest consecutive sequence
  *
- * @returns {Promise<number>} Longest streak in days
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
- * Test: Check console for calculated streak value
+ * @param {Array} allCheckins - All check-in records for the user
+ * @returns {number} Longest streak in days
  */
-async function calculateLongestStreak() {
+function calculateLongestStreak(allCheckins) {
   try {
-    const habits = await getHabitsData();
-    if (habits.length === 0) return 0;
-
-    // Fetch all check-ins for the user in a single batch call to optimize performance
-    const allCheckins = await apiGetAllCheckins();
+    if (!allCheckins || allCheckins.length === 0) return 0;
 
     // Collect all unique completion dates
     const allDatesSet = new Set();
@@ -251,17 +259,11 @@ async function calculateLongestStreak() {
  * Updates the statistics card with latest data
  * Displays: Total Habits, Total Logins, Longest Streak
  *
- * Data Sources (all from MongoDB):
- * - Total Habits: /api/habits
- * - Total Logins: /api/logins/count (unique days)
- * - Longest Streak: Calculated from /api/checkins
- *
- * Test: Console logs show fetched values for verification
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateStatsDisplay() {
+async function updateStatsDisplay(habits, allCheckins) {
   try {
-    // Fetch user's habits from backend
-    const habits = await getHabitsData();
     console.log("📊 TEST: Habits loaded:", habits.length);
 
     // Fetch total unique login days from backend
@@ -269,8 +271,8 @@ async function updateStatsDisplay() {
     const totalLoginDays = loginData.totalLoginDays || 0;
     console.log("📊 TEST: Total login days:", totalLoginDays);
 
-    // Calculate longest streak from check-in history
-    const longestStreak = await calculateLongestStreak();
+    // Calculate longest streak from pre-fetched check-in history
+    const longestStreak = calculateLongestStreak(allCheckins);
     console.log("📊 TEST: Longest streak:", longestStreak);
 
     // Update DOM elements with calculated values
@@ -300,21 +302,12 @@ async function updateStatsDisplay() {
  * Updates "Today's Check-ins" display
  * Shows how many habits completed today vs total (e.g., "3/8 habits completed")
  *
- * Algorithm:
- * 1. Get all user's habits from backend
- * 2. Check which ones have a check-in for today's date
- * 3. Display completion ratio
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
- * Updates: Automatically when habits are checked/unchecked
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateTodayCheckins() {
+function updateTodayCheckins(habits, allCheckins) {
   try {
-    const habits = await getHabitsData();
     const today = new Date().toISOString().split("T")[0];
-
-    // Fetch all check-ins for the user in a single batch call to optimize performance
-    const allCheckins = await apiGetAllCheckins();
 
     // Count unique habits with today's check-in
     const completedToday = new Set();
@@ -340,31 +333,14 @@ async function updateTodayCheckins() {
  * Updates current streak display with animated flame
  * Calculates consecutive days with at least one habit completed
  *
- * Features:
- * - Counts days backwards from today
- * - Stops when a day has no completions
- * - Scales flame animation based on streak length
- * - Highlights milestone achievements (7, 30, 100 days)
- *
- * Flame Sizes:
- * - 0 days: 80px (small)
- * - 1-6 days: 80-145px (growing)
- * - 7-29 days: 145-170px (medium)
- * - 30-99 days: 170-200px (large)
- * - 100+ days: 200px (champion)
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateCurrentStreak() {
+function updateCurrentStreak(habits, allCheckins) {
   const streakElement = document.getElementById("dashboard-current-streak");
   if (!streakElement) return;
 
   try {
-    const habits = await getHabitsData();
-
-    // Fetch all check-ins for the user in a single batch call to optimize performance
-    const allCheckins = await apiGetAllCheckins();
-
     // Build completion map: habitId -> array of completion dates
     const completions = {};
     allCheckins.forEach((checkin) => {
