@@ -14,8 +14,7 @@
 
 import {
   isAuthenticated,
-  getHabits as apiGetHabits,
-  getCheckins as apiGetCheckins,
+  getAllCheckins as apiGetAllCheckins,
   trackDailyLogin,
   getTotalLoginDays,
 } from "../shared/api.js";
@@ -71,7 +70,22 @@ function loadHabitIcons() {
   console.log(`✅ TEST: Loaded ${HABIT_ICONS.length} habit icons`);
 }
 
-console.log(`✅ TEST: Loaded ${HABIT_ICONS.length} habit icons`);
+/**
+ * Update all habits page UI elements using pre-fetched data
+ */
+async function updateUI() {
+  try {
+    const [habits, allCheckins] = await Promise.all([
+      getHabitsData(),
+      apiGetAllCheckins(),
+    ]);
+
+    await updateStatsCard(habits, allCheckins);
+    updateCurrentStreak(habits, allCheckins);
+  } catch (error) {
+    console.error("❌ Failed to update habits UI:", error);
+  }
+}
 
 /* =========================================================
    MAIN INITIALIZATION
@@ -101,14 +115,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     openModalSelector: ".open-habit-modal",
     onHabitChange: async () => {
       // Callback: Update all statistics when habits change
-      await updateStatsCard();
-      await updateCurrentStreak();
+      await updateUI();
     },
   });
 
   // Initial update of all UI elements
-  await updateStatsCard();
-  await updateCurrentStreak();
+  await updateUI();
 
   console.log("✅ Habits page initialization complete");
 });
@@ -121,29 +133,20 @@ document.addEventListener("DOMContentLoaded", async () => {
  * Calculates the longest consecutive streak across all habits
  *
  * Algorithm:
- * 1. Fetch all habit check-ins from backend
- * 2. Collect all unique completion dates
- * 3. Sort dates and find longest consecutive sequence
+ * 1. Collect all unique completion dates from pre-fetched check-ins
+ * 2. Sort dates and find longest consecutive sequence
  *
- * @returns {Promise<number>} Longest streak in days
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
+ * @param {Array} allCheckins - All check-in records for the user
+ * @returns {number} Longest streak in days
  */
-async function calculateLongestStreak() {
+function calculateLongestStreak(allCheckins) {
   try {
-    const habits = await getHabitsData();
-    if (habits.length === 0) return 0;
-
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    if (!allCheckins || allCheckins.length === 0) return 0;
 
     // Collect all unique completion dates
     const allDatesSet = new Set();
-    checkinsArrays.forEach((checkins) => {
-      checkins.forEach((checkin) => {
-        allDatesSet.add(checkin.date.split("T")[0]);
-      });
+    allCheckins.forEach((checkin) => {
+      allDatesSet.add(checkin.date.split("T")[0]);
     });
 
     // Sort dates chronologically
@@ -183,24 +186,18 @@ async function calculateLongestStreak() {
  * Updates the statistics card with latest data
  * Displays: Total Habits, Total Logins, Longest Streak
  *
- * Data Sources (all from MongoDB):
- * - Total Habits: /api/habits
- * - Total Logins: /api/logins/count (unique days)
- * - Longest Streak: Calculated from /api/checkins
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateStatsCard() {
+async function updateStatsCard(habits, allCheckins) {
   try {
-    // Fetch user's habits from backend
-    const habits = await getHabitsData();
-    console.log("📊 TEST: Habits loaded:", habits.length);
-
     // Fetch total unique login days from backend
     const loginData = await getTotalLoginDays();
     const totalLoginDays = loginData.totalLoginDays || 0;
     console.log("📊 TEST: Total login days:", totalLoginDays);
 
-    // Calculate longest streak from check-in history
-    const longestStreak = await calculateLongestStreak();
+    // Calculate longest streak from pre-fetched check-in history
+    const longestStreak = calculateLongestStreak(allCheckins);
     console.log("📊 TEST: Longest streak:", longestStreak);
 
     // Update DOM elements with calculated values
@@ -233,39 +230,22 @@ async function updateStatsCard() {
  * Updates current streak display with animated flame
  * Calculates consecutive days with at least one habit completed
  *
- * Features:
- * - Counts days backwards from today
- * - Stops when a day has no completions
- * - Scales flame animation based on streak length
- * - Highlights milestone achievements (7, 30, 100 days)
- *
- * Flame Sizes:
- * - 0 days: 80px (small)
- * - 1-6 days: 80-145px (growing)
- * - 7-29 days: 145-170px (medium)
- * - 30-99 days: 170-200px (large)
- * - 100+ days: 200px (champion)
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateCurrentStreak() {
+function updateCurrentStreak(habits, allCheckins) {
   const streakElement = document.getElementById("habits-current-streak");
   if (!streakElement) return;
 
   try {
-    const habits = await getHabitsData();
-
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
-
     // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     // Calculate current streak (consecutive days from today backwards)

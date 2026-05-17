@@ -15,7 +15,7 @@
 
 import {
   isAuthenticated,
-  getCheckins as apiGetCheckins,
+  getAllCheckins as apiGetAllCheckins,
   trackDailyLogin,
   getTotalLoginDays,
   getUserProfile,
@@ -44,29 +44,20 @@ if (!isAuthenticated()) {
  * Calculates the longest consecutive streak across all habits
  *
  * Algorithm:
- * 1. Fetch all habit check-ins from backend
- * 2. Collect all unique completion dates
- * 3. Sort dates and find longest consecutive sequence
+ * 1. Collect all unique completion dates from pre-fetched check-ins
+ * 2. Sort dates and find longest consecutive sequence
  *
- * @returns {Promise<number>} Longest streak in days
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
+ * @param {Array} allCheckins - All check-in records for the user
+ * @returns {number} Longest streak in days
  */
-async function calculateLongestStreak() {
+function calculateLongestStreak(allCheckins) {
   try {
-    const habits = await getHabitsData();
-    if (habits.length === 0) return 0;
-
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    if (!allCheckins || allCheckins.length === 0) return 0;
 
     // Collect all unique completion dates
     const allDatesSet = new Set();
-    checkinsArrays.forEach((checkins) => {
-      checkins.forEach((checkin) => {
-        allDatesSet.add(checkin.date.split("T")[0]);
-      });
+    allCheckins.forEach((checkin) => {
+      allDatesSet.add(checkin.date.split("T")[0]);
     });
 
     // Sort dates chronologically
@@ -105,26 +96,23 @@ async function calculateLongestStreak() {
 /**
  * Calculates current streak (consecutive days from today backwards)
  *
- * @returns {Promise<number>} Current streak in days
- *
- * Data Source: MongoDB via /api/checkins/habit/:id
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
+ * @returns {number} Current streak in days
  */
-async function calculateCurrentStreak() {
+function calculateCurrentStreak(habits, allCheckins) {
   try {
-    const habits = await getHabitsData();
-    if (habits.length === 0) return 0;
-
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
+    if (habits.length === 0 || !allCheckins || allCheckins.length === 0)
+      return 0;
 
     // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     // Calculate current streak (consecutive days from today backwards)
@@ -162,18 +150,12 @@ async function calculateCurrentStreak() {
 /**
  * Calculates comprehensive statistics for the progress page
  *
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  * @returns {Promise<Object>} Statistics object with all metrics
- *
- * Data Sources (all from MongoDB):
- * - Total Logins: /api/logins/count
- * - Current Streak: Calculated from /api/checkins
- * - Longest Streak: Calculated from /api/checkins
- * - Success Rate: Calculated from /api/checkins
  */
-async function calculateStats() {
+async function calculateStats(habits, allCheckins) {
   try {
-    const habits = await getHabitsData();
-
     // Track daily login (only counts once per day in MongoDB)
     await trackDailyLogin();
 
@@ -182,10 +164,10 @@ async function calculateStats() {
     const totalCheckins = loginData.totalLoginDays || 0;
 
     // Calculate current streak
-    const currentStreak = await calculateCurrentStreak();
+    const currentStreak = calculateCurrentStreak(habits, allCheckins);
 
     // Calculate longest streak
-    const longestStreak = await calculateLongestStreak();
+    const longestStreak = calculateLongestStreak(allCheckins);
 
     // Calculate success rate (this week)
     const today = new Date();
@@ -200,17 +182,14 @@ async function calculateStats() {
     const dailySuccess = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun success counts
     const dailyTotal = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun total counts
 
-    // Fetch check-ins for all habits from backend
-    const checkinPromises = habits.map((h) => apiGetCheckins(h._id || h.id));
-    const checkinsArrays = await Promise.all(checkinPromises);
-
     // Build completion map: habitId -> array of completion dates
     const completions = {};
-    habits.forEach((habit, index) => {
-      const habitId = habit._id || habit.id;
-      completions[habitId] = checkinsArrays[index].map(
-        (c) => c.date.split("T")[0]
-      );
+    allCheckins.forEach((checkin) => {
+      const habitId = checkin.habitId;
+      if (!completions[habitId]) {
+        completions[habitId] = [];
+      }
+      completions[habitId].push(checkin.date.split("T")[0]);
     });
 
     // Calculate success rate for this week
@@ -316,11 +295,15 @@ async function calculateStats() {
  */
 async function updateUI() {
   try {
-    // Calculate all statistics from MongoDB
-    const stats = await calculateStats();
+    // Optimization: Fetch all habits and check-ins once and distribute the data
+    // to resolve N+1 query bottlenecks across all statistical calculations.
+    const [habits, allCheckins] = await Promise.all([
+      getHabitsData(),
+      apiGetAllCheckins(),
+    ]);
 
-    // Fetch habits from backend
-    const habits = await getHabitsData();
+    // Calculate all statistics from MongoDB
+    const stats = await calculateStats(habits, allCheckins);
 
     // Update stats card
     document.getElementById("total-checkins").textContent = stats.totalCheckins;
@@ -436,8 +419,11 @@ async function updateUI() {
     // Chart will be initialized with dynamic data from updateMonthlyChart
     const monthlyChartCanvas = document.getElementById("monthlyChart");
     if (monthlyChartCanvas) {
-      await updateMonthlyChart();
+      await updateMonthlyChart(habits, allCheckins);
     }
+
+    // Render activity calendar
+    await renderCalendar(allCheckins);
   } catch (error) {
     console.error("❌ Error updating UI:", error);
   }
@@ -450,8 +436,11 @@ async function updateUI() {
 /**
  * Updates the monthly chart with habit completion data from MongoDB
  * Calculates weeks from user registration date and displays as bar chart
+ *
+ * @param {Array} habits - All habits for the user
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function updateMonthlyChart() {
+async function updateMonthlyChart(habits, allCheckins) {
   try {
     // Fetch user profile to get registration date
     const profileData = await getUserProfile();
@@ -465,9 +454,6 @@ async function updateMonthlyChart() {
     );
     const totalWeeks = Math.ceil(totalDays / 7);
 
-    // Fetch all habits from MongoDB
-    const habits = await getHabitsData();
-
     // Initialize weekly data array (one element per week since registration)
     const weeklyData = new Array(totalWeeks).fill(0);
     const weekLabels = [];
@@ -477,25 +463,21 @@ async function updateMonthlyChart() {
       weekLabels.push(`W${i + 1}`);
     }
 
-    // For each habit, fetch check-ins and count by week
-    for (const habit of habits) {
-      const checkIns = await apiGetCheckins(habit._id);
+    // Process all check-ins and count by week
+    allCheckins.forEach((checkIn) => {
+      const checkInDate = new Date(checkIn.date);
 
-      checkIns.forEach((checkIn) => {
-        const checkInDate = new Date(checkIn.date);
+      // Calculate which week this check-in belongs to (since registration)
+      const daysSinceRegistration = Math.floor(
+        (checkInDate - registrationDate) / (1000 * 60 * 60 * 24)
+      );
+      const weekIndex = Math.floor(daysSinceRegistration / 7);
 
-        // Calculate which week this check-in belongs to (since registration)
-        const daysSinceRegistration = Math.floor(
-          (checkInDate - registrationDate) / (1000 * 60 * 60 * 24)
-        );
-        const weekIndex = Math.floor(daysSinceRegistration / 7);
-
-        // Increment the count for that week (if valid index)
-        if (weekIndex >= 0 && weekIndex < totalWeeks) {
-          weeklyData[weekIndex]++;
-        }
-      });
-    }
+      // Increment the count for that week (if valid index)
+      if (weekIndex >= 0 && weekIndex < totalWeeks) {
+        weeklyData[weekIndex]++;
+      }
+    });
 
     // Get canvas and create/update chart
     const canvas = document.getElementById("monthlyChart");
@@ -590,11 +572,18 @@ let currentCalendarDate = new Date();
 /**
  * Renders the activity calendar showing days with habit completions
  * Fetches data from MongoDB instead of localStorage
+ *
+ * @param {Array} allCheckins - All check-in records for the user
  */
-async function renderCalendar() {
+async function renderCalendar(allCheckins) {
   try {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
+
+    // If allCheckins is not provided, fetch it (fallback for navigation buttons)
+    if (!allCheckins) {
+      allCheckins = await apiGetAllCheckins();
+    }
 
     // Update month display
     const monthNames = [
@@ -620,20 +609,15 @@ async function renderCalendar() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    // Fetch all habits and their check-ins from MongoDB
-    const habits = await getHabitsData();
     const activeDays = new Set(); // Set of dates with any activity
 
-    // Collect all dates with habit completions
-    for (const habit of habits) {
-      const checkIns = await apiGetCheckins(habit._id);
-      checkIns.forEach((checkIn) => {
-        // Extract date from MongoDB (already in UTC midnight format)
-        // Backend stores as: 2025-10-23T00:00:00.000Z
-        const dateStr = checkIn.date.split("T")[0];
-        activeDays.add(dateStr);
-      });
-    }
+    // Collect all dates with habit completions from the single batch fetch
+    allCheckins.forEach((checkIn) => {
+      // Extract date from MongoDB (already in UTC midnight format)
+      // Backend stores as: 2025-10-23T00:00:00.000Z
+      const dateStr = checkIn.date.split("T")[0];
+      activeDays.add(dateStr);
+    });
 
     // Get today's date in local timezone (YYYY-MM-DD format)
     const today = new Date();
@@ -642,14 +626,9 @@ async function renderCalendar() {
     const todayDay = String(today.getDate()).padStart(2, "0");
     const todayStr = `${todayYear}-${todayMonth}-${todayDay}`;
 
-    const todayDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-
     // Clear calendar
     const calendarDays = document.getElementById("calendarDays");
+    if (!calendarDays) return;
     calendarDays.innerHTML = "";
 
     // Add previous month's days
@@ -722,15 +701,21 @@ async function renderCalendar() {
    ========================================================= */
 
 // Calendar navigation
-document.getElementById("prevMonth").addEventListener("click", () => {
-  currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-  renderCalendar();
-});
+const prevMonthBtn = document.getElementById("prevMonth");
+if (prevMonthBtn) {
+  prevMonthBtn.addEventListener("click", () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+  });
+}
 
-document.getElementById("nextMonth").addEventListener("click", () => {
-  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-  renderCalendar();
-});
+const nextMonthBtn = document.getElementById("nextMonth");
+if (nextMonthBtn) {
+  nextMonthBtn.addEventListener("click", () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+  });
+}
 
 /* =========================================================
    PAGE INITIALIZATION
@@ -744,9 +729,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Update all statistics and UI elements from MongoDB
     await updateUI();
-
-    // Render the activity calendar
-    await renderCalendar();
   } catch (error) {
     console.error("❌ Error initializing progress page:", error);
   }
