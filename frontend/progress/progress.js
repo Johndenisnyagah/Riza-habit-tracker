@@ -410,9 +410,9 @@ async function updateUI() {
       labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     });
 
-    // Update weekly chart with real data
+    // Update weekly chart with real data (using pre-fetched data)
     if (weeklyChart) {
-      updateChartWithHabitData(weeklyChart);
+      await updateChartWithHabitData(weeklyChart, habits, allCheckins);
     }
 
     // Create Monthly Chart (line chart - weeks since registration)

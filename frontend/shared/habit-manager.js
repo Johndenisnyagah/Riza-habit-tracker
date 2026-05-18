@@ -65,11 +65,14 @@ export async function initializeHabitManager(options = {}) {
     onHabitChangeCallback = options.onHabitChange;
   }
 
-  await loadHabitsFromAPI();
   setupEventListeners(options);
 
-  const habitListId = options.habitListId || "habit-list";
-  await updateHabitSummaryList(habitListId);
+  // Optimization: Skip initial API load if caller handles it (e.g., via updateUI)
+  if (!options.skipInitialRender) {
+    await loadHabitsFromAPI();
+    const habitListId = options.habitListId || "habit-list";
+    await updateHabitSummaryList(habitListId);
+  }
 }
 
 function setupEventListeners(options = {}) {
@@ -245,12 +248,14 @@ export async function deleteHabit(habitId) {
   await refreshHabitDisplay();
 }
 
-export async function updateHabitSummaryList(elementId = "habit-list") {
+export async function updateHabitSummaryList(elementId = "habit-list", habits = null, allCheckins = null) {
   const habitList = document.getElementById(elementId);
   if (!habitList) return;
 
   try {
-    let [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+    if (!habits || !allCheckins) {
+      [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+    }
     const today = new Date().toISOString().split("T")[0];
 
     if (currentFilter !== "all") habits = habits.filter((h) => h.frequency === currentFilter);
@@ -314,11 +319,13 @@ export async function toggleHabitCompletion(habitId, checkbox) {
   }
 }
 
-export async function updateStreakCount() {
+export async function updateStreakCount(habits = null, allCheckins = null) {
   const streakElement = document.getElementById("streak-count");
   if (!streakElement) return;
 
-  const [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+  if (!habits || !allCheckins) {
+    [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+  }
   const completions = {};
   allCheckins.forEach((c) => {
     if (!completions[c.habitId]) completions[c.habitId] = [];
@@ -338,19 +345,31 @@ export async function updateStreakCount() {
   streakElement.textContent = `${streak} day${streak !== 1 ? "s" : ""}`;
 }
 
-async function updateTodayCheckins() {
+async function updateTodayCheckins(habits = null, allCheckins = null) {
   const el = document.querySelector(".checkins-status");
   if (!el) return;
-  const [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+
+  if (!habits || !allCheckins) {
+    [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+  }
   const today = new Date().toISOString().split("T")[0];
   const completed = new Set(allCheckins.filter((c) => c.date.split("T")[0] === today).map((c) => c.habitId)).size;
   el.textContent = `${completed}/${habits.length} habits completed`;
 }
 
 export async function refreshHabitDisplay() {
-  await Promise.all([updateHabitSummaryList(), updateStreakCount(), updateTodayCheckins()]);
+  const [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
+
+  await Promise.all([
+    updateHabitSummaryList("habit-list", habits, allCheckins),
+    updateStreakCount(habits, allCheckins),
+    updateTodayCheckins(habits, allCheckins),
+  ]);
+
   if (chartInstance) {
-    import("./chart.js").then((m) => m.updateChartWithHabitData(chartInstance));
+    import("./chart.js").then((m) =>
+      m.updateChartWithHabitData(chartInstance, habits, allCheckins)
+    );
   }
 }
 

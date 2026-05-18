@@ -21,6 +21,7 @@ import {
 import {
   initializeHabitManager,
   getHabitsData,
+  updateHabitSummaryList,
 } from "../shared/habit-manager.js";
 import {
   HABIT_ICONS,
@@ -75,13 +76,17 @@ function loadHabitIcons() {
  */
 async function updateUI() {
   try {
-    const [habits, allCheckins] = await Promise.all([
-      getHabitsData(),
+    const [habits, allCheckins, loginData] = await Promise.all([
+      getHabitsData(true),
       apiGetAllCheckins(),
+      getTotalLoginDays(),
     ]);
 
-    await updateStatsCard(habits, allCheckins);
+    const totalLoginDays = loginData.totalLoginDays || 0;
+
+    updateStatsCard(habits, allCheckins, totalLoginDays);
     updateCurrentStreak(habits, allCheckins);
+    await updateHabitSummaryList("habit-list", habits, allCheckins);
   } catch (error) {
     console.error("❌ Failed to update habits UI:", error);
   }
@@ -113,6 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initializeHabitManager({
     habitListId: "habit-list",
     openModalSelector: ".open-habit-modal",
+    skipInitialRender: true, // updateUI will handle initial rendering
     onHabitChange: async () => {
       // Callback: Update all statistics when habits change
       await updateUI();
@@ -188,12 +194,10 @@ function calculateLongestStreak(allCheckins) {
  *
  * @param {Array} habits - All habits for the user
  * @param {Array} allCheckins - All check-in records for the user
+ * @param {number} totalLoginDays - Pre-fetched total login days
  */
-async function updateStatsCard(habits, allCheckins) {
+function updateStatsCard(habits, allCheckins, totalLoginDays) {
   try {
-    // Fetch total unique login days from backend
-    const loginData = await getTotalLoginDays();
-    const totalLoginDays = loginData.totalLoginDays || 0;
     console.log("📊 TEST: Total login days:", totalLoginDays);
 
     // Calculate longest streak from pre-fetched check-in history

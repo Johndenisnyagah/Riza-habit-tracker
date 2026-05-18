@@ -132,17 +132,21 @@ export function initializeProgressChart(options = {}) {
  * Performance: Uses apiGetAllCheckins() to resolve N+1 query problem.
  *
  * @param {Object} chartInstance - Chart.js instance to update
+ * @param {Array} habits - (Optional) Pre-fetched habit data
+ * @param {Array} allCheckins - (Optional) Pre-fetched check-in data
  * @returns {Promise<void>}
  */
-export async function updateChartWithHabitData(chartInstance) {
+export async function updateChartWithHabitData(chartInstance, habits = null, allCheckins = null) {
   if (!chartInstance) return;
 
   try {
-    // Optimization: Fetch all habits and ALL check-ins in parallel
-    const [habits, allCheckins] = await Promise.all([
-      apiGetHabits(),
-      apiGetAllCheckins(),
-    ]);
+    // Optimization: Fetch only if data not already provided
+    if (!habits || !allCheckins) {
+      [habits, allCheckins] = await Promise.all([
+        apiGetHabits(),
+        apiGetAllCheckins(),
+      ]);
+    }
     const today = new Date();
 
     const weekData = [0, 0, 0, 0, 0, 0, 0]; // [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
