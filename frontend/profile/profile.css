@@ -277,6 +277,15 @@ body::before {
   transform: translateY(-1px);
 }
 
+.edit-btn:focus,
+.setting-btn:focus,
+.logout-btn:focus,
+.delete-btn:focus,
+.edit-icon:focus {
+  outline: 3px solid #2d6a4f;
+  outline-offset: 3px;
+}
+
 /* =========================================================
    SETTINGS PANEL
    Purpose: Account settings and actions section
