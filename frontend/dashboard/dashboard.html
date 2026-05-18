@@ -358,6 +358,7 @@
                       type="button"
                       class="freq-btn active"
                       data-value="daily"
+                      aria-pressed="true"
                     >
                       Daily
                     </button>
@@ -365,6 +366,7 @@
                       type="button"
                       class="freq-btn"
                       data-value="weekdays"
+                      aria-pressed="false"
                     >
                       Weekdays
                     </button>
@@ -372,10 +374,16 @@
                       type="button"
                       class="freq-btn"
                       data-value="weekends"
+                      aria-pressed="false"
                     >
                       Weekends
                     </button>
-                    <button type="button" class="freq-btn" data-value="custom">
+                    <button
+                      type="button"
+                      class="freq-btn"
+                      data-value="custom"
+                      aria-pressed="false"
+                    >
                       Custom
                     </button>
                   </div>

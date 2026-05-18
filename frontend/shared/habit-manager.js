@@ -98,8 +98,12 @@ function setupEventListeners(options = {}) {
   document.querySelectorAll(".freq-btn").forEach((btn) => {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
-      document.querySelectorAll(".freq-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".freq-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
       const customDaysDiv = document.querySelector(".custom-days");
       if (customDaysDiv) {
         if (this.dataset.value === "custom") customDaysDiv.classList.remove("hidden");
@@ -111,8 +115,12 @@ function setupEventListeners(options = {}) {
   document.querySelectorAll(".icon-option").forEach((icon) => {
     icon.addEventListener("click", function (e) {
       e.preventDefault();
-      document.querySelectorAll(".icon-option").forEach((i) => i.classList.remove("active"));
+      document.querySelectorAll(".icon-option").forEach((i) => {
+        i.classList.remove("active");
+        i.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
     });
   });
 
@@ -135,7 +143,10 @@ export function openModal(habitData = null) {
   if (!modal || !habitForm) return;
 
   habitForm.reset();
-  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => {
+    el.classList.remove("active");
+    el.setAttribute("aria-pressed", "false");
+  });
 
   if (habitData) {
     isEditing = true;
@@ -147,7 +158,10 @@ export function openModal(habitData = null) {
     document.getElementById("habit-description").value = habitData.description || "";
 
     const freqBtn = document.querySelector(`.freq-btn[data-value="${habitData.frequency || "daily"}"]`);
-    if (freqBtn) freqBtn.classList.add("active");
+    if (freqBtn) {
+      freqBtn.classList.add("active");
+      freqBtn.setAttribute("aria-pressed", "true");
+    }
 
     const customDaysDiv = document.querySelector(".custom-days");
     if (habitData.frequency === "custom" && customDaysDiv) {
@@ -161,14 +175,27 @@ export function openModal(habitData = null) {
     }
 
     const iconOption = document.querySelector(`.icon-option[data-icon="${habitData.icon || "meditation.svg"}"]`);
-    if (iconOption) iconOption.classList.add("active");
+    if (iconOption) {
+      iconOption.classList.add("active");
+      iconOption.setAttribute("aria-pressed", "true");
+    }
   } else {
     isEditing = false;
     currentHabitId = null;
     modalTitle.textContent = "Add New Habit";
     deleteBtn?.classList.add("hidden");
-    document.querySelector('.freq-btn[data-value="daily"]')?.classList.add("active");
-    document.querySelector(".icon-option")?.classList.add("active");
+
+    const defaultFreq = document.querySelector('.freq-btn[data-value="daily"]');
+    if (defaultFreq) {
+      defaultFreq.classList.add("active");
+      defaultFreq.setAttribute("aria-pressed", "true");
+    }
+
+    const defaultIcon = document.querySelector(".icon-option");
+    if (defaultIcon) {
+      defaultIcon.classList.add("active");
+      defaultIcon.setAttribute("aria-pressed", "true");
+    }
   }
 
   modal.classList.add("active");

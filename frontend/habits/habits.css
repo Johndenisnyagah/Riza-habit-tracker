@@ -1812,6 +1812,7 @@ body::before {
   border: 2px solid transparent;
   background: #f5f5f5;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
 #habit-modal .icon-option:hover {
@@ -1821,6 +1822,12 @@ body::before {
 #habit-modal .icon-option.active {
   border-color: #1b4332;
   background: rgba(27, 67, 50, 0.1);
+}
+
+#habit-modal .icon-option:focus-visible,
+#habit-modal .freq-btn:focus-visible {
+  outline: 3px solid #2d6a4f;
+  outline-offset: 2px;
 }
 
 #habit-modal .icon-option img {

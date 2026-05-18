@@ -55,9 +55,12 @@ function loadHabitIcons() {
 
   // Create icon options from config
   HABIT_ICONS.forEach((icon, index) => {
-    const iconOption = document.createElement("div");
+    const iconOption = document.createElement("button");
+    iconOption.type = "button";
     iconOption.className = "icon-option" + (index === 0 ? " active" : "");
     iconOption.setAttribute("data-icon", icon.filename);
+    iconOption.setAttribute("aria-label", `Select ${icon.name} icon`);
+    iconOption.setAttribute("aria-pressed", index === 0 ? "true" : "false");
 
     const img = document.createElement("img");
     img.src = HABIT_ICONS_PATH + icon.filename;
