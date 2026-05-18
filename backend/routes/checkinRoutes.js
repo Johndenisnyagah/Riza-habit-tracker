@@ -104,6 +104,11 @@ router.post("/toggle", protect, async (req, res) => {
   try {
     const { habitId } = req.body;
 
+    // Robust input validation to prevent NoSQL injection
+    if (typeof habitId !== "string" || habitId.trim().length === 0) {
+      return res.status(400).json({ message: "Invalid habit ID" });
+    }
+
     // Create today's date at midnight UTC for consistency
     const now = new Date();
     const today = new Date(

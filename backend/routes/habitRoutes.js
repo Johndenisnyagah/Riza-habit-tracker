@@ -66,6 +66,12 @@ const router = express.Router();
 router.post("/", protect, async (req, res) => {
   try {
     const { name, description, frequency, customDays, icon } = req.body;
+
+    // Robust input validation to prevent NoSQL injection and invalid data
+    if (typeof name !== "string" || name.trim().length === 0) {
+      return res.status(400).json({ message: "Please provide a valid habit name" });
+    }
+
     const habit = new Habit({
       userId: req.user.id,
       name,
@@ -142,6 +148,12 @@ router.get("/", protect, async (req, res) => {
 router.put("/:id", protect, async (req, res) => {
   try {
     const { name, description, frequency, customDays, icon } = req.body;
+
+    // Robust input validation to prevent NoSQL injection and invalid data
+    if (name !== undefined && (typeof name !== "string" || name.trim().length === 0)) {
+      return res.status(400).json({ message: "Please provide a valid habit name" });
+    }
+
     const habit = await Habit.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       { name, description, frequency, customDays, icon },
