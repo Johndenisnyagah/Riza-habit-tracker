@@ -593,6 +593,6 @@ footer {
    ========================================================= */
 .nav-links a:focus,
 .simple-btn:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18); /* Subtle green outline */
-  outline-offset: 3px; /* Space from element */
+  outline: 3px solid #2d6a4f;
+  outline-offset: 3px;
 }

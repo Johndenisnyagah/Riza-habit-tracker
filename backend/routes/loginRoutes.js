@@ -103,7 +103,7 @@ router.post("/track", protect, async (req, res) => {
       login,
     });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -144,7 +144,7 @@ router.get("/count", protect, async (req, res) => {
 
     res.status(200).json({ totalLoginDays: count });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 

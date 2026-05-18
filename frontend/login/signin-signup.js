@@ -264,4 +264,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loginForm.addEventListener("submit", handleLogin);
   signupForm.addEventListener("submit", handleSignup);
+
+  setupPasswordToggles();
 });
+
+function setupPasswordToggles() {
+  document.querySelectorAll(".password-toggle").forEach(t => {
+    t.onclick = () => {
+      const i = t.parentElement.querySelector("input"), s = t.querySelector("i"), p = i.type === "password";
+      i.type = p ? "text" : "password";
+      s.className = p ? "fas fa-eye-slash" : "fas fa-eye";
+      t.setAttribute("aria-label", p ? "Hide password" : "Show password");
+    };
+  });
+}

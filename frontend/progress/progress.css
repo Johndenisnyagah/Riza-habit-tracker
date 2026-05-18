@@ -913,7 +913,7 @@ body::before {
 .card:focus-within,
 a:focus,
 button:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline: 3px solid #2d6a4f;
   outline-offset: 3px;
   transition: outline 0.2s ease;
 }

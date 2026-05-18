@@ -818,7 +818,7 @@ body::before {
 
 /* Focus state for accessibility */
 .btn-outline:focus {
-  outline: 3px solid rgba(45, 106, 79, 0.18);
+  outline: 3px solid #2d6a4f;
   outline-offset: 3px;
 }
 
