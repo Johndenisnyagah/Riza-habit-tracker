@@ -22,7 +22,6 @@ desktop.ini        # Windows folder settings
 # ----------------------------------------------------------------------------
 node_modules/      # NPM packages (backend/)
 **/node_modules/
-package-lock.json  # Lock file (optional, can commit if needed)
 yarn.lock          # Yarn lock file
 
 # Environment Variables (CRITICAL - Contains secrets!)
