@@ -7,3 +7,8 @@
 **Vulnerability:** Information Leakage and Email Enumeration via overly descriptive error messages.
 **Learning:** Returning specific error messages like "User not found" vs "Invalid password" allows attackers to verify the existence of user accounts. Additionally, including `err.message` in 500 responses can leak sensitive database schema details or internal logic.
 **Prevention:** Always use generic error messages for authentication failures (e.g., "Invalid email or password"). For server-side errors, return a standard "Server error" message without attaching the raw error object or stack trace to the response.
+
+## 2026-05-18 - NoSQL Injection via Object Injection in Authentication Routes
+**Vulnerability:** Authentication bypass or data manipulation via object injection in `req.body`.
+**Learning:** In Node.js/Express applications using Mongoose, passing unsanitized user input directly from `req.body` to query methods like `findOne` or `findById` can be dangerous. If an attacker provides an object with MongoDB operators (e.g., `{ "email": { "$gt": "" } }`) instead of a string, it can lead to authentication bypass or unauthorized data access. Even if the application logic expects strings, Express's JSON parser will happily create objects if the request payload is structured that way.
+**Prevention:** Always validate that incoming user input matches the expected data type. Use `typeof === "string"` checks for all fields before using them in database queries or operations. Implement schema-level validation (e.g., `match`, `minlength`) in Mongoose as a defense-in-depth measure.
