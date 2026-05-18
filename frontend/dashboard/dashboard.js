@@ -27,6 +27,7 @@ import {
   initializeHabitManager,
   refreshHabitDisplay,
   getHabitsData,
+  updateHabitSummaryList,
 } from "../shared/habit-manager.js";
 import {
   initializeProgressChart,
@@ -124,14 +125,23 @@ async function loadUserName() {
  */
 async function updateUI() {
   try {
-    const [habits, allCheckins] = await Promise.all([
-      getHabitsData(),
+    const [habits, allCheckins, loginData] = await Promise.all([
+      getHabitsData(true), // Force refresh to ensure latest data
       apiGetAllCheckins(),
+      getTotalLoginDays(),
     ]);
 
-    await updateStatsDisplay(habits, allCheckins);
+    const totalLoginDays = loginData.totalLoginDays || 0;
+
+    updateStatsDisplay(habits, allCheckins, totalLoginDays);
     updateTodayCheckins(habits, allCheckins);
     updateCurrentStreak(habits, allCheckins);
+
+    // Also update habit list and chart with pre-fetched data
+    await updateHabitSummaryList("habit-list", habits, allCheckins);
+    if (chartInstance) {
+      await updateChartWithHabitData(chartInstance, habits, allCheckins);
+    }
   } catch (error) {
     console.error("❌ Failed to update dashboard UI:", error);
   }
@@ -175,16 +185,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     canvasId: "progressChart",
   });
 
-  // Populate chart with user's habit data
-  if (chartInstance) {
-    await updateChartWithHabitData(chartInstance);
-  }
-
   // Initialize habit manager with real-time update callbacks
   await initializeHabitManager({
     chartInstance: chartInstance,
     habitListId: "habit-list",
     openModalSelector: ".open-habit-modal",
+    skipInitialRender: true, // updateUI will handle initial rendering
     onHabitChange: async () => {
       // Callback: Update all dashboard statistics when habits change
       // This ensures UI stays synchronized with backend
@@ -192,7 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
   });
 
-  // Initial update of all UI elements
+  // Initial update of all UI elements (including chart and stats)
   await updateUI();
 
   console.log("✅ Dashboard initialization complete");
@@ -261,14 +267,11 @@ function calculateLongestStreak(allCheckins) {
  *
  * @param {Array} habits - All habits for the user
  * @param {Array} allCheckins - All check-in records for the user
+ * @param {number} totalLoginDays - Pre-fetched total login days
  */
-async function updateStatsDisplay(habits, allCheckins) {
+function updateStatsDisplay(habits, allCheckins, totalLoginDays) {
   try {
     console.log("📊 TEST: Habits loaded:", habits.length);
-
-    // Fetch total unique login days from backend
-    const loginData = await getTotalLoginDays();
-    const totalLoginDays = loginData.totalLoginDays || 0;
     console.log("📊 TEST: Total login days:", totalLoginDays);
 
     // Calculate longest streak from pre-fetched check-in history

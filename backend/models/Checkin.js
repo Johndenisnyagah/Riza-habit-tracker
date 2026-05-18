@@ -62,6 +62,7 @@ const checkinSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Habit",
     required: true,
+    index: true,
   },
 
   // Reference to the user who completed the habit
@@ -71,6 +72,7 @@ const checkinSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+    index: true,
   },
 
   // Date of completion (normalized to midnight UTC)

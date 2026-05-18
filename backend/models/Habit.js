@@ -65,6 +65,7 @@ const habitSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+    index: true,
   },
 
   // Habit name (displayed in habit list and dashboard)
