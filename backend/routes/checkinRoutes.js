@@ -68,7 +68,7 @@ router.get("/", protect, async (req, res) => {
 
     res.status(200).json(checkins);
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -140,7 +140,7 @@ router.post("/toggle", protect, async (req, res) => {
       });
     }
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -180,7 +180,7 @@ router.get("/:habitId", protect, async (req, res) => {
 
     res.status(200).json(checkins);
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -250,7 +250,7 @@ router.get("/:habitId/streak", protect, async (req, res) => {
 
     res.status(200).json({ streak });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 

@@ -77,7 +77,7 @@ router.post("/", protect, async (req, res) => {
     await habit.save();
     res.status(201).json({ message: "Habit created", habit });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -105,7 +105,7 @@ router.get("/", protect, async (req, res) => {
     const habits = await Habit.find({ userId: req.user.id });
     res.status(200).json(habits);
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -152,7 +152,7 @@ router.put("/:id", protect, async (req, res) => {
     }
     res.status(200).json({ message: "Habit updated", habit });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -195,7 +195,7 @@ router.delete("/:id", protect, async (req, res) => {
     }
     res.status(200).json({ message: "Habit deleted" });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
