@@ -24,6 +24,7 @@
  * - Protected routes require valid JWT token
  * - Password validation and strength requirements
  * - Secure profile picture upload with size limits (5MB max)
+ * - Strict input validation to prevent NoSQL injection and data corruption
  *
  * Dependencies:
  * - bcrypt: Password hashing and comparison
@@ -58,10 +59,11 @@ const router = express.Router();
  *
  * Response:
  * - 201: User registered successfully
- * - 400: Email already exists
+ * - 400: Email already exists or invalid input
  * - 500: Server error
  *
  * Security:
+ * - Validates input types and presence
  * - Checks for duplicate email addresses
  * - Hashes password with bcrypt (10 salt rounds)
  * - Never stores plain text passwords
@@ -69,6 +71,25 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    // Robust input validation
+    if (typeof name !== "string" || name.trim().length === 0) {
+      return res.status(400).json({ message: "Please provide a valid name" });
+    }
+    if (typeof email !== "string" || email.trim().length === 0) {
+      return res.status(400).json({ message: "Please provide a valid email" });
+    }
+    if (typeof password !== "string" || password.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+
+    // Basic email format validation
+    const emailRegex = /.+\@.+\..+/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Please provide a valid email format" });
+    }
 
     // Check if the email is already used
     const existingUser = await User.findOne({ email });
@@ -103,10 +124,11 @@ router.post("/register", async (req, res) => {
  *
  * Response:
  * - 200: Login successful with JWT token and user data
- * - 400: User not found or invalid password
+ * - 400: User not found, invalid password, or invalid input
  * - 500: Server error
  *
  * Security:
+ * - Validates input types and presence
  * - Validates user credentials
  * - Compares hashed passwords using bcrypt
  * - Generates JWT token valid for 1 hour
@@ -115,6 +137,14 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Robust input validation
+    if (typeof email !== "string" || email.trim().length === 0) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+    if (typeof password !== "string" || password.length === 0) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
 
     // Find user by email
     const user = await User.findOne({ email });
@@ -234,7 +264,7 @@ router.put("/profile", protect, async (req, res) => {
     const { name } = req.body;
 
     // Validate input
-    if (!name || name.trim().length === 0) {
+    if (typeof name !== "string" || name.trim().length === 0) {
       return res.status(400).json({ message: "Please provide a valid name" });
     }
 
@@ -305,7 +335,7 @@ router.put("/profile-picture", protect, async (req, res) => {
     );
 
     // Validate input
-    if (!profilePicture) {
+    if (typeof profilePicture !== "string") {
       return res
         .status(400)
         .json({ message: "Please provide a profile picture" });
@@ -381,6 +411,7 @@ router.put("/profile-picture", protect, async (req, res) => {
  * - 500: Server error
  *
  * Security:
+ * - Validates input types
  * - Verifies current password before allowing change
  * - Enforces minimum password length (6 characters)
  * - Hashes new password with bcrypt (10 salt rounds)
@@ -391,7 +422,7 @@ router.put("/change-password", protect, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     // Validate input
-    if (!currentPassword || !newPassword) {
+    if (typeof currentPassword !== "string" || typeof newPassword !== "string") {
       return res
         .status(400)
         .json({ message: "Please provide current and new password" });

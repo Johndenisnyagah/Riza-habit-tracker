@@ -20,6 +20,8 @@
  * - Email uniqueness enforced at database level
  * - Password stored as bcrypt hash (10 salt rounds)
  * - Password excluded from API responses using .select("-password")
+ * - Email format validation via regex
+ * - Minimum password length constraint
  *
  * Relationships:
  * - One User → Many Habits (one-to-many)
@@ -62,6 +64,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true, // Creates unique index in MongoDB
+      match: [/.+\@.+\..+/, "Please fill a valid email address"], // Basic email regex
     },
 
     // Hashed password (bcrypt with 10 salt rounds)
@@ -69,6 +72,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      minlength: 6, // Minimum length for password security
     },
 
     // Profile picture (base64 encoded image string)
