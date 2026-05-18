@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Habit Tracker Backend API - Express.js REST API with MongoDB Atlas database, JWT authentication, and bcrypt password hashing. Provides endpoints for user management, habit CRUD operations, daily check-ins, and login tracking.",
+  "description": "Habit Tracker Backend API - Express.js REST API with MongoDB Atlas database, JWT authentication, and bcrypt password hashing. Provides endpoints for user management, habit CRUD operations, and progress tracking.",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -37,7 +37,9 @@
       "bcrypt": "Password hashing library - securely hashes passwords before storing (10 salt rounds)",
       "jsonwebtoken": "JWT token generation and verification - handles user authentication",
       "cors": "Cross-Origin Resource Sharing - allows frontend (different port) to access backend API",
-      "dotenv": "Environment variables loader - reads .env file for sensitive configuration (MONGO_URI, JWT_SECRET)"
+      "dotenv": "Environment variables loader - reads .env file for sensitive configuration (MONGO_URI, JWT_SECRET)",
+      "helmet": "Security middleware - sets HTTP headers to protect against common vulnerabilities",
+      "nodemailer": "Email sending library - handles email verification and notifications (requires SMTP config in .env)"
     },
     "scripts": {
       "start": "Production mode - runs server with node (use this for deployment)",
