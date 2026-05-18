@@ -344,15 +344,9 @@ function updateCurrentStreak(habits, allCheckins) {
   if (!streakElement) return;
 
   try {
-    // Build completion map: habitId -> array of completion dates
-    const completions = {};
-    allCheckins.forEach((checkin) => {
-      const habitId = checkin.habitId;
-      if (!completions[habitId]) {
-        completions[habitId] = [];
-      }
-      completions[habitId].push(checkin.date.split("T")[0]);
-    });
+    // Optimization: Create a Set of unique completion dates for O(1) lookups
+    // This resolves the O(Streak * Habits * Checkins) performance bottleneck
+    const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
 
     // Calculate current streak (consecutive days from today backwards)
     let currentStreak = 0;
@@ -360,18 +354,9 @@ function updateCurrentStreak(habits, allCheckins) {
 
     while (true) {
       const dateStr = checkDate.toISOString().split("T")[0];
-      let anyCompleted = false;
 
       // Check if any habit was completed on this date
-      for (const habit of habits) {
-        const habitId = habit._id || habit.id;
-        if (completions[habitId] && completions[habitId].includes(dateStr)) {
-          anyCompleted = true;
-          break;
-        }
-      }
-
-      if (anyCompleted) {
+      if (completionDates.has(dateStr)) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1); // Move to previous day
       } else {

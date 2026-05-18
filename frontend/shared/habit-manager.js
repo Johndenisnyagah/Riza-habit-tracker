@@ -335,18 +335,16 @@ export async function updateStreakCount(habits = null, allCheckins = null) {
   if (!habits || !allCheckins) {
     [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
   }
-  const completions = {};
-  allCheckins.forEach((c) => {
-    if (!completions[c.habitId]) completions[c.habitId] = [];
-    completions[c.habitId].push(c.date.split("T")[0]);
-  });
+
+  // Optimization: Create a Set of unique completion dates for O(1) lookups
+  // This resolves the O(Streak * Habits * Checkins) performance bottleneck
+  const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
 
   let streak = 0;
   let checkDate = new Date();
   while (true) {
     const dateStr = checkDate.toISOString().split("T")[0];
-    const any = habits.some((h) => completions[h._id || h.id]?.includes(dateStr));
-    if (any) {
+    if (completionDates.has(dateStr)) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
     } else break;

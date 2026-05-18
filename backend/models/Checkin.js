@@ -62,7 +62,6 @@ const checkinSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Habit",
     required: true,
-    index: true,
   },
 
   // Reference to the user who completed the habit
@@ -72,7 +71,6 @@ const checkinSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    index: true,
   },
 
   // Date of completion (normalized to midnight UTC)
@@ -92,6 +90,20 @@ const checkinSchema = new mongoose.Schema({
     default: true,
   },
 });
+
+/**
+ * DATABASE INDEXING STRATEGY
+ *
+ * 1. { habitId, userId, date } (Unique)
+ *    - Prevents duplicate check-ins for the same habit on the same day
+ *    - Optimizes toggle lookups (Checkin.findOne)
+ *
+ * 2. { userId, date }
+ *    - Optimizes batch fetching for dashboard/stats (Checkin.find({ userId }).sort({ date: -1 }))
+ *    - Covers queries filtering by userId only
+ */
+checkinSchema.index({ habitId: 1, userId: 1, date: 1 }, { unique: true });
+checkinSchema.index({ userId: 1, date: -1 });
 
 /**
  * Export Check-in Model
