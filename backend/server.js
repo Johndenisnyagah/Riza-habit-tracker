@@ -82,10 +82,16 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 /**
  * CORS Middleware
  * - Enables Cross-Origin Resource Sharing
- * - Allows frontend (running on different port) to access backend API
- * - In production, configure specific allowed origins for security
+ * - Restricts access to authorized origins only (specified in FRONTEND_URL)
+ * - Defaults to localhost:8000 for local development if not set
  */
-app.use(cors());
+const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:8000";
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
 
 // ============================================================================
 // DATABASE CONNECTION

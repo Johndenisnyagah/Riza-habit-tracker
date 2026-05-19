@@ -66,10 +66,28 @@ const router = express.Router();
 router.post("/", protect, async (req, res) => {
   try {
     const { name, description, frequency, customDays, icon } = req.body;
+
+    // Robust input validation to prevent NoSQL injection
+    if (typeof name !== "string" || name.trim().length === 0) {
+      return res.status(400).json({ message: "Please provide a valid name" });
+    }
+    if (description && typeof description !== "string") {
+      return res.status(400).json({ message: "Invalid description format" });
+    }
+    if (frequency && typeof frequency !== "string") {
+      return res.status(400).json({ message: "Invalid frequency format" });
+    }
+    if (customDays && !Array.isArray(customDays)) {
+      return res.status(400).json({ message: "Invalid custom days format" });
+    }
+    if (icon && typeof icon !== "string") {
+      return res.status(400).json({ message: "Invalid icon format" });
+    }
+
     const habit = new Habit({
       userId: req.user.id,
-      name,
-      description,
+      name: name.trim(),
+      description: description || "",
       frequency: frequency || "daily",
       customDays: customDays || [],
       icon: icon || "target.svg",
@@ -142,9 +160,34 @@ router.get("/", protect, async (req, res) => {
 router.put("/:id", protect, async (req, res) => {
   try {
     const { name, description, frequency, customDays, icon } = req.body;
+
+    // Robust input validation to prevent NoSQL injection
+    if (name && (typeof name !== "string" || name.trim().length === 0)) {
+      return res.status(400).json({ message: "Please provide a valid name" });
+    }
+    if (description && typeof description !== "string") {
+      return res.status(400).json({ message: "Invalid description format" });
+    }
+    if (frequency && typeof frequency !== "string") {
+      return res.status(400).json({ message: "Invalid frequency format" });
+    }
+    if (customDays && !Array.isArray(customDays)) {
+      return res.status(400).json({ message: "Invalid custom days format" });
+    }
+    if (icon && typeof icon !== "string") {
+      return res.status(400).json({ message: "Invalid icon format" });
+    }
+
+    const updateData = {};
+    if (name) updateData.name = name.trim();
+    if (description !== undefined) updateData.description = description;
+    if (frequency) updateData.frequency = frequency;
+    if (customDays) updateData.customDays = customDays;
+    if (icon) updateData.icon = icon;
+
     const habit = await Habit.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
-      { name, description, frequency, customDays, icon },
+      updateData,
       { new: true }
     );
     if (!habit) {
