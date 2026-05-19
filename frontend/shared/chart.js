@@ -147,40 +147,45 @@ export async function updateChartWithHabitData(chartInstance, habits = null, all
         apiGetAllCheckins(),
       ]);
     }
+
+    // Performance Optimization: Hoist week boundaries and use early exit.
+    // Reduces object creation from O(N) to O(N_week) and complexity to O(N_week).
     const today = new Date();
+    const todayDay = today.getDay(); // 0 (Sun) to 6 (Sat)
+
+    // Calculate Monday of this week (00:00:00)
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (todayDay === 0 ? 6 : todayDay - 1));
+    monday.setHours(0, 0, 0, 0);
+    const mondayTime = monday.getTime();
+
+    // Calculate Sunday of this week (23:59:59)
+    // Fix: If today is Sunday (0), end boundary is today, not next week.
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() + (todayDay === 0 ? 0 : 7 - todayDay));
+    sunday.setHours(23, 59, 59, 999);
+    const sundayTime = sunday.getTime();
 
     const weekData = [0, 0, 0, 0, 0, 0, 0]; // [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
 
-    allCheckins.forEach((checkin) => {
-      const date = new Date(checkin.date);
+    // Efficiently process check-ins (leveraging descending sort from backend)
+    for (const checkin of allCheckins) {
+      const checkinDate = new Date(checkin.date);
+      const checkinTime = checkinDate.getTime();
 
-      if (isThisWeek(date, today)) {
-        const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+      // Early exit: Since allCheckins are sorted descending, once we pass Monday, we're done.
+      if (checkinTime < mondayTime) break;
+
+      // Only count if within this week's boundaries
+      if (checkinTime <= sundayTime) {
+        const dayIndex = checkinDate.getDay() === 0 ? 6 : checkinDate.getDay() - 1;
         weekData[dayIndex]++;
       }
-    });
+    }
 
     chartInstance.data.datasets[0].data = weekData;
     chartInstance.update();
   } catch (error) {
     console.error("Failed to update chart with habit data:", error);
   }
-}
-
-/**
- * Check if a given date falls within the current week
- */
-function isThisWeek(date, today) {
-  const todayDate = today.getDate();
-  const todayDay = today.getDay();
-
-  const monday = new Date(today);
-  monday.setDate(todayDate - todayDay + (todayDay === 0 ? -6 : 1));
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(today);
-  sunday.setDate(todayDate + (7 - todayDay));
-  sunday.setHours(23, 59, 59, 999);
-
-  return date >= monday && date <= sunday;
 }
