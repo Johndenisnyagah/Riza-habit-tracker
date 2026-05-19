@@ -1123,6 +1123,7 @@ body::before {
   border: 2px solid transparent;
   background: #f5f5f5;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
 /* Icon hover effect */
@@ -1130,10 +1131,21 @@ body::before {
   background: #edf4f0; /* Light green */
 }
 
+.icon-option:focus-visible {
+  outline: 3px solid #2d6a4f;
+  outline-offset: 2px;
+}
+
 /* Selected icon (highlighted border) */
 .icon-option.active {
   border-color: #1b4332;
   background: rgba(27, 67, 50, 0.1);
+}
+
+.required {
+  color: #e76f51;
+  font-weight: bold;
+  margin-left: 2px;
 }
 
 /* Icon image sizing */

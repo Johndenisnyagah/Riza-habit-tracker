@@ -108,11 +108,18 @@ function setupEventListeners(options = {}) {
     });
   });
 
-  document.querySelectorAll(".icon-option").forEach((icon) => {
-    icon.addEventListener("click", function (e) {
+  document.querySelectorAll(".icon-selector").forEach((selector) => {
+    selector.addEventListener("click", function (e) {
+      const iconOption = e.target.closest(".icon-option");
+      if (!iconOption) return;
+
       e.preventDefault();
-      document.querySelectorAll(".icon-option").forEach((i) => i.classList.remove("active"));
-      this.classList.add("active");
+      selector.querySelectorAll(".icon-option").forEach((i) => {
+        i.classList.remove("active");
+        i.setAttribute("aria-pressed", "false");
+      });
+      iconOption.classList.add("active");
+      iconOption.setAttribute("aria-pressed", "true");
     });
   });
 
@@ -161,14 +168,21 @@ export function openModal(habitData = null) {
     }
 
     const iconOption = document.querySelector(`.icon-option[data-icon="${habitData.icon || "meditation.svg"}"]`);
-    if (iconOption) iconOption.classList.add("active");
+    if (iconOption) {
+      iconOption.classList.add("active");
+      iconOption.setAttribute("aria-pressed", "true");
+    }
   } else {
     isEditing = false;
     currentHabitId = null;
     modalTitle.textContent = "Add New Habit";
     deleteBtn?.classList.add("hidden");
     document.querySelector('.freq-btn[data-value="daily"]')?.classList.add("active");
-    document.querySelector(".icon-option")?.classList.add("active");
+    const firstIcon = document.querySelector(".icon-option");
+    if (firstIcon) {
+      firstIcon.classList.add("active");
+      firstIcon.setAttribute("aria-pressed", "true");
+    }
   }
 
   modal.classList.add("active");

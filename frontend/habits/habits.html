@@ -527,7 +527,7 @@
          - Keyboard navigation supported (Tab, Enter, Esc)
          - Focus trapped within modal when open
          ========================================================= -->
-    <div id="habit-modal" class="modal" aria-hidden="true">
+    <div id="habit-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
       <div class="modal-content">
         <!-- =========================================================
              MODAL HEADER
@@ -554,7 +554,7 @@
                  Example: "Morning Meditation", "Read 30 minutes"
                  ========================================================= -->
             <div class="form-group">
-              <label for="habit-name">Habit Name</label>
+              <label for="habit-name">Habit Name <span class="required" title="Required">*</span></label>
               <input
                 type="text"
                 id="habit-name"
@@ -669,7 +669,7 @@
                  ========================================================= -->
             <div class="form-group">
               <label>Choose Icon</label>
-              <div class="icon-selector" id="icon-selector">
+              <div class="icon-selector" id="icon-selector" role="radiogroup" aria-label="Habit icons">
                 <!-- Icons will be loaded dynamically from habit-icons-config.js -->
               </div>
             </div>

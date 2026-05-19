@@ -316,7 +316,7 @@
         <!-- ===================== HABIT MODAL ===================== -->
         <!-- Modal popup for creating and editing habits -->
         <!-- Managed by habit-manager.js -->
-        <div id="habit-modal" class="modal" aria-hidden="true">
+        <div id="habit-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
           <div class="modal-content">
             <!-- Modal header with title and close button -->
             <div class="modal-header">
@@ -330,7 +330,7 @@
               <form id="habit-form">
                 <!-- Habit name input (required) -->
                 <div class="form-group">
-                  <label for="habit-name">Habit Name</label>
+                  <label for="habit-name">Habit Name <span class="required" title="Required">*</span></label>
                   <input
                     type="text"
                     id="habit-name"
@@ -400,7 +400,7 @@
                 <!-- Selected icon saved to MongoDB in habit.icon field -->
                 <div class="form-group">
                   <label>Choose Icon</label>
-                  <div class="icon-selector" id="icon-selector">
+                  <div class="icon-selector" id="icon-selector" role="radiogroup" aria-label="Habit icons">
                     <!-- Icons populated by loadHabitIcons() in dashboard.js -->
                   </div>
                 </div>
