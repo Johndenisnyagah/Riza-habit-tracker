@@ -660,8 +660,8 @@ body::before {
   color: #fff;
 }
 
-.btn-outline:focus {
-  outline: 3px solid #2d6a4f;
+.btn-outline:focus-visible {
+  outline: 3px solid #1b4332;
   outline-offset: 3px;
 }
 
@@ -1448,6 +1448,14 @@ body::before {
 #habitsContainer .habit-name {
   color: #1b4332;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Completed habit style */
+#habit-list .habit-item.completed .habit-name,
+#habitsContainer .habit-item.completed .habit-name {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 #habit-list .habit-description,
@@ -1686,6 +1694,12 @@ body::before {
   color: #ffffff;
 }
 
+#habit-modal .modal-footer .cancel-btn:focus-visible,
+#habit-modal .modal-footer .save-btn:focus-visible {
+  outline: 3px solid #1b4332;
+  outline-offset: 3px;
+}
+
 /* Form styling */
 #habit-modal .form-group {
   margin-bottom: 20px;
@@ -1733,6 +1747,12 @@ body::before {
   background: #1b4332;
   color: white;
   border-color: #1b4332;
+}
+
+#habit-modal .freq-btn:focus-visible,
+.filter-btn:focus-visible {
+  outline: 3px solid #1b4332;
+  outline-offset: 3px;
 }
 
 /* Custom days */
@@ -1820,7 +1840,7 @@ body::before {
 }
 
 #habit-modal .icon-option:focus-visible {
-  outline: 3px solid #2d6a4f;
+  outline: 3px solid #1b4332;
   outline-offset: 2px;
 }
 

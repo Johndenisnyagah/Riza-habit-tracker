@@ -911,9 +911,9 @@ body::before {
    ========================================================= */
 /* Focus states for accessibility */
 .card:focus-within,
-a:focus,
-button:focus {
-  outline: 3px solid #2d6a4f;
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #1b4332;
   outline-offset: 3px;
   transition: outline 0.2s ease;
 }
