@@ -54,32 +54,25 @@ function calculateLongestStreak(allCheckins) {
   try {
     if (!allCheckins || allCheckins.length === 0) return 0;
 
-    // Collect all unique completion dates
-    const allDatesSet = new Set();
-    allCheckins.forEach((checkin) => {
-      allDatesSet.add(checkin.date.split("T")[0]);
-    });
+    // Optimization: Use UTC timestamps for consistency and to avoid redundant Date object creation in the loop
+    // Backend stores dates as midnight UTC, and new Date("YYYY-MM-DD") parses as midnight UTC.
+    const allTimestamps = Array.from(new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()))).sort((a, b) => a - b);
 
-    // Sort dates chronologically
-    const allDates = Array.from(allDatesSet).sort();
-    if (allDates.length === 0) return 0;
+    if (allTimestamps.length === 0) return 0;
 
     // Find longest consecutive sequence
     let longestStreak = 1;
     let currentStreakCount = 1;
+    const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
-    for (let i = 1; i < allDates.length; i++) {
-      const prevDate = new Date(allDates[i - 1]);
-      const currDate = new Date(allDates[i]);
-
-      // Calculate difference in days
-      const diffTime = currDate - prevDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    for (let i = 1; i < allTimestamps.length; i++) {
+      // Calculate difference in days using pre-calculated timestamps
+      const diffDays = Math.round((allTimestamps[i] - allTimestamps[i - 1]) / ONE_DAY_MS);
 
       if (diffDays === 1) {
         // Consecutive day - increment streak
         currentStreakCount++;
-        longestStreak = Math.max(longestStreak, currentStreakCount);
+        if (currentStreakCount > longestStreak) longestStreak = currentStreakCount;
       } else {
         // Streak broken - reset counter
         currentStreakCount = 1;
@@ -105,21 +98,20 @@ function calculateCurrentStreak(habits, allCheckins) {
     if (habits.length === 0 || !allCheckins || allCheckins.length === 0)
       return 0;
 
-    // Optimization: Create a Set of unique completion dates for O(1) lookups
-    // This resolves the O(Streak * Habits * Checkins) performance bottleneck
-    const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
+    // Optimization: Use a Set of UTC timestamps for O(1) lookups and faster date arithmetic
+    const completionTimestamps = new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()));
 
     // Calculate current streak (consecutive days from today backwards)
     let currentStreak = 0;
-    let checkDate = new Date();
+    const now = new Date();
+    // Match the backend's "Local YMD -> UTC midnight" logic for consistency
+    let checkTimestamp = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
     while (true) {
-      const dateStr = checkDate.toISOString().split("T")[0];
-
-      // Check if any habit was completed on this date
-      if (completionDates.has(dateStr)) {
+      if (completionTimestamps.has(checkTimestamp)) {
         currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1); // Move to previous day
+        checkTimestamp -= ONE_DAY_MS;
       } else {
         break; // Streak broken
       }
@@ -137,16 +129,13 @@ function calculateCurrentStreak(habits, allCheckins) {
  *
  * @param {Array} habits - All habits for the user
  * @param {Array} allCheckins - All check-in records for the user
- * @returns {Promise<Object>} Statistics object with all metrics
+ * @param {number} totalLoginDays - Pre-fetched total login days
+ * @returns {Object} Statistics object with all metrics
  */
-async function calculateStats(habits, allCheckins) {
+function calculateStats(habits, allCheckins, totalLoginDays) {
   try {
-    // Track daily login (only counts once per day in MongoDB)
-    await trackDailyLogin();
-
-    // Fetch total unique login days from backend
-    const loginData = await getTotalLoginDays();
-    const totalCheckins = loginData.totalLoginDays || 0;
+    // Optimization: Remove redundant trackDailyLogin() call as it's already handled in DOMContentLoaded
+    const totalCheckins = totalLoginDays || 0;
 
     // Calculate current streak
     const currentStreak = calculateCurrentStreak(habits, allCheckins);
@@ -162,64 +151,65 @@ async function calculateStats(habits, allCheckins) {
     );
     weekStart.setHours(0, 0, 0, 0);
 
+    const lastWeekStart = new Date(weekStart);
+    lastWeekStart.setDate(weekStart.getDate() - 7);
+
+    // Pre-calculate date strings for current and last week once to avoid thousands of Date objects in the habit loop
+    const thisWeekDateStrings = [];
+    const lastWeekDateStrings = [];
+    for (let i = 0; i < 7; i++) {
+      const d1 = new Date(weekStart);
+      d1.setDate(weekStart.getDate() + i);
+      thisWeekDateStrings.push(d1.toISOString().split("T")[0]);
+
+      const d2 = new Date(lastWeekStart);
+      d2.setDate(lastWeekStart.getDate() + i);
+      lastWeekDateStrings.push(d2.toISOString().split("T")[0]);
+    }
+
     let totalPossible = 0;
     let totalCompleted = 0;
+    let lastWeekPossible = 0;
+    let lastWeekCompleted = 0;
     const dailySuccess = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun success counts
     const dailyTotal = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun total counts
 
-    // Build completion map: habitId -> array of completion dates
+    // Build completion map: habitId -> Set of completion dates for O(1) lookup
     const completions = {};
     allCheckins.forEach((checkin) => {
       const habitId = checkin.habitId;
       if (!completions[habitId]) {
-        completions[habitId] = [];
+        completions[habitId] = new Set();
       }
-      completions[habitId].push(checkin.date.split("T")[0]);
+      completions[habitId].add(checkin.date.split("T")[0]);
     });
 
-    // Calculate success rate for this week
+    // Calculate success rates for both current and last week in a single pass over the habits array
     habits.forEach((habit) => {
       const habitId = habit._id || habit.id;
-      for (let i = 0; i < 7; i++) {
-        const checkDate = new Date(weekStart);
-        checkDate.setDate(weekStart.getDate() + i);
-        const dateStr = checkDate.toISOString().split("T")[0];
+      const habitCompletions = completions[habitId] || new Set();
 
+      thisWeekDateStrings.forEach((dateStr, i) => {
         totalPossible++;
         dailyTotal[i]++;
-
-        if (completions[habitId] && completions[habitId].includes(dateStr)) {
+        if (habitCompletions.has(dateStr)) {
           totalCompleted++;
           dailySuccess[i]++;
         }
-      }
+      });
+
+      lastWeekDateStrings.forEach((dateStr) => {
+        lastWeekPossible++;
+        if (habitCompletions.has(dateStr)) {
+          lastWeekCompleted++;
+        }
+      });
     });
 
     const successRate =
       totalPossible > 0
         ? Math.round((totalCompleted / totalPossible) * 100)
         : 0;
-
-    // Calculate last week's success rate for comparison
-    const lastWeekStart = new Date(weekStart);
-    lastWeekStart.setDate(weekStart.getDate() - 7);
-
-    let lastWeekPossible = 0;
-    let lastWeekCompleted = 0;
-
-    habits.forEach((habit) => {
-      const habitId = habit._id || habit.id;
-      for (let i = 0; i < 7; i++) {
-        const checkDate = new Date(lastWeekStart);
-        checkDate.setDate(lastWeekStart.getDate() + i);
-        const dateStr = checkDate.toISOString().split("T")[0];
-
-        lastWeekPossible++;
-        if (completions[habitId] && completions[habitId].includes(dateStr)) {
-          lastWeekCompleted++;
-        }
-      }
-    });
 
     const lastWeekRate =
       lastWeekPossible > 0
@@ -280,15 +270,16 @@ async function calculateStats(habits, allCheckins) {
  */
 async function updateUI() {
   try {
-    // Optimization: Fetch all habits and check-ins once and distribute the data
-    // to resolve N+1 query bottlenecks across all statistical calculations.
-    const [habits, allCheckins] = await Promise.all([
+    // Optimization: Fetch all data in parallel to reduce overall load time.
+    // This resolves N+1 query bottlenecks and reduces waterfall requests.
+    const [habits, allCheckins, loginData] = await Promise.all([
       getHabitsData(),
       apiGetAllCheckins(),
+      getTotalLoginDays(),
     ]);
 
-    // Calculate all statistics from MongoDB
-    const stats = await calculateStats(habits, allCheckins);
+    // Calculate all statistics from pre-fetched data
+    const stats = calculateStats(habits, allCheckins, loginData.totalLoginDays);
 
     // Update stats card
     document.getElementById("total-checkins").textContent = stats.totalCheckins;
