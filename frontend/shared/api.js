@@ -159,7 +159,7 @@ export async function changePassword(currentPassword, newPassword) {
  */
 export async function deleteAccount() {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/delete-account`, {
+    const response = await fetch(`${API_BASE_URL}/auth/account`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });

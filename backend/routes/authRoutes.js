@@ -65,7 +65,7 @@ const router = express.Router();
  * Security:
  * - Validates input types and presence
  * - Checks for duplicate email addresses
- * - Hashes password with bcrypt (10 salt rounds)
+ * - Hashes password with bcrypt (12 salt rounds)
  * - Never stores plain text passwords
  */
 router.post("/register", async (req, res) => {
@@ -98,7 +98,8 @@ router.post("/register", async (req, res) => {
     }
 
     // Hash password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Using 12 rounds for better security (modern recommendation)
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create and save user
     const user = new User({ name, email, password: hashedPassword });
@@ -414,7 +415,7 @@ router.put("/profile-picture", protect, async (req, res) => {
  * - Validates input types
  * - Verifies current password before allowing change
  * - Enforces minimum password length (6 characters)
- * - Hashes new password with bcrypt (10 salt rounds)
+ * - Hashes new password with bcrypt (12 salt rounds)
  * - Never stores plain text passwords
  */
 router.put("/change-password", protect, async (req, res) => {
@@ -447,7 +448,8 @@ router.put("/change-password", protect, async (req, res) => {
     }
 
     // Hash new password
-    const salt = await bcrypt.genSalt(10);
+    // Using 12 rounds for better security (modern recommendation)
+    const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(newPassword, salt);
     await user.save();
 

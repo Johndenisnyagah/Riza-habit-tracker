@@ -33,6 +33,7 @@
 
 import express from "express";
 import Habit from "../models/Habit.js";
+import Checkin from "../models/Checkin.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -223,19 +224,24 @@ router.put("/:id", protect, async (req, res) => {
  * - Returns 404 if habit doesn't exist or user doesn't own it
  *
  * Note:
- * - Consider cascading deletion of related check-ins
- * - Currently check-ins may remain orphaned
- * - Future enhancement: Delete related check-ins when habit is deleted
+ * - Implements cascading deletion of related check-ins
+ * - Ensures data integrity and prevents orphaned records
  */
 router.delete("/:id", protect, async (req, res) => {
   try {
+    // Delete habit and ensure it belongs to user
     const habit = await Habit.findOneAndDelete({
       _id: req.params.id,
       userId: req.user.id,
     });
+
     if (!habit) {
       return res.status(404).json({ message: "Habit not found" });
     }
+
+    // Cascading delete: Remove all check-ins associated with this habit
+    await Checkin.deleteMany({ habitId: req.params.id, userId: req.user.id });
+
     res.status(200).json({ message: "Habit deleted" });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
