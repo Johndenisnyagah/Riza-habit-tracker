@@ -98,8 +98,12 @@ function setupEventListeners(options = {}) {
   document.querySelectorAll(".freq-btn").forEach((btn) => {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
-      document.querySelectorAll(".freq-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".freq-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
       const customDaysDiv = document.querySelector(".custom-days");
       if (customDaysDiv) {
         if (this.dataset.value === "custom") customDaysDiv.classList.remove("hidden");
@@ -125,8 +129,12 @@ function setupEventListeners(options = {}) {
 
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".filter-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
       currentFilter = this.dataset.filter;
       updateHabitSummaryList(options.habitListId || "habit-list");
     });
@@ -142,7 +150,10 @@ export function openModal(habitData = null) {
   if (!modal || !habitForm) return;
 
   habitForm.reset();
-  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => {
+    el.classList.remove("active");
+    el.setAttribute("aria-pressed", "false");
+  });
 
   if (habitData) {
     isEditing = true;
@@ -154,7 +165,10 @@ export function openModal(habitData = null) {
     document.getElementById("habit-description").value = habitData.description || "";
 
     const freqBtn = document.querySelector(`.freq-btn[data-value="${habitData.frequency || "daily"}"]`);
-    if (freqBtn) freqBtn.classList.add("active");
+    if (freqBtn) {
+      freqBtn.classList.add("active");
+      freqBtn.setAttribute("aria-pressed", "true");
+    }
 
     const customDaysDiv = document.querySelector(".custom-days");
     if (habitData.frequency === "custom" && customDaysDiv) {
@@ -177,7 +191,11 @@ export function openModal(habitData = null) {
     currentHabitId = null;
     modalTitle.textContent = "Add New Habit";
     deleteBtn?.classList.add("hidden");
-    document.querySelector('.freq-btn[data-value="daily"]')?.classList.add("active");
+    const dailyBtn = document.querySelector('.freq-btn[data-value="daily"]');
+    if (dailyBtn) {
+      dailyBtn.classList.add("active");
+      dailyBtn.setAttribute("aria-pressed", "true");
+    }
     const firstIcon = document.querySelector(".icon-option");
     if (firstIcon) {
       firstIcon.classList.add("active");
@@ -262,7 +280,9 @@ export async function updateHabit(updatedHabit) {
 }
 
 export async function deleteHabit(habitId) {
-  if (!confirm("Are you sure?")) return;
+  const habit = habitsCache?.find(h => (h._id || h.id) === habitId);
+  const habitName = habit ? habit.name : "this habit";
+  if (!confirm(`Are you sure you want to delete "${habitName}"?`)) return;
   await apiDeleteHabit(habitId);
   await loadHabitsFromAPI();
   if (onHabitChangeCallback) await onHabitChangeCallback();
@@ -284,7 +304,7 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
 
     habitList.innerHTML = "";
     if (habits.length === 0) {
-      habitList.innerHTML = '<li class="empty-message">No habits found.</li>';
+      habitList.innerHTML = '<li class="empty-message">No habits found. Time to start a new journey! Click \'Get Started\' above.</li>';
       return;
     }
 

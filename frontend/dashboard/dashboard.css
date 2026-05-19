@@ -622,6 +622,16 @@ body::before {
   transition: background 0.25s ease;
 }
 
+#habit-list .habit-item.completed {
+  opacity: 0.7;
+  background: rgba(74, 222, 128, 0.1);
+}
+
+#habit-list .habit-item.completed .habit-name {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
 /* Left side: checkbox + habit name/description */
 #habit-list .habit-left {
   display: flex;

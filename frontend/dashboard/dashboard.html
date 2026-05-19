@@ -295,15 +295,15 @@
 
             <!-- Filter buttons: All, Daily, Weekdays, Weekends, Custom -->
             <div class="habit-filters">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="daily">Daily</button>
-              <button class="filter-btn" data-filter="weekdays">
+              <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+              <button class="filter-btn" data-filter="daily" aria-pressed="false">Daily</button>
+              <button class="filter-btn" data-filter="weekdays" aria-pressed="false">
                 Weekdays
               </button>
-              <button class="filter-btn" data-filter="weekends">
+              <button class="filter-btn" data-filter="weekends" aria-pressed="false">
                 Weekends
               </button>
-              <button class="filter-btn" data-filter="custom">Custom</button>
+              <button class="filter-btn" data-filter="custom" aria-pressed="false">Custom</button>
             </div>
 
             <!-- Habit list populated dynamically by habit-manager.js -->
@@ -358,6 +358,7 @@
                       type="button"
                       class="freq-btn active"
                       data-value="daily"
+                      aria-pressed="true"
                     >
                       Daily
                     </button>
@@ -365,6 +366,7 @@
                       type="button"
                       class="freq-btn"
                       data-value="weekdays"
+                      aria-pressed="false"
                     >
                       Weekdays
                     </button>
@@ -372,10 +374,11 @@
                       type="button"
                       class="freq-btn"
                       data-value="weekends"
+                      aria-pressed="false"
                     >
                       Weekends
                     </button>
-                    <button type="button" class="freq-btn" data-value="custom">
+                    <button type="button" class="freq-btn" data-value="custom" aria-pressed="false">
                       Custom
                     </button>
                   </div>

@@ -1506,9 +1506,15 @@ body::before {
 /* Completed state */
 #habit-list .habit-item.completed,
 #habitsContainer .habit-item.completed {
-  opacity: 0.8;
+  opacity: 0.7;
   background-color: rgba(74, 222, 128, 0.1);
   border-left: 3px solid #4ade80;
+}
+
+#habit-list .habit-item.completed .habit-name,
+#habitsContainer .habit-item.completed .habit-name {
+  text-decoration: line-through;
+  color: #6b7280;
 }
 
 /* Empty message */
