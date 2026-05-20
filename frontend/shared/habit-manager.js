@@ -334,8 +334,8 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
           </div>
         </div>
         <div class="habit-actions">
-          <button class="btn-outline edit-btn" aria-label="Edit ${escapedName} habit"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn-outline delete-btn-item" aria-label="Delete ${escapedName} habit"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn-outline edit-btn" aria-label="Edit ${escapedName} habit" title="Edit ${escapedName} habit"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn-outline delete-btn-item" aria-label="Delete ${escapedName} habit" title="Delete ${escapedName} habit"><i class="fa-solid fa-trash"></i></button>
         </div>
       `;
 
