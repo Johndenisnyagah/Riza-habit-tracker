@@ -109,6 +109,12 @@ router.post("/toggle", protect, async (req, res) => {
       return res.status(400).json({ message: "Invalid habit ID" });
     }
 
+    // Verify habit ownership (prevent IDOR)
+    const habit = await Habit.findOne({ _id: habitId, userId: req.user.id });
+    if (!habit) {
+      return res.status(404).json({ message: "Habit not found" });
+    }
+
     // Create today's date at midnight UTC for consistency
     const now = new Date();
     const today = new Date(
