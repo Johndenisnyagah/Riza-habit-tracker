@@ -847,6 +847,12 @@ body::before {
   border-radius: 0;
 }
 
+#habit-list .checkbox-container input:focus-visible ~ .checkmark,
+#habitsContainer .checkbox-container input:focus-visible ~ .checkmark {
+  outline: 3px solid #1b4332;
+  outline-offset: 3px;
+}
+
 .habit-name {
   flex: 1;
   color: #1b4332;
