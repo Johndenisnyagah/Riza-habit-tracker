@@ -277,12 +277,12 @@ body::before {
   transform: translateY(-1px);
 }
 
-.edit-btn:focus,
-.setting-btn:focus,
-.logout-btn:focus,
-.delete-btn:focus,
-.edit-icon:focus {
-  outline: 3px solid #2d6a4f;
+.edit-btn:focus-visible,
+.setting-btn:focus-visible,
+.logout-btn:focus-visible,
+.delete-btn:focus-visible,
+.edit-icon:focus-visible {
+  outline: 3px solid #1b4332;
   outline-offset: 3px;
 }
 

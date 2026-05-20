@@ -91,15 +91,22 @@ function setupEventListeners(options = {}) {
   const deleteBtn = document.querySelector(".delete-btn");
   if (deleteBtn) {
     deleteBtn.addEventListener("click", () => {
-      if (currentHabitId) deleteHabit(currentHabitId);
+      if (currentHabitId) {
+        const habitName = document.getElementById("habit-name")?.value || "this habit";
+        deleteHabit(currentHabitId, habitName);
+      }
     });
   }
 
   document.querySelectorAll(".freq-btn").forEach((btn) => {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
-      document.querySelectorAll(".freq-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".freq-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
       const customDaysDiv = document.querySelector(".custom-days");
       if (customDaysDiv) {
         if (this.dataset.value === "custom") customDaysDiv.classList.remove("hidden");
@@ -125,8 +132,12 @@ function setupEventListeners(options = {}) {
 
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".filter-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
       this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
       currentFilter = this.dataset.filter;
       updateHabitSummaryList(options.habitListId || "habit-list");
     });
@@ -142,7 +153,10 @@ export function openModal(habitData = null) {
   if (!modal || !habitForm) return;
 
   habitForm.reset();
-  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".freq-btn, .icon-option").forEach((el) => {
+    el.classList.remove("active");
+    el.setAttribute("aria-pressed", "false");
+  });
 
   if (habitData) {
     isEditing = true;
@@ -154,7 +168,10 @@ export function openModal(habitData = null) {
     document.getElementById("habit-description").value = habitData.description || "";
 
     const freqBtn = document.querySelector(`.freq-btn[data-value="${habitData.frequency || "daily"}"]`);
-    if (freqBtn) freqBtn.classList.add("active");
+    if (freqBtn) {
+      freqBtn.classList.add("active");
+      freqBtn.setAttribute("aria-pressed", "true");
+    }
 
     const customDaysDiv = document.querySelector(".custom-days");
     if (habitData.frequency === "custom" && customDaysDiv) {
@@ -177,7 +194,11 @@ export function openModal(habitData = null) {
     currentHabitId = null;
     modalTitle.textContent = "Add New Habit";
     deleteBtn?.classList.add("hidden");
-    document.querySelector('.freq-btn[data-value="daily"]')?.classList.add("active");
+    const defaultFreq = document.querySelector('.freq-btn[data-value="daily"]');
+    if (defaultFreq) {
+      defaultFreq.classList.add("active");
+      defaultFreq.setAttribute("aria-pressed", "true");
+    }
     const firstIcon = document.querySelector(".icon-option");
     if (firstIcon) {
       firstIcon.classList.add("active");
@@ -261,8 +282,8 @@ export async function updateHabit(updatedHabit) {
   return updated;
 }
 
-export async function deleteHabit(habitId) {
-  if (!confirm("Are you sure?")) return;
+export async function deleteHabit(habitId, habitName = "this habit") {
+  if (!confirm(`Are you sure you want to delete "${habitName}"?`)) return;
   await apiDeleteHabit(habitId);
   await loadHabitsFromAPI();
   if (onHabitChangeCallback) await onHabitChangeCallback();
@@ -322,7 +343,7 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
         toggleHabitCompletion(habitId, this);
       });
       item.querySelector(".edit-btn").addEventListener("click", () => openModal(habit));
-      item.querySelector(".delete-btn-item").addEventListener("click", () => deleteHabit(habitId));
+      item.querySelector(".delete-btn-item").addEventListener("click", () => deleteHabit(habitId, habit.name));
       habitList.appendChild(item);
     });
   } catch (error) {
