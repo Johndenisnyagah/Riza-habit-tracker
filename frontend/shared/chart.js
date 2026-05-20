@@ -147,18 +147,42 @@ export async function updateChartWithHabitData(chartInstance, habits = null, all
         apiGetAllCheckins(),
       ]);
     }
+
+    // Performance Optimization: Hoist date calculations outside the loop
+    // and use timestamps for faster numerical comparisons.
     const today = new Date();
+    const todayDate = today.getDate();
+    const todayDay = today.getDay();
+
+    // Calculate Monday of current week (00:00:00)
+    const monday = new Date(today);
+    monday.setDate(todayDate - todayDay + (todayDay === 0 ? -6 : 1));
+    monday.setHours(0, 0, 0, 0);
+    const mondayTs = monday.getTime();
+
+    // Calculate Sunday of current week (23:59:59)
+    // Fix: Using monday as base ensuring exactly 7 days
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+    const sundayTs = sunday.getTime();
 
     const weekData = [0, 0, 0, 0, 0, 0, 0]; // [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
 
-    allCheckins.forEach((checkin) => {
-      const date = new Date(checkin.date);
+    // Optimization: Use for...of with early break since allCheckins is sorted descending
+    // This reduces complexity from O(TotalCheckins) to O(WeeklyCheckins)
+    for (const checkin of allCheckins) {
+      const checkinDate = new Date(checkin.date);
+      const checkinTs = checkinDate.getTime();
 
-      if (isThisWeek(date, today)) {
-        const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+      if (checkinTs >= mondayTs && checkinTs <= sundayTs) {
+        const dayIndex = checkinDate.getDay() === 0 ? 6 : checkinDate.getDay() - 1;
         weekData[dayIndex]++;
+      } else if (checkinTs < mondayTs) {
+        // Exit early once we reach check-ins from previous weeks
+        break;
       }
-    });
+    }
 
     chartInstance.data.datasets[0].data = weekData;
     chartInstance.update();
@@ -169,6 +193,8 @@ export async function updateChartWithHabitData(chartInstance, habits = null, all
 
 /**
  * Check if a given date falls within the current week
+ * Used by other modules if necessary, but updateChartWithHabitData now uses
+ * an optimized internal loop.
  */
 function isThisWeek(date, today) {
   const todayDate = today.getDate();
@@ -178,8 +204,8 @@ function isThisWeek(date, today) {
   monday.setDate(todayDate - todayDay + (todayDay === 0 ? -6 : 1));
   monday.setHours(0, 0, 0, 0);
 
-  const sunday = new Date(today);
-  sunday.setDate(todayDate + (7 - todayDay));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
   sunday.setHours(23, 59, 59, 999);
 
   return date >= monday && date <= sunday;

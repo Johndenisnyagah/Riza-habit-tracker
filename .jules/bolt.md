@@ -5,3 +5,7 @@
 ## 2026-05-18 - [Database Indexing & Algorithmic Optimization]
 **Learning:** Found a critical performance bottleneck in streak calculation where every day of the streak was checking every habit against all check-ins (O(S*H*C)). Also, the backend lacked compound indexes for the most frequent check-in queries.
 **Action:** Optimized the frontend by using a Set for O(1) date lookups and the backend by adding compound indexes on {habitId, userId, date} and {userId, date}. Always use Sets for date-based existence checks in long-term tracking apps.
+
+## 2025-05-20 - [Optimized Chart Iteration & Sunday Boundary Fix]
+**Learning:** The weekly chart was iterating through the entire check-in history for every render, and the boundary logic incorrectly handled Sundays, potentially extending the week range. Using timestamps and a 'for...of' loop with an early 'break' (leveraging descending sort order) reduced complexity from O(N) to O(K) where K is weekly check-ins.
+**Action:** Always hoist date boundary calculations outside loops and use early break patterns when processing sorted historical data. Handle Sunday (day 0) as an explicit edge case in weekly logic.
