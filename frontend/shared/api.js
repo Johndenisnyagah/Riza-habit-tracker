@@ -124,6 +124,12 @@ export function logoutUser() {
   try {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    // Clear user-specific login tracking cache
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("lastLoginTracked_")) {
+        localStorage.removeItem(key);
+      }
+    });
     console.log("✅ User logged out successfully");
   } catch (error) {
     console.error("❌ Logout error:", error);
@@ -483,11 +489,28 @@ export async function getTodayLoginCount() {
  */
 export async function trackDailyLogin() {
   try {
+    // Optimization: Use localStorage caching to skip redundant API calls
+    // Reduces network overhead by only tracking once per user session per day
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const userId = user.id || user._id;
+    const today = new Date().toISOString().split("T")[0];
+    const cacheKey = `lastLoginTracked_${userId}`;
+
+    if (localStorage.getItem(cacheKey) === today) {
+      console.log("⚡ Bolt: Skipping login tracking, already tracked today.");
+      return { message: "Already tracked today", cached: true };
+    }
+
     const response = await fetch(`${API_BASE_URL}/logins/track`, {
       method: "POST",
       headers: getAuthHeaders(),
     });
     const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem(cacheKey, today);
+    }
+
     console.log("✅ Daily login tracked:", data);
     return data;
   } catch (error) {
