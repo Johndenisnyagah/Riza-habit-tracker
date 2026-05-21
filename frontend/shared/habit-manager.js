@@ -30,6 +30,7 @@ let onHabitChangeCallback = null;
 let isEditing = false;
 let currentHabitId = null;
 let chartInstance = null;
+let previousActiveElement = null;
 
 function escapeHTML(str) {
   if (!str) return "";
@@ -142,9 +143,20 @@ function setupEventListeners(options = {}) {
       updateHabitSummaryList(options.habitListId || "habit-list");
     });
   });
+
+  // Handle Escape key to close modal
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const modal = document.getElementById("habit-modal");
+      if (modal && modal.classList.contains("active")) {
+        closeModal();
+      }
+    }
+  });
 }
 
 export function openModal(habitData = null) {
+  previousActiveElement = document.activeElement;
   const modal = document.getElementById("habit-modal");
   const modalTitle = document.getElementById("modal-title");
   const habitForm = document.getElementById("habit-form");
@@ -219,6 +231,11 @@ export function closeModal() {
   modal.setAttribute("aria-hidden", "true");
   isEditing = false;
   currentHabitId = null;
+
+  if (previousActiveElement && typeof previousActiveElement.focus === "function") {
+    previousActiveElement.focus();
+    previousActiveElement = null;
+  }
 }
 
 async function saveHabit() {
