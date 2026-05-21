@@ -41,6 +41,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { authLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
@@ -68,7 +69,7 @@ const router = express.Router();
  * - Hashes password with bcrypt (12 salt rounds)
  * - Never stores plain text passwords
  */
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -135,7 +136,7 @@ router.post("/register", async (req, res) => {
  * - Generates JWT token valid for 1 hour
  * - Token includes user ID and email in payload
  */
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -147,8 +148,8 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    // Find user by email (include password for comparison)
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       // Use generic error message to prevent email enumeration
       return res.status(400).json({ message: "Invalid email or password" });
@@ -210,8 +211,6 @@ router.get("/profile", protect, async (req, res) => {
 
     // Fetch full user data from database (excluding password)
     const user = await User.findById(req.user.id).select("-password");
-
-    console.log("User fetched from DB:", user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -435,8 +434,8 @@ router.put("/change-password", protect, async (req, res) => {
         .json({ message: "New password must be at least 6 characters" });
     }
 
-    // Get user from database
-    const user = await User.findById(req.user.id);
+    // Get user from database (include password for verification)
+    const user = await User.findById(req.user.id).select("+password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

@@ -153,7 +153,9 @@ export const protect = (req, res, next) => {
      * - Token is expired
      * - Token is malformed
      */
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
 
     // ========================================================================
     // STEP 4: Attach User Data to Request

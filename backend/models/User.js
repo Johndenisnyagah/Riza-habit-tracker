@@ -67,12 +67,14 @@ const userSchema = new mongoose.Schema(
       match: [/.+\@.+\..+/, "Please fill a valid email address"], // Basic email regex
     },
 
-    // Hashed password (bcrypt with 10 salt rounds)
+    // Hashed password (bcrypt with 12 salt rounds)
     // Never stored in plain text for security
+    // Hidden by default for defense-in-depth against accidental leakage
     password: {
       type: String,
       required: true,
       minlength: 6, // Minimum length for password security
+      select: false, // Don't return password in queries by default
     },
 
     // Profile picture (base64 encoded image string)
