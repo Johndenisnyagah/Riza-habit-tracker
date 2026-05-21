@@ -62,9 +62,14 @@ const router = express.Router();
  */
 router.get("/", protect, async (req, res) => {
   try {
-    const checkins = await Checkin.find({
-      userId: req.user.id,
-    }).sort({ date: -1 });
+    // Optimization: Project only necessary fields and use .lean() for performance
+    // Reduces payload size and decreases memory usage by returning POJOs instead of Mongoose documents
+    const checkins = await Checkin.find(
+      { userId: req.user.id },
+      { habitId: 1, date: 1 }
+    )
+      .sort({ date: -1 })
+      .lean();
 
     res.status(200).json(checkins);
   } catch (err) {
@@ -185,10 +190,16 @@ router.post("/toggle", protect, async (req, res) => {
  */
 router.get("/:habitId", protect, async (req, res) => {
   try {
-    const checkins = await Checkin.find({
-      habitId: req.params.habitId,
-      userId: req.user.id,
-    }).sort({ date: -1 });
+    // Optimization: Project only necessary fields and use .lean() for performance
+    const checkins = await Checkin.find(
+      {
+        habitId: req.params.habitId,
+        userId: req.user.id,
+      },
+      { habitId: 1, date: 1 }
+    )
+      .sort({ date: -1 })
+      .lean();
 
     res.status(200).json(checkins);
   } catch (err) {
@@ -231,30 +242,34 @@ router.get("/:habitId", protect, async (req, res) => {
  */
 router.get("/:habitId/streak", protect, async (req, res) => {
   try {
-    const checkins = await Checkin.find({
-      habitId: req.params.habitId,
-      userId: req.user.id,
-    }).sort({ date: -1 });
+    // Optimization: Project only date and use .lean() for performance
+    const checkins = await Checkin.find(
+      {
+        habitId: req.params.habitId,
+        userId: req.user.id,
+      },
+      { date: 1 }
+    )
+      .sort({ date: -1 })
+      .lean();
 
     if (checkins.length === 0) {
       return res.status(200).json({ streak: 0 });
     }
 
-    // Normalize dates (ignore time)
-    const normalize = (d) => new Date(d).setHours(0, 0, 0, 0);
-
+    // Optimization: Use timestamps directly and avoid redundant Date object creation in the loop
+    // Dates are already normalized to midnight UTC by the backend
+    const ONE_DAY_MS = 86400000; // 1000 * 60 * 60 * 24
     let streak = 1;
-    let lastDate = normalize(checkins[0].date);
+    let lastTimestamp = checkins[0].date.getTime();
 
     for (let i = 1; i < checkins.length; i++) {
-      const currentDate = normalize(checkins[i].date);
-      const diffInDays = Math.floor(
-        (lastDate - currentDate) / (1000 * 60 * 60 * 24)
-      );
+      const currentTimestamp = checkins[i].date.getTime();
+      const diffInDays = Math.round((lastTimestamp - currentTimestamp) / ONE_DAY_MS);
 
       if (diffInDays === 1) {
         streak++;
-        lastDate = currentDate;
+        lastTimestamp = currentTimestamp;
       } else if (diffInDays > 1) {
         break;
       }
