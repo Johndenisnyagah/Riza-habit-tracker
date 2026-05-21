@@ -12,3 +12,8 @@
 **Vulnerability:** Authentication bypass or data manipulation via object injection in `req.body`.
 **Learning:** In Node.js/Express applications using Mongoose, passing unsanitized user input directly from `req.body` to query methods like `findOne` or `findById` can be dangerous. If an attacker provides an object with MongoDB operators (e.g., `{ "email": { "$gt": "" } }`) instead of a string, it can lead to authentication bypass or unauthorized data access. Even if the application logic expects strings, Express's JSON parser will happily create objects if the request payload is structured that way.
 **Prevention:** Always validate that incoming user input matches the expected data type. Use `typeof === "string"` checks for all fields before using them in database queries or operations. Implement schema-level validation (e.g., `match`, `minlength`) in Mongoose as a defense-in-depth measure.
+
+## 2026-05-19 - Authentication Hardening and Defense-in-Depth
+**Vulnerability:** Multiple vectors including brute-force risk, JWT algorithm confusion, and accidental password leakage.
+**Learning:** Even with password hashing, auth endpoints are vulnerable to brute-force without rate limiting. JWT verification without explicit algorithm pinning is susceptible to algorithm switching attacks. Defaulting sensitive fields (like passwords) to be included in query results increases the risk of accidental exposure in logs or API responses.
+**Prevention:** Implement `express-rate-limit` on sensitive routes. Explicitly specify allowed algorithms in `jwt.verify`. Use `select: false` in Mongoose schemas for sensitive fields and only include them when absolutely necessary using `.select("+field")`.
