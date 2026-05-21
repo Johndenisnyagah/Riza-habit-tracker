@@ -1601,7 +1601,8 @@ body::before {
 
 /* ============== UPDATED MODAL STYLES ============== */
 #habit-modal.modal {
-  display: none;
+  visibility: hidden;
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
@@ -1613,11 +1614,11 @@ body::before {
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, visibility 0.3s;
 }
 
 #habit-modal.modal.active {
-  display: flex;
+  visibility: visible;
   opacity: 1;
   pointer-events: auto;
 }
@@ -1629,10 +1630,16 @@ body::before {
   max-width: 500px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transform: translateY(20px);
-  transition: transform 0.3s ease;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   overflow: hidden;
   position: relative;
   z-index: 1001;
+}
+
+#habit-modal.active .modal-content {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* Fix for form inputs */
