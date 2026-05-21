@@ -226,32 +226,34 @@ function calculateLongestStreak(allCheckins) {
   try {
     if (!allCheckins || allCheckins.length === 0) return 0;
 
-    // Collect all unique completion dates
-    const allDatesSet = new Set();
-    allCheckins.forEach((checkin) => {
-      allDatesSet.add(checkin.date.split("T")[0]);
-    });
+    // Optimization: Use a Set of date strings to get unique days, then sort.
+    // Using Date.parse() avoids redundant Date object creation entirely.
+    const uniqueDates = new Set();
+    for (let i = 0; i < allCheckins.length; i++) {
+      uniqueDates.add(allCheckins[i].date.substring(0, 10));
+    }
 
-    // Sort dates chronologically
-    const allDates = Array.from(allDatesSet).sort();
-    if (allDates.length === 0) return 0;
+    const allTimestamps = Array.from(uniqueDates)
+      .sort()
+      .map((d) => Date.parse(d));
+
+    if (allTimestamps.length === 0) return 0;
 
     // Find longest consecutive sequence
     let longestStreak = 1;
     let currentStreakCount = 1;
+    const ONE_DAY_MS = 86400000; // 1000 * 60 * 60 * 24
 
-    for (let i = 1; i < allDates.length; i++) {
-      const prevDate = new Date(allDates[i - 1]);
-      const currDate = new Date(allDates[i]);
-
-      // Calculate difference in days
-      const diffTime = currDate - prevDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    for (let i = 1; i < allTimestamps.length; i++) {
+      // Calculate difference in days using pre-calculated timestamps
+      const diffDays = Math.round(
+        (allTimestamps[i] - allTimestamps[i - 1]) / ONE_DAY_MS
+      );
 
       if (diffDays === 1) {
         // Consecutive day - increment streak
         currentStreakCount++;
-        longestStreak = Math.max(longestStreak, currentStreakCount);
+        if (currentStreakCount > longestStreak) longestStreak = currentStreakCount;
       } else {
         // Streak broken - reset counter
         currentStreakCount = 1;
