@@ -77,14 +77,16 @@ export async function initializeHabitManager(options = {}) {
 }
 
 function setupEventListeners(options = {}) {
-  const openModalBtn = document.querySelector(options.openModalSelector || ".open-habit-modal");
-  if (openModalBtn) openModalBtn.addEventListener("click", () => openModal());
+  const openModalSelector = options.openModalSelector || ".open-habit-modal";
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(openModalSelector)) {
+      openModal();
+    }
 
-  const closeBtn = document.querySelector(".close-modal");
-  if (closeBtn) closeBtn.addEventListener("click", closeModal);
-
-  const cancelBtn = document.querySelector(".cancel-btn");
-  if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+    if (e.target.closest(".close-modal") || e.target.closest(".cancel-btn")) {
+      closeModal();
+    }
+  });
 
   const saveBtn = document.querySelector(".save-btn");
   if (saveBtn) saveBtn.addEventListener("click", saveHabit);
@@ -322,7 +324,11 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
 
     habitList.innerHTML = "";
     if (habits.length === 0) {
-      habitList.innerHTML = '<li class="empty-message">No habits found.</li>';
+      habitList.innerHTML = `
+        <li class="empty-message">
+          <p>Ready to start a new journey?</p>
+          <button class="btn open-habit-modal" style="margin-top: 10px;">Add Your First Habit</button>
+        </li>`;
       return;
     }
 
