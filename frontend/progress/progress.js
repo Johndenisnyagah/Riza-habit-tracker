@@ -41,114 +41,73 @@ if (!isAuthenticated()) {
    ========================================================= */
 
 /**
- * Calculates the longest consecutive streak across all habits
- *
- * Algorithm:
- * 1. Collect all unique completion dates from pre-fetched check-ins
- * 2. Sort dates and find longest consecutive sequence
- *
- * @param {Array} allCheckins - All check-in records for the user
- * @returns {number} Longest streak in days
- */
-function calculateLongestStreak(allCheckins) {
-  try {
-    if (!allCheckins || allCheckins.length === 0) return 0;
-
-    // Optimization: Use UTC timestamps for consistency and to avoid redundant Date object creation in the loop
-    // Backend stores dates as midnight UTC, and new Date("YYYY-MM-DD") parses as midnight UTC.
-    const allTimestamps = Array.from(new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()))).sort((a, b) => a - b);
-
-    if (allTimestamps.length === 0) return 0;
-
-    // Find longest consecutive sequence
-    let longestStreak = 1;
-    let currentStreakCount = 1;
-    const ONE_DAY_MS = 1000 * 60 * 60 * 24;
-
-    for (let i = 1; i < allTimestamps.length; i++) {
-      // Calculate difference in days using pre-calculated timestamps
-      const diffDays = Math.round((allTimestamps[i] - allTimestamps[i - 1]) / ONE_DAY_MS);
-
-      if (diffDays === 1) {
-        // Consecutive day - increment streak
-        currentStreakCount++;
-        if (currentStreakCount > longestStreak) longestStreak = currentStreakCount;
-      } else {
-        // Streak broken - reset counter
-        currentStreakCount = 1;
-      }
-    }
-
-    return longestStreak;
-  } catch (error) {
-    console.error("❌ Failed to calculate longest streak:", error);
-    return 0;
-  }
-}
-
-/**
- * Calculates current streak (consecutive days from today backwards)
- *
- * @param {Array} habits - All habits for the user
- * @param {Array} allCheckins - All check-in records for the user
- * @returns {number} Current streak in days
- */
-function calculateCurrentStreak(habits, allCheckins) {
-  try {
-    if (habits.length === 0 || !allCheckins || allCheckins.length === 0)
-      return 0;
-
-    // Optimization: Use a Set of UTC timestamps for O(1) lookups and faster date arithmetic
-    const completionTimestamps = new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()));
-
-    // Calculate current streak (consecutive days from today backwards)
-    let currentStreak = 0;
-    const now = new Date();
-    // Match the backend's "Local YMD -> UTC midnight" logic for consistency
-    let checkTimestamp = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-    const ONE_DAY_MS = 1000 * 60 * 60 * 24;
-
-    while (true) {
-      if (completionTimestamps.has(checkTimestamp)) {
-        currentStreak++;
-        checkTimestamp -= ONE_DAY_MS;
-      } else {
-        break; // Streak broken
-      }
-    }
-
-    return currentStreak;
-  } catch (error) {
-    console.error("❌ Failed to calculate current streak:", error);
-    return 0;
-  }
-}
-
-/**
  * Calculates comprehensive statistics for the progress page
  *
+ * Performance Optimization:
+ * - Performs a single O(N) pass over all check-ins to build completions map and extract unique dates.
+ * - Leverages the descending sort from the backend to efficiently process streaks.
+ * - Minimizes Date object instantiation by using timestamps and pre-calculated date strings.
+ *
  * @param {Array} habits - All habits for the user
- * @param {Array} allCheckins - All check-in records for the user
+ * @param {Array} allCheckins - All check-in records for the user (sorted descending by date)
  * @param {number} totalLoginDays - Pre-fetched total login days
  * @returns {Object} Statistics object with all metrics
  */
 function calculateStats(habits, allCheckins, totalLoginDays) {
   try {
-    // Optimization: Remove redundant trackDailyLogin() call as it's already handled in DOMContentLoaded
+    if (!habits || !allCheckins) {
+      return { totalCheckins: 0, currentStreak: 0, successRate: 0, longestStreak: 0, weekComparison: 0, bestDay: "Monday" };
+    }
+
     const totalCheckins = totalLoginDays || 0;
+    const ONE_DAY_MS = 86400000;
+
+    // Single pass to build completion map and unique date timestamps
+    const completions = {};
+    const uniqueTimestamps = new Set();
+
+    for (let i = 0; i < allCheckins.length; i++) {
+      const checkin = allCheckins[i];
+      const dateStr = checkin.date.split("T")[0];
+      const timestamp = Date.parse(dateStr);
+      uniqueTimestamps.add(timestamp);
+
+      if (!completions[checkin.habitId]) {
+        completions[checkin.habitId] = new Set();
+      }
+      completions[checkin.habitId].add(dateStr);
+    }
 
     // Calculate current streak
-    const currentStreak = calculateCurrentStreak(habits, allCheckins);
+    let currentStreak = 0;
+    const now = new Date();
+    let checkTimestamp = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+
+    while (uniqueTimestamps.has(checkTimestamp)) {
+      currentStreak++;
+      checkTimestamp -= ONE_DAY_MS;
+    }
 
     // Calculate longest streak
-    const longestStreak = calculateLongestStreak(allCheckins);
+    let longestStreak = 0;
+    if (uniqueTimestamps.size > 0) {
+      const sortedTimestamps = Array.from(uniqueTimestamps).sort((a, b) => b - a);
+      longestStreak = 1;
+      let tempStreak = 1;
+      for (let i = 1; i < sortedTimestamps.length; i++) {
+        if (Math.round((sortedTimestamps[i - 1] - sortedTimestamps[i]) / ONE_DAY_MS) === 1) {
+          tempStreak++;
+          if (tempStreak > longestStreak) longestStreak = tempStreak;
+        } else {
+          tempStreak = 1;
+        }
+      }
+    }
 
     // Calculate success rate (this week)
     const today = new Date();
     const weekStart = new Date(today);
-    weekStart.setDate(
-      today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
-    );
+    weekStart.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
     weekStart.setHours(0, 0, 0, 0);
 
     const lastWeekStart = new Date(weekStart);
@@ -174,16 +133,6 @@ function calculateStats(habits, allCheckins, totalLoginDays) {
     const dailySuccess = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun success counts
     const dailyTotal = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun total counts
 
-    // Build completion map: habitId -> Set of completion dates for O(1) lookup
-    const completions = {};
-    allCheckins.forEach((checkin) => {
-      const habitId = checkin.habitId;
-      if (!completions[habitId]) {
-        completions[habitId] = new Set();
-      }
-      completions[habitId].add(checkin.date.split("T")[0]);
-    });
-
     // Calculate success rates for both current and last week in a single pass over the habits array
     habits.forEach((habit) => {
       const habitId = habit._id || habit.id;
@@ -206,33 +155,17 @@ function calculateStats(habits, allCheckins, totalLoginDays) {
       });
     });
 
-    const successRate =
-      totalPossible > 0
-        ? Math.round((totalCompleted / totalPossible) * 100)
-        : 0;
-
-    const lastWeekRate =
-      lastWeekPossible > 0
-        ? Math.round((lastWeekCompleted / lastWeekPossible) * 100)
-        : 0;
+    const successRate = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+    const lastWeekRate = lastWeekPossible > 0 ? Math.round((lastWeekCompleted / lastWeekPossible) * 100) : 0;
     const weekComparison = successRate - lastWeekRate;
 
     // Find best day of the week
-    const dayNames = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     let bestDayIndex = 0;
     let bestDayRate = 0;
 
     dailySuccess.forEach((completed, index) => {
-      const rate =
-        dailyTotal[index] > 0 ? (completed / dailyTotal[index]) * 100 : 0;
+      const rate = dailyTotal[index] > 0 ? (completed / dailyTotal[index]) * 100 : 0;
       if (rate > bestDayRate) {
         bestDayRate = rate;
         bestDayIndex = index;
@@ -440,14 +373,15 @@ async function updateMonthlyChart(habits, allCheckins) {
     }
 
     // Process all check-ins and count by week
+    // Optimization: Use timestamps and simple arithmetic to avoid thousands of Date objects
+    const regTimestamp = registrationDate.getTime();
+    const ONE_WEEK_MS = 1000 * 60 * 60 * 24 * 7;
+
     allCheckins.forEach((checkIn) => {
-      const checkInDate = new Date(checkIn.date);
+      const checkInTime = Date.parse(checkIn.date);
 
       // Calculate which week this check-in belongs to (since registration)
-      const daysSinceRegistration = Math.floor(
-        (checkInDate - registrationDate) / (1000 * 60 * 60 * 24)
-      );
-      const weekIndex = Math.floor(daysSinceRegistration / 7);
+      const weekIndex = Math.floor((checkInTime - regTimestamp) / ONE_WEEK_MS);
 
       // Increment the count for that week (if valid index)
       if (weekIndex >= 0 && weekIndex < totalWeeks) {
