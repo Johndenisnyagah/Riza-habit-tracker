@@ -146,7 +146,7 @@ export function logoutUser() {
 export async function changePassword(currentPassword, newPassword) {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
-      method: "POST",
+      method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify({ currentPassword, newPassword }),
     });
