@@ -54,9 +54,16 @@ function calculateLongestStreak(allCheckins) {
   try {
     if (!allCheckins || allCheckins.length === 0) return 0;
 
-    // Optimization: Use UTC timestamps for consistency and to avoid redundant Date object creation in the loop
-    // Backend stores dates as midnight UTC, and new Date("YYYY-MM-DD") parses as midnight UTC.
-    const allTimestamps = Array.from(new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()))).sort((a, b) => a - b);
+    // Optimization: Use a single O(N) pass to collect unique timestamps in ascending order.
+    // Leverages the backend's descending sort to avoid a separate .sort() call.
+    const allTimestamps = [];
+    for (let i = allCheckins.length - 1; i >= 0; i--) {
+      const ts = Date.parse(allCheckins[i].date.substring(0, 10));
+      // Only add if it's a new day (avoid duplicates from multiple habits)
+      if (allTimestamps.length === 0 || ts !== allTimestamps[allTimestamps.length - 1]) {
+        allTimestamps.push(ts);
+      }
+    }
 
     if (allTimestamps.length === 0) return 0;
 
@@ -98,8 +105,12 @@ function calculateCurrentStreak(habits, allCheckins) {
     if (habits.length === 0 || !allCheckins || allCheckins.length === 0)
       return 0;
 
-    // Optimization: Use a Set of UTC timestamps for O(1) lookups and faster date arithmetic
-    const completionTimestamps = new Set(allCheckins.map(c => new Date(c.date.split("T")[0]).getTime()));
+    // Optimization: Use a Set of UTC timestamps for O(1) lookups.
+    // Use Date.parse() to avoid redundant Date object creation.
+    const completionTimestamps = new Set();
+    for (let i = 0; i < allCheckins.length; i++) {
+      completionTimestamps.add(Date.parse(allCheckins[i].date.substring(0, 10)));
+    }
 
     // Calculate current streak (consecutive days from today backwards)
     let currentStreak = 0;
@@ -176,13 +187,15 @@ function calculateStats(habits, allCheckins, totalLoginDays) {
 
     // Build completion map: habitId -> Set of completion dates for O(1) lookup
     const completions = {};
-    allCheckins.forEach((checkin) => {
+    for (let i = 0; i < allCheckins.length; i++) {
+      const checkin = allCheckins[i];
       const habitId = checkin.habitId;
       if (!completions[habitId]) {
         completions[habitId] = new Set();
       }
-      completions[habitId].add(checkin.date.split("T")[0]);
-    });
+      // Optimization: Use substring(0, 10) instead of split("T")[0]
+      completions[habitId].add(checkin.date.substring(0, 10));
+    }
 
     // Calculate success rates for both current and last week in a single pass over the habits array
     habits.forEach((habit) => {
@@ -440,12 +453,13 @@ async function updateMonthlyChart(habits, allCheckins) {
     }
 
     // Process all check-ins and count by week
-    allCheckins.forEach((checkIn) => {
-      const checkInDate = new Date(checkIn.date);
+    // Optimization: Use Date.parse() instead of new Date() in the loop
+    for (let i = 0; i < allCheckins.length; i++) {
+      const checkInTime = Date.parse(allCheckins[i].date);
 
       // Calculate which week this check-in belongs to (since registration)
       const daysSinceRegistration = Math.floor(
-        (checkInDate - registrationDate) / (1000 * 60 * 60 * 24)
+        (checkInTime - registrationDate) / (1000 * 60 * 60 * 24)
       );
       const weekIndex = Math.floor(daysSinceRegistration / 7);
 
@@ -588,12 +602,13 @@ async function renderCalendar(allCheckins) {
     const activeDays = new Set(); // Set of dates with any activity
 
     // Collect all dates with habit completions from the single batch fetch
-    allCheckins.forEach((checkIn) => {
+    // Optimization: Use substring(0, 10) and a for loop
+    for (let i = 0; i < allCheckins.length; i++) {
       // Extract date from MongoDB (already in UTC midnight format)
       // Backend stores as: 2025-10-23T00:00:00.000Z
-      const dateStr = checkIn.date.split("T")[0];
+      const dateStr = allCheckins[i].date.substring(0, 10);
       activeDays.add(dateStr);
-    });
+    }
 
     // Get today's date in local timezone (YYYY-MM-DD format)
     const today = new Date();
