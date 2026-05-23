@@ -417,7 +417,7 @@ router.put("/profile-picture", protect, async (req, res) => {
  * - Hashes new password with bcrypt (12 salt rounds)
  * - Never stores plain text passwords
  */
-router.put("/change-password", protect, async (req, res) => {
+router.put("/change-password", protect, authLimiter, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
@@ -484,7 +484,7 @@ router.put("/change-password", protect, async (req, res) => {
  * - Irreversible operation (permanent data deletion)
  * - Maintains data integrity by removing all related records
  */
-router.delete("/account", protect, async (req, res) => {
+router.delete("/account", protect, authLimiter, async (req, res) => {
   try {
     const userId = req.user.id;
 
