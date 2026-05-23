@@ -318,7 +318,7 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
     if (!habits || !allCheckins) {
       [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
     }
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().substring(0, 10);
 
     if (currentFilter !== "all") habits = habits.filter((h) => h.frequency === currentFilter);
 
@@ -332,15 +332,21 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
       return;
     }
 
-    const completions = {};
-    allCheckins.forEach((c) => {
-      if (!completions[c.habitId]) completions[c.habitId] = [];
-      completions[c.habitId].push(c.date.split("T")[0]);
-    });
+    // Optimization: Use early exit for today's check-ins since they are sorted newest first.
+    // Complexity: O(TodayCheckins) instead of O(TotalCheckins)
+    const completions = new Set();
+    for (let i = 0; i < allCheckins.length; i++) {
+      const checkinDate = allCheckins[i].date.substring(0, 10);
+      if (checkinDate === today) {
+        completions.add(allCheckins[i].habitId);
+      } else if (checkinDate < today) {
+        break; // Stop once we encounter dates before today
+      }
+    }
 
     habits.forEach((habit) => {
       const habitId = habit._id || habit.id;
-      const isCompleted = completions[habitId]?.includes(today);
+      const isCompleted = completions.has(habitId);
       const item = document.createElement("li");
       item.className = `habit-item ${isCompleted ? "completed" : ""}`;
       const escapedName = escapeHTML(habit.name);
@@ -394,15 +400,32 @@ export async function updateStreakCount(habits = null, allCheckins = null) {
     [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
   }
 
-  // Optimization: Create a Set of unique completion dates for O(1) lookups
-  // This resolves the O(Streak * Habits * Checkins) performance bottleneck
-  const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
-
+  // Optimization: Directly iterate over sorted check-ins to calculate current streak.
+  // Avoids O(N) Set creation and multiple O(1) lookups in a loop.
+  // Complexity: O(StreakCheckins) instead of O(TotalCheckins)
   let streak = 0;
   let checkDate = new Date();
+  let checkinIdx = 0;
+
   while (true) {
-    const dateStr = checkDate.toISOString().split("T")[0];
-    if (completionDates.has(dateStr)) {
+    const dateStr = checkDate.toISOString().substring(0, 10);
+    let found = false;
+
+    while (checkinIdx < allCheckins.length) {
+      const checkinDate = allCheckins[checkinIdx].date.substring(0, 10);
+      if (checkinDate === dateStr) {
+        found = true;
+        while (checkinIdx < allCheckins.length && allCheckins[checkinIdx].date.substring(0, 10) === dateStr) {
+          checkinIdx++;
+        }
+        break;
+      } else if (checkinDate < dateStr) {
+        break;
+      }
+      checkinIdx++;
+    }
+
+    if (found) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
     } else break;
@@ -417,9 +440,21 @@ async function updateTodayCheckins(habits = null, allCheckins = null) {
   if (!habits || !allCheckins) {
     [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
   }
-  const today = new Date().toISOString().split("T")[0];
-  const completed = new Set(allCheckins.filter((c) => c.date.split("T")[0] === today).map((c) => c.habitId)).size;
-  el.textContent = `${completed}/${habits.length} habits completed`;
+  const today = new Date().toISOString().substring(0, 10);
+
+  // Optimization: Use early exit for today's check-ins since they are sorted newest first.
+  // Complexity: O(TodayCheckins) instead of O(TotalCheckins)
+  const completedToday = new Set();
+  for (let i = 0; i < allCheckins.length; i++) {
+    const checkinDate = allCheckins[i].date.substring(0, 10);
+    if (checkinDate === today) {
+      completedToday.add(allCheckins[i].habitId);
+    } else if (checkinDate < today) {
+      break;
+    }
+  }
+
+  el.textContent = `${completedToday.size}/${habits.length} habits completed`;
 }
 
 export async function refreshHabitDisplay() {

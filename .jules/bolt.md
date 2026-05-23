@@ -9,3 +9,7 @@
 ## 2025-05-20 - [Efficient Date Processing in Loops]
 **Learning:** Using `substring(0, 10)` and `Date.parse()` instead of `split("T")[0]` and `new Date()` significantly reduces garbage collection pressure and memory allocation in performance-critical calculation loops. Additionally, leveraging the backend's sort order (e.g., descending dates) allows for O(N) streak calculations by avoiding client-side sorting.
 **Action:** Always prioritize `Date.parse()` for timestamp comparisons and `substring` for date extraction in high-frequency loops. Avoid `Set` and `Array.sort()` on the client when the data is already ordered.
+
+## 2025-05-22 - [Early-Exit Optimization for Sorted Data]
+**Learning:** Leveraged backend descending sort to implement early-exit loops for current status and streak calculations. This reduced complexity from O(N) (where N is total check-in history) to O(Today) or O(Streak), avoiding redundant O(N) space allocations like Set or intermediate maps.
+**Action:** Always check if incoming data is pre-sorted before applying O(N) operations like Set construction. If sorted, prioritize early-exit loops for calculating "current" metrics.

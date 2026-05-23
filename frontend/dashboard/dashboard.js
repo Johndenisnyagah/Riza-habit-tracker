@@ -316,15 +316,19 @@ function updateStatsDisplay(habits, allCheckins, totalLoginDays) {
  */
 function updateTodayCheckins(habits, allCheckins) {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().substring(0, 10);
 
-    // Count unique habits with today's check-in
+    // Optimization: Use early exit for today's check-ins since they are sorted newest first.
+    // Complexity: O(TodayCheckins) instead of O(TotalCheckins)
     const completedToday = new Set();
-    allCheckins.forEach((checkin) => {
-      if (checkin.date.split("T")[0] === today) {
-        completedToday.add(checkin.habitId);
+    for (let i = 0; i < allCheckins.length; i++) {
+      const checkinDate = allCheckins[i].date.substring(0, 10);
+      if (checkinDate === today) {
+        completedToday.add(allCheckins[i].habitId);
+      } else if (checkinDate < today) {
+        break; // Stop once we encounter dates before today
       }
-    });
+    }
 
     let completed = completedToday.size;
 
@@ -350,23 +354,42 @@ function updateCurrentStreak(habits, allCheckins) {
   if (!streakElement) return;
 
   try {
-    // Optimization: Create a Set of unique completion dates for O(1) lookups
-    // This resolves the O(Streak * Habits * Checkins) performance bottleneck
-    const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
-
-    // Calculate current streak (consecutive days from today backwards)
+    // Optimization: Directly iterate over sorted check-ins to calculate current streak.
+    // Avoids O(N) Set creation and multiple O(1) lookups in a loop.
+    // Complexity: O(StreakCheckins) instead of O(TotalCheckins)
     let currentStreak = 0;
     let checkDate = new Date();
+    let checkinIdx = 0;
 
     while (true) {
-      const dateStr = checkDate.toISOString().split("T")[0];
+      const dateStr = checkDate.toISOString().substring(0, 10);
+      let found = false;
 
-      // Check if any habit was completed on this date
-      if (completionDates.has(dateStr)) {
+      // Find if any check-in exists for the current checkDate
+      while (checkinIdx < allCheckins.length) {
+        const checkinDate = allCheckins[checkinIdx].date.substring(0, 10);
+        if (checkinDate === dateStr) {
+          found = true;
+          // Move index to next day's check-ins
+          while (
+            checkinIdx < allCheckins.length &&
+            allCheckins[checkinIdx].date.substring(0, 10) === dateStr
+          ) {
+            checkinIdx++;
+          }
+          break;
+        } else if (checkinDate < dateStr) {
+          // Since check-ins are descending, once we pass the date, it doesn't exist
+          break;
+        }
+        checkinIdx++;
+      }
+
+      if (found) {
         currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1); // Move to previous day
+        checkDate.setDate(checkDate.getDate() - 1);
       } else {
-        break; // Streak broken
+        break;
       }
     }
 
