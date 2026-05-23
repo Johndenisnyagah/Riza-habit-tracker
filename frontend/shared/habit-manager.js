@@ -318,7 +318,7 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
     if (!habits || !allCheckins) {
       [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
     }
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().substring(0, 10);
 
     if (currentFilter !== "all") habits = habits.filter((h) => h.frequency === currentFilter);
 
@@ -332,15 +332,20 @@ export async function updateHabitSummaryList(elementId = "habit-list", habits = 
       return;
     }
 
-    const completions = {};
-    allCheckins.forEach((c) => {
-      if (!completions[c.habitId]) completions[c.habitId] = [];
-      completions[c.habitId].push(c.date.split("T")[0]);
-    });
+    // Optimization: Early-exit loop to identify today's completions.
+    // Leverages descending sort from backend to reduce complexity to O(TodayCheckins).
+    const completedToday = new Set();
+    for (let i = 0; i < allCheckins.length; i++) {
+      const dateStr = allCheckins[i].date.substring(0, 10);
+      if (dateStr < today) break;
+      if (dateStr === today) {
+        completedToday.add(allCheckins[i].habitId);
+      }
+    }
 
     habits.forEach((habit) => {
       const habitId = habit._id || habit.id;
-      const isCompleted = completions[habitId]?.includes(today);
+      const isCompleted = completedToday.has(habitId);
       const item = document.createElement("li");
       item.className = `habit-item ${isCompleted ? "completed" : ""}`;
       const escapedName = escapeHTML(habit.name);
@@ -396,12 +401,12 @@ export async function updateStreakCount(habits = null, allCheckins = null) {
 
   // Optimization: Create a Set of unique completion dates for O(1) lookups
   // This resolves the O(Streak * Habits * Checkins) performance bottleneck
-  const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
+  const completionDates = new Set(allCheckins.map(c => c.date.substring(0, 10)));
 
   let streak = 0;
   let checkDate = new Date();
   while (true) {
-    const dateStr = checkDate.toISOString().split("T")[0];
+    const dateStr = checkDate.toISOString().substring(0, 10);
     if (completionDates.has(dateStr)) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
@@ -417,8 +422,20 @@ async function updateTodayCheckins(habits = null, allCheckins = null) {
   if (!habits || !allCheckins) {
     [habits, allCheckins] = await Promise.all([getHabitsData(), apiGetAllCheckins()]);
   }
-  const today = new Date().toISOString().split("T")[0];
-  const completed = new Set(allCheckins.filter((c) => c.date.split("T")[0] === today).map((c) => c.habitId)).size;
+  const today = new Date().toISOString().substring(0, 10);
+
+  // Optimization: Early-exit loop for today's completions.
+  // Reduces O(TotalCheckins) to O(TodayCheckins) using pre-sorted backend data.
+  const completedToday = new Set();
+  for (let i = 0; i < allCheckins.length; i++) {
+    const dateStr = allCheckins[i].date.substring(0, 10);
+    if (dateStr < today) break;
+    if (dateStr === today) {
+      completedToday.add(allCheckins[i].habitId);
+    }
+  }
+
+  const completed = completedToday.size;
   el.textContent = `${completed}/${habits.length} habits completed`;
 }
 

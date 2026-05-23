@@ -493,7 +493,7 @@ export async function trackDailyLogin() {
     // Reduces network overhead by only tracking once per user session per day
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const userId = user.id || user._id;
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().substring(0, 10);
     const cacheKey = `lastLoginTracked_${userId}`;
 
     if (localStorage.getItem(cacheKey) === today) {
