@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
  *
  * Algorithm:
  * 1. Collect all unique completion dates from pre-fetched check-ins
- * 2. Sort dates and find longest consecutive sequence
+ * 2. Find longest consecutive sequence in O(N) by iterating backwards
  *
  * @param {Array} allCheckins - All check-in records for the user
  * @returns {number} Longest streak in days
@@ -226,16 +226,16 @@ function calculateLongestStreak(allCheckins) {
   try {
     if (!allCheckins || allCheckins.length === 0) return 0;
 
-    // Optimization: Use a Set of date strings to get unique days, then sort.
-    // Using Date.parse() avoids redundant Date object creation entirely.
-    const uniqueDates = new Set();
-    for (let i = 0; i < allCheckins.length; i++) {
-      uniqueDates.add(allCheckins[i].date.substring(0, 10));
+    // Optimization: Use a single O(N) pass to collect unique timestamps in ascending order.
+    // Leverages the backend's descending sort to avoid a separate .sort() call.
+    const allTimestamps = [];
+    for (let i = allCheckins.length - 1; i >= 0; i--) {
+      const ts = Date.parse(allCheckins[i].date.substring(0, 10));
+      // Only add if it's a new day (avoid duplicates from multiple habits)
+      if (allTimestamps.length === 0 || ts !== allTimestamps[allTimestamps.length - 1]) {
+        allTimestamps.push(ts);
+      }
     }
-
-    const allTimestamps = Array.from(uniqueDates)
-      .sort()
-      .map((d) => Date.parse(d));
 
     if (allTimestamps.length === 0) return 0;
 
@@ -316,15 +316,18 @@ function updateStatsDisplay(habits, allCheckins, totalLoginDays) {
  */
 function updateTodayCheckins(habits, allCheckins) {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().substring(0, 10);
 
-    // Count unique habits with today's check-in
+    // Optimization: Early-exit loop to identify today's completions.
+    // Reduces O(TotalCheckins) to O(TodayCheckins) using pre-sorted backend data.
     const completedToday = new Set();
-    allCheckins.forEach((checkin) => {
-      if (checkin.date.split("T")[0] === today) {
-        completedToday.add(checkin.habitId);
+    for (let i = 0; i < allCheckins.length; i++) {
+      const dateStr = allCheckins[i].date.substring(0, 10);
+      if (dateStr < today) break;
+      if (dateStr === today) {
+        completedToday.add(allCheckins[i].habitId);
       }
-    });
+    }
 
     let completed = completedToday.size;
 
@@ -352,14 +355,14 @@ function updateCurrentStreak(habits, allCheckins) {
   try {
     // Optimization: Create a Set of unique completion dates for O(1) lookups
     // This resolves the O(Streak * Habits * Checkins) performance bottleneck
-    const completionDates = new Set(allCheckins.map(c => c.date.split("T")[0]));
+    const completionDates = new Set(allCheckins.map(c => c.date.substring(0, 10)));
 
     // Calculate current streak (consecutive days from today backwards)
     let currentStreak = 0;
     let checkDate = new Date();
 
     while (true) {
-      const dateStr = checkDate.toISOString().split("T")[0];
+      const dateStr = checkDate.toISOString().substring(0, 10);
 
       // Check if any habit was completed on this date
       if (completionDates.has(dateStr)) {

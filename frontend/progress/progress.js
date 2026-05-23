@@ -171,11 +171,11 @@ function calculateStats(habits, allCheckins, totalLoginDays) {
     for (let i = 0; i < 7; i++) {
       const d1 = new Date(weekStart);
       d1.setDate(weekStart.getDate() + i);
-      thisWeekDateStrings.push(d1.toISOString().split("T")[0]);
+      thisWeekDateStrings.push(d1.toISOString().substring(0, 10));
 
       const d2 = new Date(lastWeekStart);
       d2.setDate(lastWeekStart.getDate() + i);
-      lastWeekDateStrings.push(d2.toISOString().split("T")[0]);
+      lastWeekDateStrings.push(d2.toISOString().substring(0, 10));
     }
 
     let totalPossible = 0;
